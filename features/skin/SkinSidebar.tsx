@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSkinStore } from "@/stores/skinStore";
+import { useCustomBgStore } from "@/stores/customBgStore";
 import BackgroundControls from "./BackgroundControls";
+import CustomBgUpload from "./CustomBgUpload";
 import SkinCard from "./SkinCard";
 import {
   CATEGORY_META,
   SKINS_BY_CATEGORY,
+  type BackgroundSkin,
   type SkinCategory,
 } from "./presets";
 
@@ -51,6 +54,34 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
   const toggleCat = useSkinStore((s) => s.toggleCat);
 
+  const customItems = useCustomBgStore((s) => s.items);
+  const loadCustom = useCustomBgStore((s) => s.load);
+  const removeCustom = useCustomBgStore((s) => s.remove);
+
+  // 마운트 시 IndexedDB → 업로드 배경 목록 1회 로드.
+  useEffect(() => {
+    loadCustom().catch(() => {});
+  }, [loadCustom]);
+
+  // 커스텀 배경을 SkinCard가 받는 BackgroundSkin 형태로 변환.
+  const customSkins: BackgroundSkin[] = customItems.map((item) => ({
+    id: item.id,
+    name: item.name,
+    author: "내 사진",
+    description: "직접 올린 배경 사진",
+    category: "background",
+    status: "available",
+    thumbnail: item.objectUrl,
+    image: item.objectUrl,
+    defaultFit: item.fit,
+  }));
+
+  // 적용중인 사진을 삭제하면 배경도 함께 해제.
+  const handleDeleteCustom = (id: string) => {
+    if (backgroundSkinId === id) removeBackground();
+    removeCustom(id).catch(() => {});
+  };
+
   const toggleSection = (c: SkinCategory) =>
     setOpen((o) => ({ ...o, [c]: !o[c] }));
 
@@ -89,7 +120,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
       <div className="thin-scroll flex-1 overflow-y-auto">
         {CATEGORY_ORDER.map((category) => {
           const meta = CATEGORY_META[category];
-          const skins = SKINS_BY_CATEGORY[category];
+          const skins =
+            category === "background"
+              ? [...SKINS_BY_CATEGORY[category], ...customSkins]
+              : SKINS_BY_CATEGORY[category];
           const isOpen = open[category];
 
           return (
@@ -106,7 +140,12 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
 
               {isOpen && (
                 <div>
-                  {category === "background" && <BackgroundControls />}
+                  {category === "background" && (
+                    <>
+                      <BackgroundControls />
+                      <CustomBgUpload />
+                    </>
+                  )}
                   {skins.map((skin) => {
                     const applied =
                       (category === "background" &&
@@ -132,6 +171,11 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                           else if (category === "indicator") removeIndicator();
                           else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                         }}
+                        onDelete={
+                          skin.id.startsWith("custom-")
+                            ? () => handleDeleteCustom(skin.id)
+                            : undefined
+                        }
                       />
                     );
                   })}
