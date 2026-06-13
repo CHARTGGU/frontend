@@ -73,11 +73,11 @@ export const INDICATOR_SKINS: IndicatorSkin[] = [
     description: "기간 최고점엔 신난 고양이, 최저점엔 슬픈 고양이가 붙어요.",
     category: "indicator",
     status: "available",
-    thumbnail: "/skins/cat-happy.svg",
+    thumbnail: "/skins/cat-photo-happy.png",
     characters: {
-      happy: "/skins/cat-happy.svg",
-      sad: "/skins/cat-sad.svg",
-      neutral: "/skins/cat-neutral.svg",
+      happy: "/skins/cat-photo-happy.png",
+      sad: "/skins/cat-photo-sad.png",
+      neutral: "/skins/cat-photo-neutral.png",
     },
   },
 ];
