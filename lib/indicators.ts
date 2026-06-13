@@ -67,3 +67,61 @@ export function detectHighLowInRange(
   );
   return detectHighLow(inRange);
 }
+
+/**
+ * 지수이동평균. values 길이 < period면 빈 배열.
+ * 첫 값 = 첫 period의 SMA, 이후 EMA = close*k + prev*(1-k), k = 2/(period+1).
+ * 반환 길이 = values.length - period + 1.
+ */
+export function ema(values: number[], period: number): number[] {
+  if (values.length < period) return [];
+
+  const k = 2 / (period + 1);
+  const out: number[] = [];
+  let seed = 0;
+  for (let i = 0; i < period; i++) seed += values[i];
+  let prev = seed / period;
+  out.push(prev);
+  for (let i = period; i < values.length; i++) {
+    prev = values[i] * k + prev * (1 - k);
+    out.push(prev);
+  }
+  return out;
+}
+
+/**
+ * RSI (Wilder smoothing). 0~100. candles.length <= period면 빈 배열.
+ * 첫 평균은 단순평균, 이후 Wilder: avg = (avg*(period-1) + cur)/period.
+ * 반환 길이 = candles.length - period.
+ */
+export function rsi(candles: Candle[], period = 14): LineData[] {
+  if (candles.length <= period) return [];
+
+  let gain = 0;
+  let loss = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = candles[i].close - candles[i - 1].close;
+    if (diff >= 0) gain += diff;
+    else loss -= diff;
+  }
+  let avgGain = gain / period;
+  let avgLoss = loss / period;
+
+  const out: LineData[] = [];
+  const push = (i: number) => {
+    const rs = avgLoss === 0 ? Infinity : avgGain / avgLoss;
+    const value = avgLoss === 0 ? 100 : 100 - 100 / (1 + rs);
+    out.push({ time: candles[i].time, value });
+  };
+  push(period);
+
+  for (let i = period + 1; i < candles.length; i++) {
+    const diff = candles[i].close - candles[i - 1].close;
+    const curGain = diff > 0 ? diff : 0;
+    const curLoss = diff < 0 ? -diff : 0;
+    avgGain = (avgGain * (period - 1) + curGain) / period;
+    avgLoss = (avgLoss * (period - 1) + curLoss) / period;
+    push(i);
+  }
+  return out;
+}
