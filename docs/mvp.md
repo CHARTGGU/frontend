@@ -1,7 +1,8 @@
 # ChartSkin — MVP 스펙 & 작업 분해
 
 > 1차 구현 계약 문서. 전체 로드맵·기술 근거는 [`tech_stack.md`](./tech_stack.md) 참고.
-> 핵심: **API 키 불필요 + 유저별 데이터 없음 → 순수 프론트엔드, 백엔드 0.**
+> 핵심: **MVP는 API 키 불필요 + 유저별 데이터 없음 → 백엔드 거의 안 씀** (Binance 직접 호출).
+> 단 프레임워크는 **Next.js 풀스택**으로 출발 — Route Handlers로 백엔드 자리 미리 확보 (backlog 주식·AI 대비).
 
 ---
 
@@ -26,17 +27,18 @@
 ## 2. 기술 스택
 
 ```
-React + TypeScript
-Vite                      # 빌드 (순수 프론트라 Next 불필요)
-lightweight-charts v5     # 차트
-Zustand                   # 전역 상태 (적용 스킨·차트 설정)
-Tailwind CSS              # 스타일
-html-to-image             # PNG export
-dnd-kit                   # (지표 스킨 위치 조정 — 필요 시)
+Next.js (App Router) + TypeScript   # 프론트 + 백엔드 단일 코드베이스 (확정)
+  └ Route Handlers (app/api/*)       #   백엔드 = 서버리스 함수 (시세 프록시·키 보호·후속 DB/AI)
+lightweight-charts v5                # 차트
+Zustand                              # 전역 상태 (적용 스킨·차트 설정)
+Tailwind CSS                         # 스타일
+html-to-image                        # PNG export
+dnd-kit                              # (지표 스킨 위치 조정 — 필요 시)
 ```
 
-> ⚠️ **프레임워크 주의**: backlog의 주식/AI가 곧 들어오면 백엔드(API Route) 필요 → 그때 **Next.js**로 시작했어야 마이그레이션 0.
-> 당분간 차트·스킨만 갈 거라 Vite 채택. 주식 일정 잡히면 재검토.
+> **프레임워크 확정: Next.js 풀스택 (프론트+백엔드 둘 다).**
+> MVP(암호화폐 단독)는 브라우저 직접 호출이라 백엔드 거의 안 쓰지만, backlog의 주식/AI/스킨공유가 들어오면 Route Handlers가 그대로 백엔드가 됨 → 마이그레이션 0.
+> Binance klines는 키 불필요 + CORS 허용 → MVP 단계에선 클라이언트에서 직접 호출, 그 외 소스는 `app/api/*` 프록시 경유.
 
 > ⚠️ **lightweight-charts v5 API**: series 생성은 `chart.addSeries(CandlestickSeries, opts)` 형식.
 > v4의 `addCandlestickSeries()` 아님 — 예제 복붙 시 주의.
@@ -48,9 +50,9 @@ dnd-kit                   # (지표 스킨 위치 조정 — 필요 시)
 > 협업용. `[ ]` 체크박스 = 1 작업 단위. **의존**은 선행 작업, **담당**은 병렬 분담 제안(A=차트/데이터, B=스킨/UI).
 
 ### M0. 프로젝트 셋업  · 담당 공통 · 의존 없음
-- [ ] Vite + React + TS 초기화
+- [ ] Next.js (App Router) + TS 초기화
 - [ ] Tailwind 설정
-- [ ] 폴더 구조 (`/components`, `/features`, `/stores`, `/lib`, `/assets/skins`)
+- [ ] 폴더 구조 (`/app`, `/components`, `/features`, `/stores`, `/lib`, `/app/api`, `/assets/skins`)
 - [ ] Zustand 스토어 뼈대 (`chartStore`, `skinStore`)
 - [ ] ESLint/Prettier
 
@@ -62,7 +64,7 @@ dnd-kit                   # (지표 스킨 위치 조정 — 필요 시)
 - [ ] 로딩·에러 상태
 
 ### M2. 차트 코어  · 담당 A · 의존 M1
-- [ ] lightweight-charts v5 마운트 + 리사이즈 핸들
+- [ ] lightweight-charts v5 마운트 + 리사이즈 핸들 (⚠️ Next: 차트·오버레이는 `'use client'` 컴포넌트, SSR 비활성 `dynamic(..., { ssr:false })`)
 - [ ] 캔들 시리즈 + 거래량 히스토그램(별도 pane)
 - [ ] MA 계산 함수(SMA 5/20/60/120) → 라인 시리즈 주입
 - [ ] 기간 선택 UI ↔ 데이터 refetch ↔ `setData`
