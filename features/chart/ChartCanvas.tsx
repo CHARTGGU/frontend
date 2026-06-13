@@ -9,13 +9,30 @@ import {
   LineStyle,
   createChart,
   type IChartApi,
+  type IPriceLine,
   type ISeriesApi,
   type LogicalRange,
 } from "lightweight-charts";
 import { subscribeKline } from "@/lib/binance";
-import { sma } from "@/lib/indicators";
-import { MA_COLORS, type MaPeriod } from "@/lib/types";
+import { bollinger, macd, rsi, sma } from "@/lib/indicators";
+import {
+  BB_COLORS,
+  BB_MULT,
+  BB_PERIOD,
+  MA_COLORS,
+  MACD_COLORS,
+  MACD_FAST,
+  MACD_SIGNAL,
+  MACD_SLOW,
+  RSI_COLOR,
+  RSI_LEVEL_COLOR,
+  RSI_LEVELS,
+  RSI_PERIOD,
+  type MaPeriod,
+} from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
+import { useSkinStore } from "@/stores/skinStore";
+import { CatOverlay } from "./CatOverlay";
 import { useChartRefs } from "./ChartRefContext";
 
 const volColor = (up: boolean) =>
@@ -28,7 +45,29 @@ export default function ChartCanvas() {
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const maSeriesRef = useRef<Map<MaPeriod, ISeriesApi<"Line">>>(new Map());
 
+  // 볼린저밴드 3선 (price pane). 활성 시 생성, 해제 시 제거.
+  const bbRef = useRef<{
+    upper: ISeriesApi<"Line">;
+    middle: ISeriesApi<"Line">;
+    lower: ISeriesApi<"Line">;
+  } | null>(null);
+
+  // RSI (별도 pane). 시리즈 + 30/70 기준선.
+  const rsiRef = useRef<{
+    series: ISeriesApi<"Line">;
+    lines: IPriceLine[];
+  } | null>(null);
+
+  // MACD (별도 pane). macd·signal 라인 + histogram.
+  const macdRef = useRef<{
+    macd: ISeriesApi<"Line">;
+    signal: ISeriesApi<"Line">;
+    hist: ISeriesApi<"Histogram">;
+  } | null>(null);
+
   const { setRefs, setReady } = useChartRefs();
+
+  const catEnabled = useSkinStore((s) => s.catEnabled);
 
   const candles = useChartStore((s) => s.candles);
   const activeMa = useChartStore((s) => s.activeMa);
@@ -36,6 +75,7 @@ export default function ChartCanvas() {
   const liveBar = useChartStore((s) => s.liveBar);
   const symbol = useChartStore((s) => s.symbol);
   const interval = useChartStore((s) => s.interval);
+  const activeIndicators = useChartStore((s) => s.activeIndicators);
 
   // 마운트: 차트 + 시리즈 생성, 과거 페이징 구독. (lightweight-charts v5)
   useEffect(() => {
@@ -100,6 +140,9 @@ export default function ChartCanvas() {
       candleRef.current = null;
       volumeRef.current = null;
       maSeriesRef.current.clear();
+      bbRef.current = null;
+      rsiRef.current = null;
+      macdRef.current = null;
       setRefs({ chart: null, candleSeries: null });
       setReady(false);
     };
@@ -199,5 +242,176 @@ export default function ChartCanvas() {
     }
   }, [candles, activeMa]);
 
-  return <div ref={containerRef} className="absolute inset-0" />;
+  // 볼린저밴드 (price pane 오버레이) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("bb");
+    if (!on) {
+      if (bbRef.current) {
+        chart.removeSeries(bbRef.current.upper);
+        chart.removeSeries(bbRef.current.middle);
+        chart.removeSeries(bbRef.current.lower);
+        bbRef.current = null;
+      }
+      return;
+    }
+
+    if (!bbRef.current) {
+      const lineOpts = {
+        lineWidth: 1 as const,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      };
+      bbRef.current = {
+        upper: chart.addSeries(LineSeries, { ...lineOpts, color: BB_COLORS.upper }),
+        middle: chart.addSeries(LineSeries, {
+          ...lineOpts,
+          color: BB_COLORS.middle,
+          lineStyle: LineStyle.Dashed,
+        }),
+        lower: chart.addSeries(LineSeries, { ...lineOpts, color: BB_COLORS.lower }),
+      };
+    }
+
+    const bands = bollinger(candles, BB_PERIOD, BB_MULT);
+    bbRef.current.upper.setData(bands.upper);
+    bbRef.current.middle.setData(bands.middle);
+    bbRef.current.lower.setData(bands.lower);
+  }, [candles, activeIndicators]);
+
+  // RSI (별도 pane) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("rsi");
+    if (!on) {
+      if (rsiRef.current) {
+        chart.removeSeries(rsiRef.current.series);
+        rsiRef.current = null;
+      }
+      return;
+    }
+
+    if (!rsiRef.current) {
+      const paneIndex = chart.panes().length;
+      const series = chart.addSeries(
+        LineSeries,
+        {
+          color: RSI_COLOR,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      const lines = RSI_LEVELS.map((level) =>
+        series.createPriceLine({
+          price: level,
+          color: RSI_LEVEL_COLOR,
+          lineWidth: 1,
+          lineStyle: LineStyle.Dashed,
+          axisLabelVisible: true,
+          title: String(level),
+        }),
+      );
+      chart.panes()[paneIndex]?.setHeight(100);
+      rsiRef.current = { series, lines };
+    }
+
+    rsiRef.current.series.setData(rsi(candles, RSI_PERIOD));
+  }, [candles, activeIndicators]);
+
+  // MACD (별도 pane) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("macd");
+    if (!on) {
+      if (macdRef.current) {
+        chart.removeSeries(macdRef.current.macd);
+        chart.removeSeries(macdRef.current.signal);
+        chart.removeSeries(macdRef.current.hist);
+        macdRef.current = null;
+      }
+      return;
+    }
+
+    if (!macdRef.current) {
+      const paneIndex = chart.panes().length;
+      const hist = chart.addSeries(
+        HistogramSeries,
+        { priceLineVisible: false, lastValueVisible: false },
+        paneIndex,
+      );
+      const macdLine = chart.addSeries(
+        LineSeries,
+        {
+          color: MACD_COLORS.macd,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      const signalLine = chart.addSeries(
+        LineSeries,
+        {
+          color: MACD_COLORS.signal,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      chart.panes()[paneIndex]?.setHeight(100);
+      macdRef.current = { macd: macdLine, signal: signalLine, hist };
+    }
+
+    const result = macd(candles, MACD_FAST, MACD_SLOW, MACD_SIGNAL);
+    macdRef.current.hist.setData(result.histogram);
+    macdRef.current.macd.setData(result.macd);
+    macdRef.current.signal.setData(result.signal);
+  }, [candles, activeIndicators]);
+
+  const getYAtX = (x: number): number | null => {
+    const ts = chartRef.current?.timeScale();
+    const series = candleRef.current;
+    if (!ts || !series) return null;
+    const logical = ts.coordinateToLogical(x);
+    if (logical == null) return null;
+    const candle = candles[Math.round(logical)];
+    if (!candle) return null;
+    return series.priceToCoordinate(candle.high);
+  };
+
+  const getXBounds = (): { left: number; right: number } | null => {
+    const ts = chartRef.current?.timeScale();
+    if (!ts) return null;
+    const range = ts.getVisibleLogicalRange();
+    if (!range) return null;
+    const from = Math.max(0, Math.ceil(range.from));
+    const to = Math.min(candles.length - 1, Math.floor(range.to));
+    if (to < from) return null;
+    const a = ts.logicalToCoordinate(from as never);
+    const b = ts.logicalToCoordinate(to as never);
+    if (a == null || b == null) return null;
+    return { left: Math.min(a, b), right: Math.max(a, b) };
+  };
+
+  return (
+    <>
+      <div ref={containerRef} className="absolute inset-0" />
+      {catEnabled && (
+        <CatOverlay hostRef={containerRef} getYAtX={getYAtX} getXBounds={getXBounds} />
+      )}
+    </>
+  );
 }

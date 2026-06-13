@@ -88,10 +88,10 @@ export const WIDGET_SKINS: BaseSkin[] = [
     id: "wg-running-cat",
     name: "뛰어다니는 고양이",
     author: "ChartSkin",
-    description: "차트 위를 돌아다니는 감성 캐릭터. (준비중)",
+    description: "차트 캔들 고가 위를 좌우로 뛰어다니는 고양이 위젯.",
     category: "widget",
-    status: "soon",
-    thumbnail: "/skins/cat-neutral.svg",
+    status: "available",
+    thumbnail: "/skins/cat-running.svg",
   },
   {
     id: "wg-news-marker",
@@ -100,7 +100,7 @@ export const WIDGET_SKINS: BaseSkin[] = [
     description: "종목 뉴스를 차트 시간축에 표시. (준비중)",
     category: "widget",
     status: "soon",
-    thumbnail: "/skins/cat-neutral.svg",
+    thumbnail: "/skins/news-marker.svg",
   },
 ];
 

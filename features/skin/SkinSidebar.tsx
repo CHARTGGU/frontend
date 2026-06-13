@@ -17,6 +17,15 @@ const CATEGORY_ORDER: SkinCategory[] = [
   "set",
 ];
 
+// 구현된(status='available') 스킨이 1개라도 있는 카테고리는 펼친 채로 시작.
+const DEFAULT_OPEN = CATEGORY_ORDER.reduce(
+  (acc, c) => ({
+    ...acc,
+    [c]: SKINS_BY_CATEGORY[c].some((s) => s.status === "available"),
+  }),
+  {} as Record<SkinCategory, boolean>,
+);
+
 interface SkinSidebarProps {
   /** 접힘 여부 (AppShell이 소유) */
   collapsed: boolean;
@@ -31,19 +40,16 @@ interface SkinSidebarProps {
  * 접힌 상태에서는 얇은 세로 레일만 남고, 펼치기 버튼이 보인다.
  */
 export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
-  const [open, setOpen] = useState<Record<SkinCategory, boolean>>({
-    background: true,
-    indicator: true,
-    widget: false,
-    set: false,
-  });
+  const [open, setOpen] = useState<Record<SkinCategory, boolean>>(DEFAULT_OPEN);
 
   const backgroundSkinId = useSkinStore((s) => s.backgroundSkinId);
   const indicatorSkinId = useSkinStore((s) => s.indicatorSkinId);
+  const catEnabled = useSkinStore((s) => s.catEnabled);
   const applyBackground = useSkinStore((s) => s.applyBackground);
   const removeBackground = useSkinStore((s) => s.removeBackground);
   const applyIndicator = useSkinStore((s) => s.applyIndicator);
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
+  const toggleCat = useSkinStore((s) => s.toggleCat);
 
   const toggleSection = (c: SkinCategory) =>
     setOpen((o) => ({ ...o, [c]: !o[c] }));
@@ -106,7 +112,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                       (category === "background" &&
                         backgroundSkinId === skin.id) ||
                       (category === "indicator" &&
-                        indicatorSkinId === skin.id);
+                        indicatorSkinId === skin.id) ||
+                      (category === "widget" &&
+                        skin.id === "wg-running-cat" &&
+                        catEnabled);
 
                     return (
                       <SkinCard
@@ -115,12 +124,13 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         applied={applied}
                         onApply={() => {
                           if (category === "background") applyBackground(skin.id);
-                          else if (category === "indicator")
-                            applyIndicator(skin.id);
+                          else if (category === "indicator") applyIndicator(skin.id);
+                          else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                         }}
                         onRemove={() => {
                           if (category === "background") removeBackground();
                           else if (category === "indicator") removeIndicator();
+                          else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                         }}
                       />
                     );

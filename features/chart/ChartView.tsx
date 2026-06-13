@@ -7,6 +7,7 @@ import BackgroundLayer from "@/features/skin/BackgroundLayer";
 import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
+import VolumeProfileOverlay from "./VolumeProfileOverlay";
 
 /**
  * 차트 영역 합성: [배경 스킨] → [차트 캔들/거래량] → [지표 스킨 오버레이].
@@ -30,6 +31,7 @@ export default function ChartView() {
           <BackgroundLayer />
           <ChartCanvas />
           <IndicatorOverlay />
+          <VolumeProfileOverlay />
         </div>
 
         {status === "loading" && (
