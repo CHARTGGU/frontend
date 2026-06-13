@@ -41,10 +41,12 @@ dnd-kit                   # (지표 스킨 위치 조정 쓸 경우)
 ```
 → DB·S3·Python·NextAuth·Redis·프록시 **전부 불필요.**
 
-### 프레임워크 선택 (미결)
-- 가까운 시일 주식/백엔드 붙일 예정 → **Next.js**(API Route 자리 미리 확보, 후속 마이그레이션 0)
-- 당분간 차트·스킨만 → **Vite + React**(가볍고 빠름)
-- *기본 권장: 일단 가볍게 가려면 Vite. 단 backlog의 주식이 곧이면 Next.*
+### 프레임워크 선택 (확정: Next.js 풀스택)
+- **프론트 + 백엔드 둘 다 Next.js (App Router) 단일 코드베이스로 확정.**
+- 프론트: React Server/Client Components + 차트·스킨 오버레이.
+- 백엔드: **Route Handlers (`app/api/*`)** = 서버리스 함수. 시세 프록시·키 보호·CORS 우회·DB 액세스·AI 프록시를 같은 앱에서 처리.
+- 근거: backlog(주식·AI·스킨공유·저장)가 들어오는 순간 백엔드 필연(§3.0 역산). 처음부터 Next로 가면 후속 마이그레이션 0, BFF 자리 미리 확보.
+- ⚠️ 단, 무거운 Python 전용 작업(rembg 등 Phase 3)은 Next 밖 **별도 Python(FastAPI) 서비스**로 분리. Next는 그 앞단 프록시.
 
 ---
 
@@ -103,8 +105,16 @@ Lightweight Charts는 차트가 우리 DOM 트리 안에 있고, 좌표 변환 A
 | ㄴ가격 좌표 → 픽셀 좌표 변환 | 🟡 | `series.priceToCoordinate()` + `timeScale().timeToCoordinate()` (라이브러리 API) |
 | ㄴ최고점/최저점 자동 감지 | 🔴 | TypeScript 데이터 분석 (min/max 스캔) |
 | ㄴ캐릭터/말풍선 렌더 | 🔴 | **DOM 오버레이**(React 절대배치) 또는 Series Primitive. ⚠️ §2-B |
-| ㄴ스크롤·줌 시 위치 재계산 | 🟡 | 라이브러리 이벤트 구독(`subscribeVisibleLogicalRangeChange`/`subscribeCrosshairMove`) + `requestAnimationFrame` throttle |
+| ㄴ스크롤·줌 시 위치 재계산 | 🟡 | 라이브러리 이벤트 구독(`subscribeVisibleLogicalRangeChange`/`subscribeCrosshairMove`) + `requestAnimationFrame` throttle. **차트 view 변할 때 좌표 추적이 딱딱 따라붙는 "기민함"이 제품 완성도 핵심** |
+| 1-4b 지표 알고리즘 (스킨 데이터 소스) | | |
+| ㄴ골든크로스/데드크로스 감지 | 🔴 | 단·장기 MA 교차점 스캔 → 그 지점에 반짝임 이펙트(스킨) |
+| ㄴ일목균형표(Ichimoku) | 🔴 | 전환선/기준선/선행스팬1·2/후행스팬 계산 → **선행스팬 사이를 "구름"으로 렌더**. 스킨: 하늘 배경 + 구름 일목, 가격이 구름 돌파 시 **비행기가 뚫는** 연출 |
+| ㄴ지지선/저항선 | 🔴 | 스윙 고/저점 클러스터링 또는 피벗 계산 → 수평선 오버레이 스킨 |
+| ㄴ매물대(Volume Profile) | 🔴 | 가격 구간별 거래량 누적 히스토그램 계산 → 가로 막대 오버레이 |
 | 1-5 PNG 내보내기 | 🔴 | **`html-to-image`**(컨테이너 합성). `takeScreenshot()`은 캔버스만이라 불가. ⚠️ §2-C |
+| 1-6 위젯 (차트 부가 요소) | | |
+| ㄴ캐릭터 위젯 (뛰어다니는 고양이 등) | 🔴 | 차트와 무관하게 화면 위 돌아다니는 DOM 애니메이션 캐릭터. 감성 요소 |
+| ㄴ뉴스 마커 | 🔴 | 종목 뉴스 시각에 맞춰 차트 시간축에 마커 표시. 데이터: 뉴스 API(서버 프록시 경유) |
 
 ---
 
@@ -113,6 +123,7 @@ Lightweight Charts는 차트가 우리 DOM 트리 안에 있고, 좌표 변환 A
 | 피처 | 담당 | 필요 기술 스택 |
 |------|:----:|---------------|
 | 2-1 스킨 에디터 (드래그·말풍선·크기) | 🔴 | **dnd-kit**(드래그) + React 폼. 좌표 변환만 라이브러리 |
+| 2-1b DIY 배경 스킨 빌더 | 🔴 | 사용자가 색·패턴·이미지·레이아웃 조합으로 배경 스킨 직접 제작. React 캔버스/폼 + 결과를 스킨 포맷으로 저장 |
 | 2-1 감정 이미지 업로드 / 내 스킨 저장 | 🔴 | 파일 업로드 + **S3/R2 스토리지** + 메타 **DB(PostgreSQL+Prisma)**. localStorage는 메타만 |
 | 2-2 감정 반응 자동화 (등락률→표정) | 🔴 | TypeScript 로직 (기준기간 대비 등락률 계산) |
 | 2-2 실시간 업데이트 (틱 수신) | 🟡 | **WebSocket**(거래소 직접 또는 자체 게이트웨이) → `series.update()` |
@@ -127,6 +138,7 @@ Lightweight Charts는 차트가 우리 DOM 트리 안에 있고, 좌표 변환 A
 | 피처 | 담당 | 필요 기술 스택 |
 |------|:----:|---------------|
 | 3-1 텍스트→배경 생성 | 🔴 | **Replicate / Stability / DALL·E** API (백엔드 프록시, 키 보호) + 비동기 큐 |
+| 3-1b 자연어→지표 아이콘 생성 | 🔴 | 사용자가 자연어로 입력 → 지표 스킨용 아이콘/캐릭터 생성. 이미지 생성 API + 배경 제거 파이프라인. "AI API 연결" 기능의 핵심 |
 | 3-2 캐릭터 생성 + 감정 variant 3종 | 🔴 | 이미지 생성 API + 시드 고정 프롬프트 파이프라인 (Python 백엔드) |
 | 3-2/3-3 배경 제거 (rembg) | 🔴 | **Python(FastAPI) + rembg** 자체호스팅, 또는 remove.bg API |
 | 3-3 커스텀 업로드→스킨화 | 🔴 | 업로드 → 배경제거 → 포맷 변환 → S3 저장 |
