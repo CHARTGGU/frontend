@@ -47,3 +47,54 @@ export const MA_COLORS: Record<MaPeriod, string> = {
 };
 
 export type LoadStatus = "idle" | "loading" | "ready" | "error";
+
+/** 보조지표 ID. */
+export type IndicatorId = "bb" | "rsi" | "macd" | "volProfile";
+
+/** price pane에 오버레이되는 지표(시리즈). */
+export const OVERLAY_INDICATORS = ["bb"] as const;
+/** 별도 pane에 그리는 지표. */
+export const PANE_INDICATORS = ["rsi", "macd"] as const;
+/** DOM 오버레이 지표. */
+export const DOM_INDICATORS = ["volProfile"] as const;
+
+export const INDICATOR_LABELS: Record<IndicatorId, string> = {
+  bb: "볼린저밴드",
+  rsi: "RSI",
+  macd: "MACD",
+  volProfile: "매물대",
+};
+
+/** Toolbar 체크박스 대표색. */
+export const INDICATOR_DOT: Record<IndicatorId, string> = {
+  bb: "#4dabf7",
+  rsi: "#cc5de8",
+  macd: "#20c997",
+  volProfile: "#ffa94d",
+};
+
+/** 고정 표준 파라미터. */
+export const RSI_PERIOD = 14;
+export const RSI_LEVELS = [30, 70] as const;
+export const BB_PERIOD = 20;
+export const BB_MULT = 2;
+export const MACD_FAST = 12;
+export const MACD_SLOW = 26;
+export const MACD_SIGNAL = 9;
+export const VOL_PROFILE_BUCKETS = 24;
+
+/** BB 3선 색상. */
+export const BB_COLORS = {
+  upper: "#4dabf7",
+  middle: "rgba(77,171,247,0.5)",
+  lower: "#4dabf7",
+} as const;
+
+/** RSI 라인 색상. */
+export const RSI_COLOR = "#cc5de8";
+
+/** MACD 색상 (히스토그램은 indicators.ts에서 부호별 처리). */
+export const MACD_COLORS = {
+  macd: "#20c997",
+  signal: "#ff922b",
+} as const;
