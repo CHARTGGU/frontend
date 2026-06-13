@@ -92,6 +92,8 @@ export const BB_COLORS = {
 
 /** RSI 라인 색상. */
 export const RSI_COLOR = "#cc5de8";
+/** RSI 30/70 기준선 색상. */
+export const RSI_LEVEL_COLOR = "rgba(255,255,255,0.25)";
 
 /** MACD 색상 (히스토그램은 indicators.ts에서 부호별 처리). */
 export const MACD_COLORS = {

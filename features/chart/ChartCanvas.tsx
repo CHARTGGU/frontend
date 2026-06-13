@@ -25,6 +25,7 @@ import {
   MACD_SIGNAL,
   MACD_SLOW,
   RSI_COLOR,
+  RSI_LEVEL_COLOR,
   RSI_LEVELS,
   RSI_PERIOD,
   type MaPeriod,
@@ -307,7 +308,7 @@ export default function ChartCanvas() {
       const lines = RSI_LEVELS.map((level) =>
         series.createPriceLine({
           price: level,
-          color: "rgba(255,255,255,0.25)",
+          color: RSI_LEVEL_COLOR,
           lineWidth: 1,
           lineStyle: LineStyle.Dashed,
           axisLabelVisible: true,
