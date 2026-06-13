@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { UTCTimestamp } from "lightweight-charts";
-import { ema, rsi, bollinger, macd } from "./indicators";
+import { ema, rsi, bollinger, macd, volumeProfile } from "./indicators";
 import type { Candle } from "./types";
 
 function candlesFromCloses(closes: number[]): Candle[] {
@@ -80,5 +80,24 @@ describe("macd", () => {
     expect(out.histogram).toHaveLength(4);
     const last = out.histogram[out.histogram.length - 1];
     expect(last.color).toBeDefined();
+  });
+});
+
+describe("volumeProfile", () => {
+  it("빈 입력이면 빈 배열", () => {
+    expect(volumeProfile([], 4)).toEqual([]);
+  });
+
+  it("close가 속한 버킷에 volume 합산, 버킷 수만큼 반환", () => {
+    const candles: Candle[] = [
+      { time: 1 as UTCTimestamp, open: 0, high: 4, low: 0, close: 0.5, volume: 10 },
+      { time: 2 as UTCTimestamp, open: 0, high: 4, low: 0, close: 3.5, volume: 20 },
+      { time: 3 as UTCTimestamp, open: 0, high: 4, low: 0, close: 0.5, volume: 5 },
+    ];
+    const out = volumeProfile(candles, 4);
+    expect(out).toHaveLength(4);
+    expect(out[0].volume).toBe(15);
+    expect(out[3].volume).toBe(20);
+    expect(out[1].volume).toBe(0);
   });
 });

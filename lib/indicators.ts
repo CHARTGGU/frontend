@@ -215,3 +215,45 @@ export function macd(
 
   return { macd: macdLine, signal, histogram };
 }
+
+export interface VolumeBucket {
+  priceLow: number;
+  priceHigh: number;
+  volume: number;
+}
+
+/**
+ * 매물대. [min(low), max(high)] 구간을 bucketCount 등분, 각 캔들 volume을
+ * close가 속한 버킷에 합산. 입력은 가시범위 캔들(호출부에서 필터).
+ * 빈 입력이나 범위 0이면 빈 배열.
+ */
+export function volumeProfile(
+  candles: Candle[],
+  bucketCount = 24,
+): VolumeBucket[] {
+  if (candles.length === 0 || bucketCount <= 0) return [];
+
+  let min = candles[0].low;
+  let max = candles[0].high;
+  for (const c of candles) {
+    if (c.low < min) min = c.low;
+    if (c.high > max) max = c.high;
+  }
+  const span = max - min;
+  if (span <= 0) return [];
+
+  const width = span / bucketCount;
+  const buckets: VolumeBucket[] = Array.from({ length: bucketCount }, (_, i) => ({
+    priceLow: min + i * width,
+    priceHigh: min + (i + 1) * width,
+    volume: 0,
+  }));
+
+  for (const c of candles) {
+    let idx = Math.floor((c.close - min) / width);
+    if (idx < 0) idx = 0;
+    if (idx >= bucketCount) idx = bucketCount - 1;
+    buckets[idx] = { ...buckets[idx], volume: buckets[idx].volume + c.volume };
+  }
+  return buckets;
+}
