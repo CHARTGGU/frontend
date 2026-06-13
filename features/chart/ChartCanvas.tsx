@@ -9,12 +9,26 @@ import {
   LineStyle,
   createChart,
   type IChartApi,
+  type IPriceLine,
   type ISeriesApi,
   type LogicalRange,
 } from "lightweight-charts";
 import { subscribeKline } from "@/lib/binance";
-import { sma } from "@/lib/indicators";
-import { MA_COLORS, type MaPeriod } from "@/lib/types";
+import { bollinger, macd, rsi, sma } from "@/lib/indicators";
+import {
+  BB_COLORS,
+  BB_MULT,
+  BB_PERIOD,
+  MA_COLORS,
+  MACD_COLORS,
+  MACD_FAST,
+  MACD_SIGNAL,
+  MACD_SLOW,
+  RSI_COLOR,
+  RSI_LEVELS,
+  RSI_PERIOD,
+  type MaPeriod,
+} from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
 import { useChartRefs } from "./ChartRefContext";
 
@@ -28,6 +42,13 @@ export default function ChartCanvas() {
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const maSeriesRef = useRef<Map<MaPeriod, ISeriesApi<"Line">>>(new Map());
 
+  // 볼린저밴드 3선 (price pane). 활성 시 생성, 해제 시 제거.
+  const bbRef = useRef<{
+    upper: ISeriesApi<"Line">;
+    middle: ISeriesApi<"Line">;
+    lower: ISeriesApi<"Line">;
+  } | null>(null);
+
   const { setRefs, setReady } = useChartRefs();
 
   const candles = useChartStore((s) => s.candles);
@@ -36,6 +57,7 @@ export default function ChartCanvas() {
   const liveBar = useChartStore((s) => s.liveBar);
   const symbol = useChartStore((s) => s.symbol);
   const interval = useChartStore((s) => s.interval);
+  const activeIndicators = useChartStore((s) => s.activeIndicators);
 
   // 마운트: 차트 + 시리즈 생성, 과거 페이징 구독. (lightweight-charts v5)
   useEffect(() => {
@@ -100,6 +122,7 @@ export default function ChartCanvas() {
       candleRef.current = null;
       volumeRef.current = null;
       maSeriesRef.current.clear();
+      bbRef.current = null;
       setRefs({ chart: null, candleSeries: null });
       setReady(false);
     };
@@ -198,6 +221,46 @@ export default function ChartCanvas() {
       series.setData(candles.length >= period ? sma(candles, period) : []);
     }
   }, [candles, activeMa]);
+
+  // 볼린저밴드 (price pane 오버레이) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("bb");
+    if (!on) {
+      if (bbRef.current) {
+        chart.removeSeries(bbRef.current.upper);
+        chart.removeSeries(bbRef.current.middle);
+        chart.removeSeries(bbRef.current.lower);
+        bbRef.current = null;
+      }
+      return;
+    }
+
+    if (!bbRef.current) {
+      const lineOpts = {
+        lineWidth: 1 as const,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      };
+      bbRef.current = {
+        upper: chart.addSeries(LineSeries, { ...lineOpts, color: BB_COLORS.upper }),
+        middle: chart.addSeries(LineSeries, {
+          ...lineOpts,
+          color: BB_COLORS.middle,
+          lineStyle: LineStyle.Dashed,
+        }),
+        lower: chart.addSeries(LineSeries, { ...lineOpts, color: BB_COLORS.lower }),
+      };
+    }
+
+    const bands = bollinger(candles, BB_PERIOD, BB_MULT);
+    bbRef.current.upper.setData(bands.upper);
+    bbRef.current.middle.setData(bands.middle);
+    bbRef.current.lower.setData(bands.lower);
+  }, [candles, activeIndicators]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
 }
