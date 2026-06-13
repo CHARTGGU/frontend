@@ -49,6 +49,12 @@ export default function ChartCanvas() {
     lower: ISeriesApi<"Line">;
   } | null>(null);
 
+  // RSI (별도 pane). 시리즈 + 30/70 기준선.
+  const rsiRef = useRef<{
+    series: ISeriesApi<"Line">;
+    lines: IPriceLine[];
+  } | null>(null);
+
   const { setRefs, setReady } = useChartRefs();
 
   const candles = useChartStore((s) => s.candles);
@@ -123,6 +129,7 @@ export default function ChartCanvas() {
       volumeRef.current = null;
       maSeriesRef.current.clear();
       bbRef.current = null;
+      rsiRef.current = null;
       setRefs({ chart: null, candleSeries: null });
       setReady(false);
     };
@@ -260,6 +267,50 @@ export default function ChartCanvas() {
     bbRef.current.upper.setData(bands.upper);
     bbRef.current.middle.setData(bands.middle);
     bbRef.current.lower.setData(bands.lower);
+  }, [candles, activeIndicators]);
+
+  // RSI (별도 pane) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("rsi");
+    if (!on) {
+      if (rsiRef.current) {
+        chart.removeSeries(rsiRef.current.series);
+        rsiRef.current = null;
+      }
+      return;
+    }
+
+    if (!rsiRef.current) {
+      const paneIndex = chart.panes().length;
+      const series = chart.addSeries(
+        LineSeries,
+        {
+          color: RSI_COLOR,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      const lines = RSI_LEVELS.map((level) =>
+        series.createPriceLine({
+          price: level,
+          color: "rgba(255,255,255,0.25)",
+          lineWidth: 1,
+          lineStyle: LineStyle.Dashed,
+          axisLabelVisible: true,
+          title: String(level),
+        }),
+      );
+      chart.panes()[paneIndex]?.setHeight(100);
+      rsiRef.current = { series, lines };
+    }
+
+    rsiRef.current.series.setData(rsi(candles, RSI_PERIOD));
   }, [candles, activeIndicators]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
