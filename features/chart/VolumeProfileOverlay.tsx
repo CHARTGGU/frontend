@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { volumeProfile } from "@/lib/indicators";
 import { VOL_PROFILE_BUCKETS } from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
@@ -19,19 +20,23 @@ export default function VolumeProfileOverlay() {
   const { ready } = useChartOverlay();
   const { chart, candleSeries } = useChartRefs();
 
+  // 가시 시간범위 — 매 rAF 렌더마다 새로 읽음(저렴). null은 가드.
+  const visibleRange = chart?.timeScale().getVisibleRange() ?? null;
+  const from = visibleRange ? (visibleRange.from as number) : null;
+  const to = visibleRange ? (visibleRange.to as number) : null;
+
+  // 버킷 계산은 candles·가시범위가 바뀔 때만(crosshair·가격줌엔 from/to 불변 → 캐시 히트).
+  const buckets = useMemo(() => {
+    if (from === null || to === null) return [];
+    const visible = candles.filter(
+      (c) => (c.time as number) >= from && (c.time as number) <= to,
+    );
+    return volumeProfile(visible, VOL_PROFILE_BUCKETS);
+  }, [candles, from, to]);
+
   if (!active.includes("volProfile") || !ready || !chart || !candleSeries) {
     return null;
   }
-
-  const visibleRange = chart.timeScale().getVisibleRange();
-  if (!visibleRange) return null;
-
-  const from = visibleRange.from as number;
-  const to = visibleRange.to as number;
-  const visible = candles.filter(
-    (c) => (c.time as number) >= from && (c.time as number) <= to,
-  );
-  const buckets = volumeProfile(visible, VOL_PROFILE_BUCKETS);
   if (buckets.length === 0) return null;
 
   const maxVol = buckets.reduce((m, b) => (b.volume > m ? b.volume : m), 0);

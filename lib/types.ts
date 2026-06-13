@@ -51,13 +51,6 @@ export type LoadStatus = "idle" | "loading" | "ready" | "error";
 /** 보조지표 ID. */
 export type IndicatorId = "bb" | "rsi" | "macd" | "volProfile";
 
-/** price pane에 오버레이되는 지표(시리즈). */
-export const OVERLAY_INDICATORS = ["bb"] as const;
-/** 별도 pane에 그리는 지표. */
-export const PANE_INDICATORS = ["rsi", "macd"] as const;
-/** DOM 오버레이 지표. */
-export const DOM_INDICATORS = ["volProfile"] as const;
-
 export const INDICATOR_LABELS: Record<IndicatorId, string> = {
   bb: "볼린저밴드",
   rsi: "RSI",
