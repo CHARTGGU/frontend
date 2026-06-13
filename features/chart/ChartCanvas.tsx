@@ -55,6 +55,13 @@ export default function ChartCanvas() {
     lines: IPriceLine[];
   } | null>(null);
 
+  // MACD (별도 pane). macd·signal 라인 + histogram.
+  const macdRef = useRef<{
+    macd: ISeriesApi<"Line">;
+    signal: ISeriesApi<"Line">;
+    hist: ISeriesApi<"Histogram">;
+  } | null>(null);
+
   const { setRefs, setReady } = useChartRefs();
 
   const candles = useChartStore((s) => s.candles);
@@ -130,6 +137,7 @@ export default function ChartCanvas() {
       maSeriesRef.current.clear();
       bbRef.current = null;
       rsiRef.current = null;
+      macdRef.current = null;
       setRefs({ chart: null, candleSeries: null });
       setReady(false);
     };
@@ -311,6 +319,61 @@ export default function ChartCanvas() {
     }
 
     rsiRef.current.series.setData(rsi(candles, RSI_PERIOD));
+  }, [candles, activeIndicators]);
+
+  // MACD (별도 pane) 동기화.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("macd");
+    if (!on) {
+      if (macdRef.current) {
+        chart.removeSeries(macdRef.current.macd);
+        chart.removeSeries(macdRef.current.signal);
+        chart.removeSeries(macdRef.current.hist);
+        macdRef.current = null;
+      }
+      return;
+    }
+
+    if (!macdRef.current) {
+      const paneIndex = chart.panes().length;
+      const hist = chart.addSeries(
+        HistogramSeries,
+        { priceLineVisible: false, lastValueVisible: false },
+        paneIndex,
+      );
+      const macdLine = chart.addSeries(
+        LineSeries,
+        {
+          color: MACD_COLORS.macd,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      const signalLine = chart.addSeries(
+        LineSeries,
+        {
+          color: MACD_COLORS.signal,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        },
+        paneIndex,
+      );
+      chart.panes()[paneIndex]?.setHeight(100);
+      macdRef.current = { macd: macdLine, signal: signalLine, hist };
+    }
+
+    const result = macd(candles, MACD_FAST, MACD_SLOW, MACD_SIGNAL);
+    macdRef.current.hist.setData(result.histogram);
+    macdRef.current.macd.setData(result.macd);
+    macdRef.current.signal.setData(result.signal);
   }, [candles, activeIndicators]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
