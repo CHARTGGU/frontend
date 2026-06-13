@@ -2,17 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  INDICATOR_DOT,
+  INDICATOR_LABELS,
   INTERVALS,
   MA_COLORS,
   MA_PERIODS,
   SYMBOLS,
+  type IndicatorId,
   type SymbolId,
 } from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
 import ExportButton from "@/features/export/ExportButton";
 
-/** 준비중인 보조지표 (메뉴 자리만 — 팀원이 채움). */
-const SOON_INDICATORS = ["RSI", "볼린저밴드", "MACD"];
+/** 토글 가능한 보조지표 목록. */
+const INDICATOR_IDS: IndicatorId[] = ["bb", "rsi", "macd", "volProfile"];
 
 export default function Toolbar() {
   const symbol = useChartStore((s) => s.symbol);
@@ -21,6 +24,8 @@ export default function Toolbar() {
   const setSymbol = useChartStore((s) => s.setSymbol);
   const setInterval = useChartStore((s) => s.setInterval);
   const toggleMa = useChartStore((s) => s.toggleMa);
+  const activeIndicators = useChartStore((s) => s.activeIndicators);
+  const toggleIndicator = useChartStore((s) => s.toggleIndicator);
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-3 border-b border-panel-border bg-panel px-3">
@@ -51,7 +56,12 @@ export default function Toolbar() {
         ))}
       </div>
 
-      <IndicatorMenu activeMa={activeMa} onToggleMa={toggleMa} />
+      <IndicatorMenu
+        activeMa={activeMa}
+        onToggleMa={toggleMa}
+        activeIndicators={activeIndicators}
+        onToggleIndicator={toggleIndicator}
+      />
 
       <div className="ml-auto">
         <ExportButton />
@@ -105,9 +115,13 @@ function SymbolSelect({
 function IndicatorMenu({
   activeMa,
   onToggleMa,
+  activeIndicators,
+  onToggleIndicator,
 }: {
   activeMa: number[];
   onToggleMa: (p: (typeof MA_PERIODS)[number]) => void;
+  activeIndicators: IndicatorId[];
+  onToggleIndicator: (id: IndicatorId) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useOutsideClose(() => setOpen(false));
@@ -147,16 +161,25 @@ function IndicatorMenu({
 
           <div className="my-1 border-t border-panel-border" />
           <p className="px-2 py-1 text-[10px] font-bold uppercase text-text-muted">
-            오실레이터 (준비중)
+            보조지표
           </p>
-          {SOON_INDICATORS.map((name) => (
-            <div
-              key={name}
-              className="flex cursor-not-allowed items-center justify-between rounded px-2 py-1 text-xs text-text-muted/50"
+          {INDICATOR_IDS.map((id) => (
+            <label
+              key={id}
+              className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-text-primary hover:bg-panel-hover"
             >
-              <span>{name}</span>
-              <span className="text-[10px]">준비중</span>
-            </div>
+              <input
+                type="checkbox"
+                checked={activeIndicators.includes(id)}
+                onChange={() => onToggleIndicator(id)}
+                className="accent-accent"
+              />
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ background: INDICATOR_DOT[id] }}
+              />
+              <span>{INDICATOR_LABELS[id]}</span>
+            </label>
           ))}
         </div>
       )}
