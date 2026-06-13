@@ -7,17 +7,21 @@ interface SkinCardProps {
   applied: boolean;
   onApply: () => void;
   onRemove: () => void;
+  /** 사용자 업로드 배경 등 삭제 가능한 카드에만 전달 → 🗑 버튼 노출. */
+  onDelete?: () => void;
 }
 
 /**
  * 마켓플레이스 스킨 카드 (VSCode 익스텐션 항목 룩).
  * 썸네일 + 이름/제작자/설명 + 적용·해제 버튼. status='soon'이면 비활성(준비중).
+ * onDelete가 있으면 우측에 삭제 버튼을 추가로 노출한다(커스텀 배경).
  */
 export default function SkinCard({
   skin,
   applied,
   onApply,
   onRemove,
+  onDelete,
 }: SkinCardProps) {
   const soon = skin.status === "soon";
 
@@ -39,11 +43,11 @@ export default function SkinCard({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className="truncate text-[13px] font-semibold text-text-primary">
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-text-primary">
             {skin.name}
           </span>
           {applied && (
-            <span className="rounded-sm bg-accent px-1 text-[10px] text-white">
+            <span className="shrink-0 whitespace-nowrap rounded-sm bg-accent px-1 text-[10px] text-white">
               적용중
             </span>
           )}
@@ -53,7 +57,7 @@ export default function SkinCard({
           {skin.description}
         </p>
 
-        <div className="mt-1.5">
+        <div className="mt-1.5 flex items-center gap-1.5">
           {soon ? (
             <span className="text-[11px] text-text-muted">준비중</span>
           ) : applied ? (
@@ -69,6 +73,16 @@ export default function SkinCard({
               className="rounded bg-accent px-2 py-0.5 text-[11px] text-white hover:bg-accent-hover"
             >
               적용
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              title="삭제"
+              aria-label="삭제"
+              className="rounded border border-panel-border px-1.5 py-0.5 text-[11px] text-text-muted hover:bg-panel-border hover:text-text-primary"
+            >
+              🗑
             </button>
           )}
         </div>
