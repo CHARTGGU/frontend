@@ -125,3 +125,39 @@ export function rsi(candles: Candle[], period = 14): LineData[] {
   }
   return out;
 }
+
+export interface Bollinger {
+  upper: LineData[];
+  middle: LineData[];
+  lower: LineData[];
+}
+
+/**
+ * 볼린저밴드. middle = SMA(period), upper/lower = middle ± mult*σ.
+ * σ = 모집단 표준편차(period 윈도우). candles.length < period면 전부 빈 배열.
+ */
+export function bollinger(candles: Candle[], period = 20, mult = 2): Bollinger {
+  const upper: LineData[] = [];
+  const middle: LineData[] = [];
+  const lower: LineData[] = [];
+  if (candles.length < period) return { upper, middle, lower };
+
+  for (let i = period - 1; i < candles.length; i++) {
+    let sum = 0;
+    for (let j = i - period + 1; j <= i; j++) sum += candles[j].close;
+    const mean = sum / period;
+
+    let variance = 0;
+    for (let j = i - period + 1; j <= i; j++) {
+      const d = candles[j].close - mean;
+      variance += d * d;
+    }
+    const sd = Math.sqrt(variance / period);
+
+    const time = candles[i].time;
+    middle.push({ time, value: mean });
+    upper.push({ time, value: mean + mult * sd });
+    lower.push({ time, value: mean - mult * sd });
+  }
+  return { upper, middle, lower };
+}

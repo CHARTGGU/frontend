@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { UTCTimestamp } from "lightweight-charts";
-import { ema, rsi } from "./indicators";
+import { ema, rsi, bollinger } from "./indicators";
 import type { Candle } from "./types";
 
 function candlesFromCloses(closes: number[]): Candle[] {
@@ -44,5 +44,22 @@ describe("rsi", () => {
     ];
     const out = rsi(candlesFromCloses(closes), 14);
     expect(out[0].value).toBeCloseTo(70.46, 1);
+  });
+});
+
+describe("bollinger", () => {
+  it("길이 부족하면 전부 빈 배열", () => {
+    const out = bollinger(candlesFromCloses([1, 2]), 3, 2);
+    expect(out.middle).toEqual([]);
+    expect(out.upper).toEqual([]);
+    expect(out.lower).toEqual([]);
+  });
+
+  it("middle=SMA, upper/lower = middle ± mult*모집단σ", () => {
+    const out = bollinger(candlesFromCloses([2, 4, 6]), 3, 2);
+    expect(out.middle).toHaveLength(1);
+    expect(out.middle[0].value).toBeCloseTo(4, 6);
+    expect(out.upper[0].value).toBeCloseTo(4 + 2 * 1.63299, 4);
+    expect(out.lower[0].value).toBeCloseTo(4 - 2 * 1.63299, 4);
   });
 });
