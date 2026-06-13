@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type FitMode = "cover" | "contain" | "tile";
 
@@ -11,6 +12,8 @@ interface SkinState {
   backgroundOpacity: number;
   /** 배경 이미지 fit 모드. */
   fitMode: FitMode;
+  /** 뛰어다니는 고양이 위젯 활성화 여부. */
+  catEnabled: boolean;
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -18,18 +21,26 @@ interface SkinState {
   removeIndicator: () => void;
   setBackgroundOpacity: (opacity: number) => void;
   setFitMode: (mode: FitMode) => void;
+  toggleCat: () => void;
 }
 
-export const useSkinStore = create<SkinState>((set) => ({
-  backgroundSkinId: null,
-  indicatorSkinId: null,
-  backgroundOpacity: 0.5,
-  fitMode: "cover",
+export const useSkinStore = create<SkinState>()(
+  persist(
+    (set) => ({
+      backgroundSkinId: null,
+      indicatorSkinId: null,
+      backgroundOpacity: 0.5,
+      fitMode: "cover",
+      catEnabled: false,
 
-  applyBackground: (id) => set({ backgroundSkinId: id }),
-  removeBackground: () => set({ backgroundSkinId: null }),
-  applyIndicator: (id) => set({ indicatorSkinId: id }),
-  removeIndicator: () => set({ indicatorSkinId: null }),
-  setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
-  setFitMode: (fitMode) => set({ fitMode }),
-}));
+      applyBackground: (id) => set({ backgroundSkinId: id }),
+      removeBackground: () => set({ backgroundSkinId: null }),
+      applyIndicator: (id) => set({ indicatorSkinId: id }),
+      removeIndicator: () => set({ indicatorSkinId: null }),
+      setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
+      setFitMode: (fitMode) => set({ fitMode }),
+      toggleCat: () => set((s) => ({ catEnabled: !s.catEnabled })),
+    }),
+    { name: "skin-settings" }
+  )
+);

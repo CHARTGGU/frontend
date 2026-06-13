@@ -8,10 +8,10 @@ import { useChartRefs } from "./ChartRefContext";
 import { useChartOverlay } from "./useChartOverlay";
 
 /** 막대 최대 폭(px). */
-const MAX_BAR_WIDTH = 120;
+const MAX_BAR_WIDTH = 240;
 
 /**
- * 매물대 = 가시범위 캔들의 가격버킷별 거래량 → 우측 가로막대.
+ * 매물대 = 가시범위 캔들의 가격버킷별 거래량 → 좌측 가로막대.
  * DOM 오버레이(CLAUDE.md §5). 스크롤·줌 시 useChartOverlay rAF로 재배치.
  */
 export default function VolumeProfileOverlay() {
@@ -58,7 +58,7 @@ export default function VolumeProfileOverlay() {
             key={i}
             className="absolute rounded-sm bg-[rgba(255,169,77,0.35)]"
             style={{
-              right: 8,
+              left: 8,
               top: yTop,
               height,
               width,

@@ -31,6 +31,8 @@ import {
   type MaPeriod,
 } from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
+import { useSkinStore } from "@/stores/skinStore";
+import { CatOverlay } from "./CatOverlay";
 import { useChartRefs } from "./ChartRefContext";
 
 const volColor = (up: boolean) =>
@@ -64,6 +66,8 @@ export default function ChartCanvas() {
   } | null>(null);
 
   const { setRefs, setReady } = useChartRefs();
+
+  const catEnabled = useSkinStore((s) => s.catEnabled);
 
   const candles = useChartStore((s) => s.candles);
   const activeMa = useChartStore((s) => s.activeMa);
@@ -377,5 +381,37 @@ export default function ChartCanvas() {
     macdRef.current.signal.setData(result.signal);
   }, [candles, activeIndicators]);
 
-  return <div ref={containerRef} className="absolute inset-0" />;
+  const getYAtX = (x: number): number | null => {
+    const ts = chartRef.current?.timeScale();
+    const series = candleRef.current;
+    if (!ts || !series) return null;
+    const logical = ts.coordinateToLogical(x);
+    if (logical == null) return null;
+    const candle = candles[Math.round(logical)];
+    if (!candle) return null;
+    return series.priceToCoordinate(candle.high);
+  };
+
+  const getXBounds = (): { left: number; right: number } | null => {
+    const ts = chartRef.current?.timeScale();
+    if (!ts) return null;
+    const range = ts.getVisibleLogicalRange();
+    if (!range) return null;
+    const from = Math.max(0, Math.ceil(range.from));
+    const to = Math.min(candles.length - 1, Math.floor(range.to));
+    if (to < from) return null;
+    const a = ts.logicalToCoordinate(from as never);
+    const b = ts.logicalToCoordinate(to as never);
+    if (a == null || b == null) return null;
+    return { left: Math.min(a, b), right: Math.max(a, b) };
+  };
+
+  return (
+    <>
+      <div ref={containerRef} className="absolute inset-0" />
+      {catEnabled && (
+        <CatOverlay hostRef={containerRef} getYAtX={getYAtX} getXBounds={getXBounds} />
+      )}
+    </>
+  );
 }

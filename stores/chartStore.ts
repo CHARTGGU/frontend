@@ -1,5 +1,6 @@
 import type { UTCTimestamp } from "lightweight-charts";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { fromBinance } from "@/lib/adapters";
 import { fetchKlines, type RealtimeBar } from "@/lib/binance";
 import type {
@@ -42,7 +43,9 @@ interface ChartState {
 
 let activeController: AbortController | null = null;
 
-export const useChartStore = create<ChartState>((set, get) => ({
+export const useChartStore = create<ChartState>()(
+  persist(
+    (set, get) => ({
   symbol: "BTCUSDT",
   interval: "1d",
   candles: [],
@@ -161,4 +164,15 @@ export const useChartStore = create<ChartState>((set, get) => ({
       },
     });
   },
-}));
+    }),
+    {
+      name: "chart-settings",
+      partialize: (s) => ({
+        symbol: s.symbol,
+        interval: s.interval,
+        activeMa: s.activeMa,
+        activeIndicators: s.activeIndicators,
+      }),
+    }
+  )
+);
