@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { UTCTimestamp } from "lightweight-charts";
-import { ema, rsi, bollinger } from "./indicators";
+import { ema, rsi, bollinger, macd } from "./indicators";
 import type { Candle } from "./types";
 
 function candlesFromCloses(closes: number[]): Candle[] {
@@ -61,5 +61,24 @@ describe("bollinger", () => {
     expect(out.middle[0].value).toBeCloseTo(4, 6);
     expect(out.upper[0].value).toBeCloseTo(4 + 2 * 1.63299, 4);
     expect(out.lower[0].value).toBeCloseTo(4 - 2 * 1.63299, 4);
+  });
+});
+
+describe("macd", () => {
+  it("길이 부족(< slow)하면 전부 빈 배열", () => {
+    const out = macd(candlesFromCloses([1, 2, 3]), 2, 4, 2);
+    expect(out.macd).toEqual([]);
+    expect(out.signal).toEqual([]);
+    expect(out.histogram).toEqual([]);
+  });
+
+  it("macd = emaFast - emaSlow (slow 시점부터), histogram = macd - signal", () => {
+    const closes = [1, 2, 3, 4, 5, 6, 7, 8];
+    const out = macd(candlesFromCloses(closes), 2, 4, 2);
+    expect(out.macd).toHaveLength(5);
+    expect(out.macd[out.macd.length - 1].value).toBeGreaterThan(0);
+    expect(out.histogram).toHaveLength(4);
+    const last = out.histogram[out.histogram.length - 1];
+    expect(last.color).toBeDefined();
   });
 });

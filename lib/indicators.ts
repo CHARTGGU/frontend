@@ -1,5 +1,8 @@
-import type { LineData, UTCTimestamp } from "lightweight-charts";
+import type { HistogramData, LineData, UTCTimestamp } from "lightweight-charts";
 import type { Candle, MaPeriod } from "./types";
+
+const MACD_HIST_UP = "rgba(38,166,154,0.6)";
+const MACD_HIST_DOWN = "rgba(239,83,80,0.6)";
 
 /**
  * 단순 이동평균(SMA). lightweight-charts는 지표 0 제공 → 직접 계산.
@@ -160,4 +163,55 @@ export function bollinger(candles: Candle[], period = 20, mult = 2): Bollinger {
     lower.push({ time, value: mean - mult * sd });
   }
   return { upper, middle, lower };
+}
+
+export interface Macd {
+  macd: LineData[];
+  signal: LineData[];
+  histogram: HistogramData[];
+}
+
+/**
+ * MACD = EMA(fast) - EMA(slow). signal = EMA(macd, signalPeriod).
+ * histogram = macd - signal (색상 부호별). 길이 < slow면 전부 빈 배열.
+ * EMA 시작점이 달라 fast를 slow 시작점에 정렬한 뒤 차를 구한다.
+ */
+export function macd(
+  candles: Candle[],
+  fast = 12,
+  slow = 26,
+  signalPeriod = 9,
+): Macd {
+  const empty: Macd = { macd: [], signal: [], histogram: [] };
+  if (candles.length < slow) return empty;
+
+  const closes = candles.map((c) => c.close);
+  const emaFast = ema(closes, fast);
+  const emaSlow = ema(closes, slow);
+
+  const offset = slow - fast;
+  const macdLine: LineData[] = [];
+  const macdValues: number[] = [];
+  for (let i = 0; i < emaSlow.length; i++) {
+    const value = emaFast[i + offset] - emaSlow[i];
+    macdValues.push(value);
+    macdLine.push({ time: candles[slow - 1 + i].time, value });
+  }
+
+  const signalValues = ema(macdValues, signalPeriod);
+  const signal: LineData[] = [];
+  const histogram: HistogramData[] = [];
+  const sigOffset = macdValues.length - signalValues.length;
+  for (let i = 0; i < signalValues.length; i++) {
+    const time = macdLine[i + sigOffset].time;
+    signal.push({ time, value: signalValues[i] });
+    const hist = macdValues[i + sigOffset] - signalValues[i];
+    histogram.push({
+      time,
+      value: hist,
+      color: hist >= 0 ? MACD_HIST_UP : MACD_HIST_DOWN,
+    });
+  }
+
+  return { macd: macdLine, signal, histogram };
 }
