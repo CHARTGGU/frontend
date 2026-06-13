@@ -80,6 +80,12 @@ describe("macd", () => {
     expect(out.histogram).toHaveLength(4);
     const last = out.histogram[out.histogram.length - 1];
     expect(last.color).toBeDefined();
+    for (const h of out.histogram) {
+      expect(Number.isFinite(h.value)).toBe(true);
+      expect(h.color).toBe(
+        h.value >= 0 ? "rgba(38,166,154,0.6)" : "rgba(239,83,80,0.6)",
+      );
+    }
   });
 });
 

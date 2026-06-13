@@ -251,6 +251,7 @@ export function volumeProfile(
 
   for (const c of candles) {
     let idx = Math.floor((c.close - min) / width);
+    // close가 [min,max] 범위 바깥일 때(보정 데이터 등) 클램프 처리
     if (idx < 0) idx = 0;
     if (idx >= bucketCount) idx = bucketCount - 1;
     buckets[idx] = { ...buckets[idx], volume: buckets[idx].volume + c.volume };
