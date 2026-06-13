@@ -4,6 +4,7 @@ import { fromBinance } from "@/lib/adapters";
 import { fetchKlines, type RealtimeBar } from "@/lib/binance";
 import type {
   Candle,
+  IndicatorId,
   IntervalId,
   LoadStatus,
   MaPeriod,
@@ -19,6 +20,8 @@ interface ChartState {
   error: string | null;
   /** 활성화된 MA 기간 집합 (기본 전체 on). */
   activeMa: MaPeriod[];
+  /** 활성화된 보조지표 (기본 전부 off). */
+  activeIndicators: IndicatorId[];
   /** fresh 로드(초기·심볼·기간 변경) 카운터 — 차트 fitContent 트리거. */
   dataEpoch: number;
   /** 과거 페이징 중복 호출 방지. */
@@ -31,6 +34,7 @@ interface ChartState {
   setSymbol: (symbol: SymbolId) => void;
   setInterval: (interval: IntervalId) => void;
   toggleMa: (period: MaPeriod) => void;
+  toggleIndicator: (id: IndicatorId) => void;
   loadCandles: () => Promise<void>;
   loadOlder: () => Promise<void>;
   applyRealtimeBar: (bar: RealtimeBar) => void;
@@ -45,6 +49,7 @@ export const useChartStore = create<ChartState>((set, get) => ({
   status: "idle",
   error: null,
   activeMa: [...MA_PERIODS],
+  activeIndicators: [],
   dataEpoch: 0,
   loadingMore: false,
   hasMore: true,
@@ -67,6 +72,13 @@ export const useChartStore = create<ChartState>((set, get) => ({
       activeMa: s.activeMa.includes(period)
         ? s.activeMa.filter((p) => p !== period)
         : [...s.activeMa, period].sort((a, b) => a - b),
+    })),
+
+  toggleIndicator: (id) =>
+    set((s) => ({
+      activeIndicators: s.activeIndicators.includes(id)
+        ? s.activeIndicators.filter((x) => x !== id)
+        : [...s.activeIndicators, id],
     })),
 
   loadCandles: async () => {
