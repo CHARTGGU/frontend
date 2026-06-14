@@ -105,6 +105,32 @@ npm run dev      # 개발 서버 (http://localhost:3000)
 
 ---
 
+## 레이어 스택 (z-index)
+
+모든 스킨/위젯은 `ChartView`의 같은 컨테이너에 절대배치(`absolute inset-0`)되므로 앞뒤는 **z-index**로 결정된다. 값은 `lib/zLayers.ts` **한 곳**에 정의하고 각 컴포넌트가 import — 흩어 쓰지 말 것.
+
+| 레이어 | z-index | 컴포넌트 |
+|--------|---------|----------|
+| 배경 스킨 | `0` | `BackgroundLayer` |
+| 불타는 효과 위젯 | `0` (배경 위, DOM 순서) | `FireOverlay` |
+| 차트 캔들/거래량 | `3` | lightweight-charts **내부 고정값** (변경 불가) |
+| 지표 스킨 | `5` | `IndicatorOverlay` |
+| 고양이 위젯 | `6` | `CatOverlay` |
+
+> ⚠️ 캔들 canvas `z-index:3`은 라이브러리 내부값이라 못 바꾼다. 다른 레이어를 캔들 앞/뒤로 두려면 `3`을 기준으로 값을 잡을 것.
+
+## 스킨/위젯 복수 설정
+
+현재 `skinStore` 구조상 동시 적용 제약:
+
+| 종류 | 상태 필드 | 복수 |
+|------|-----------|------|
+| 배경 스킨 | `backgroundSkinId: string \| null` | **1개** (새로 적용 시 덮어씀) |
+| 지표 스킨 | `indicatorSkinId: string \| null` | **1개** |
+| 위젯(고양이·불) | `catEnabled` / `fireEnabled` (각 boolean) | 종류별 독립 on/off → 고양이+불 **동시 가능**, 단 같은 위젯 다중 인스턴스는 불가 |
+
+> 복수 지표 스킨이나 위젯 다중 인스턴스가 필요하면 해당 필드를 `string[]`/맵 구조로 리팩터해야 한다.
+
 ## 확장 지점 (팀원용)
 
 | 하고 싶은 것 | 손댈 곳 |
