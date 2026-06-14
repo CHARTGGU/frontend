@@ -159,7 +159,43 @@ const SPARKLE_SEEDS = [
   { t: 0.64, side: -1, offset: 8, size: 3.5, delay: 0.8, dur: 1.7 },
   { t: 0.76, side: 1, offset: 5, size: 2.5, delay: 0.2, dur: 1.4 },
   { t: 0.88, side: -1, offset: 7, size: 4, delay: 1.2, dur: 1.9 },
-  { t: 0.96, side: 1, offset: 6, size: 3.5, delay: 0.5, dur: 1.6 },
+];
+
+/** 라인을 따라 점멸하는 작은 흰색 십자(+) 반짝임. */
+function CrossSparkle({
+  cx,
+  cy,
+  size,
+  delay,
+  dur,
+}: {
+  cx: number;
+  cy: number;
+  size: number;
+  delay: number;
+  dur: number;
+}) {
+  return (
+    <g transform={`translate(${cx} ${cy})`} style={{ pointerEvents: "none" }} opacity={0}>
+      <line x1={0} y1={-size} x2={0} y2={size} stroke="white" strokeWidth={1} strokeLinecap="round" />
+      <line x1={-size} y1={0} x2={size} y2={0} stroke="white" strokeWidth={1} strokeLinecap="round" />
+      <animate
+        attributeName="opacity"
+        values="0;1;0"
+        keyTimes="0;0.5;1"
+        dur={`${dur}s`}
+        begin={`${delay}s`}
+        repeatCount="indefinite"
+      />
+    </g>
+  );
+}
+
+const CROSS_SPARKLE_SEEDS = [
+  { t: 0.1, side: 1, offset: 7, size: 2.5, delay: 0, dur: 1.6 },
+  { t: 0.35, side: -1, offset: 5, size: 2, delay: 0.5, dur: 1.9 },
+  { t: 0.6, side: 1, offset: 6, size: 2.5, delay: 1, dur: 1.4 },
+  { t: 0.85, side: -1, offset: 7, size: 2, delay: 0.3, dur: 1.7 },
 ];
 
 /** 라인 위를 왕복하며 흐르는 빛나는 점(코멧). */
@@ -261,8 +297,17 @@ function renderRainbow(
           dur={s.dur}
         />
       ))}
+      {CROSS_SPARKLE_SEEDS.map((s, i) => (
+        <CrossSparkle
+          key={i}
+          cx={x1 + (x2 - x1) * s.t + perpX * s.offset * s.side}
+          cy={y1 + (y2 - y1) * s.t + perpY * s.offset * s.side}
+          size={s.size}
+          delay={s.delay}
+          dur={s.dur}
+        />
+      ))}
       <Comet x1={x1} y1={y1} x2={x2} y2={y2} glowId={glowId} color="#FFFFFF" dur={3} begin={0} />
-      <Comet x1={x1} y1={y1} x2={x2} y2={y2} glowId={glowId} color="#FFE14D" dur={3.6} begin={1.5} />
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
