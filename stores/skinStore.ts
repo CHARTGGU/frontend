@@ -17,6 +17,18 @@ export interface KiyoungiArmState {
   angle: number;
 }
 
+export type LineStyleId = "cat-tail" | "ribbon" | "lightning" | "rainbow";
+
+export interface CustomLine {
+  id: string;
+  styleId: LineStyleId;
+  /** 컨테이너 기준 px 좌표. 차트 좌표와 무관 (kiyoungi와 동일 방식). */
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
 interface SkinState {
   /** 적용된 배경 스킨 id (null = 없음). */
   backgroundSkinId: string | null;
@@ -38,6 +50,8 @@ interface SkinState {
   kiyoungiBody: KiyoungiBodyRect;
   /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
   kiyoungiArm: KiyoungiArmState;
+  /** 사용자가 그린 커스텀 라인 목록. */
+  customLines: CustomLine[];
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -51,6 +65,9 @@ interface SkinState {
   toggleKiyoungi: () => void;
   setKiyoungiBody: (patch: Partial<KiyoungiBodyRect>) => void;
   setKiyoungiArm: (patch: Partial<KiyoungiArmState>) => void;
+  addCustomLine: (line: CustomLine) => void;
+  updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
+  removeCustomLine: (id: string) => void;
 }
 
 export const useSkinStore = create<SkinState>()(
@@ -66,6 +83,7 @@ export const useSkinStore = create<SkinState>()(
       kiyoungiEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
+      customLines: [],
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
@@ -81,6 +99,16 @@ export const useSkinStore = create<SkinState>()(
         set((s) => ({ kiyoungiBody: { ...s.kiyoungiBody, ...patch } })),
       setKiyoungiArm: (patch) =>
         set((s) => ({ kiyoungiArm: { ...s.kiyoungiArm, ...patch } })),
+      addCustomLine: (line) =>
+        set((s) => ({ customLines: [...s.customLines, line] })),
+      updateCustomLine: (id, patch) =>
+        set((s) => ({
+          customLines: s.customLines.map((l) =>
+            l.id === id ? { ...l, ...patch } : l,
+          ),
+        })),
+      removeCustomLine: (id) =>
+        set((s) => ({ customLines: s.customLines.filter((l) => l.id !== id) })),
     }),
     { name: "skin-settings" }
   )
