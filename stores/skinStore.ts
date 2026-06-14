@@ -113,11 +113,18 @@ export const useSkinStore = create<SkinState>()(
     }),
     {
       name: "skin-settings",
-      version: 1,
-      // v0 → v1: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 초기화.
+      version: 2,
+      // v0 → v2: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 옛 형식 제거.
       migrate: (state, version) => {
-        if (version < 1 && state && typeof state === "object") {
-          return { ...state, customLines: [] };
+        if (version < 2 && state && typeof state === "object" && "customLines" in state) {
+          const lines = (state as { customLines: unknown }).customLines;
+          const valid = Array.isArray(lines)
+            ? lines.filter(
+                (l): l is CustomLine =>
+                  typeof l === "object" && l !== null && typeof (l as CustomLine).time1 === "number"
+              )
+            : [];
+          return { ...state, customLines: valid };
         }
         return state;
       },
