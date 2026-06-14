@@ -103,6 +103,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/fire-thumb.svg",
   },
   {
+    id: "wg-kiyoungi",
+    name: "기영이 위젯",
+    author: "ChartSkin",
+    description: "횡보 구간엔 기영이, 급등 구간엔 빛의 검을 직접 배치하는 밈 위젯.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/kiyoungi-thumb.svg",
+  },
+  {
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",
