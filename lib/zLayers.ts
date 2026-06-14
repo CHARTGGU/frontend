@@ -18,4 +18,6 @@ export const Z_LAYER = {
   indicator: 5,
   /** 뛰어다니는 고양이 위젯 — 맨 앞. */
   cat: 6,
+  /** 기영이 위젯 — 최상단, 인터랙티브(드래그/리사이즈/회전). */
+  kiyoungi: 7,
 } as const;
