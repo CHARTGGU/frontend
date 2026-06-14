@@ -92,24 +92,38 @@ function renderRibbon(
   );
 }
 
-/** 라인을 따라 점멸하는 작은 십자(+) 반짝임. */
+/** 라인을 따라 점멸·확대되는 8각 별 반짝임. */
 function Sparkle({
   cx,
   cy,
   size,
+  color,
   delay,
   dur,
 }: {
   cx: number;
   cy: number;
   size: number;
+  color: string;
   delay: number;
   dur: number;
 }) {
+  const inner = size * 0.35;
+  const path = `M0,${-size} L${inner},${-inner} L${size},0 L${inner},${inner} L0,${size} L${-inner},${inner} L${-size},0 L${-inner},${-inner} Z`;
+
   return (
     <g transform={`translate(${cx} ${cy})`} style={{ pointerEvents: "none" }} opacity={0}>
-      <line x1={0} y1={-size} x2={0} y2={size} stroke="white" strokeWidth={1} strokeLinecap="round" />
-      <line x1={-size} y1={0} x2={size} y2={0} stroke="white" strokeWidth={1} strokeLinecap="round" />
+      <path d={path} fill={color}>
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          values="0.2;1.3;0.2"
+          keyTimes="0;0.5;1"
+          dur={`${dur}s`}
+          begin={`${delay}s`}
+          repeatCount="indefinite"
+        />
+      </path>
       <animate
         attributeName="opacity"
         values="0;1;0"
@@ -122,13 +136,17 @@ function Sparkle({
   );
 }
 
-// 라인을 따라 분포한 반짝임 위치(t)와 라인 측면(side), 박자/지속시간을 고정 시드로 정의.
+const SPARKLE_COLORS = ["#FFFFFF", "#FFE14D", "#FF8FB1", "#4DDC74", "#4D9DFF", "#FF9F4D", "#A14DFF"];
+
+// 라인을 따라 분포한 반짝임 위치(t)와 라인 측면(side), 크기/색상/박자/지속시간을 고정 시드로 정의.
 const SPARKLE_SEEDS = [
-  { t: 0.12, side: 1, offset: 7, size: 2.5, delay: 0, dur: 1.6 },
-  { t: 0.3, side: -1, offset: 5, size: 2, delay: 0.5, dur: 1.9 },
-  { t: 0.5, side: 1, offset: 6, size: 3, delay: 1, dur: 1.4 },
-  { t: 0.68, side: -1, offset: 7, size: 2, delay: 0.3, dur: 2 },
-  { t: 0.86, side: 1, offset: 5, size: 2.5, delay: 0.8, dur: 1.7 },
+  { t: 0.05, side: 1, offset: 6, size: 3, delay: 0, dur: 1.5 },
+  { t: 0.2, side: -1, offset: 8, size: 4, delay: 0.6, dur: 1.8 },
+  { t: 0.35, side: 1, offset: 5, size: 2.5, delay: 1.1, dur: 1.3 },
+  { t: 0.5, side: -1, offset: 7, size: 4.5, delay: 0.3, dur: 2 },
+  { t: 0.65, side: 1, offset: 6, size: 3, delay: 1.4, dur: 1.6 },
+  { t: 0.8, side: -1, offset: 8, size: 3.5, delay: 0.8, dur: 1.7 },
+  { t: 0.95, side: 1, offset: 5, size: 2.5, delay: 0.2, dur: 1.4 },
 ];
 
 function renderRainbow(
@@ -185,6 +203,7 @@ function renderRainbow(
           cx={x1 + (x2 - x1) * s.t + perpX * s.offset * s.side}
           cy={y1 + (y2 - y1) * s.t + perpY * s.offset * s.side}
           size={s.size}
+          color={SPARKLE_COLORS[i % SPARKLE_COLORS.length]}
           delay={s.delay}
           dur={s.dur}
         />
