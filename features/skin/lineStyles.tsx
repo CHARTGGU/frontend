@@ -2,7 +2,7 @@
 
 import { computeLineGeometry } from "@/lib/lineGeometry";
 
-export type LineStyleId = "cat-tail" | "ribbon" | "lightning" | "rainbow";
+export type LineStyleId = "basic" | "ribbon" | "rainbow";
 
 export interface LineGeometryPoints {
   id: string;
@@ -63,53 +63,17 @@ function SelectionHalo({ line }: { line: LineGeometryPoints }) {
   );
 }
 
-function renderCatTail(
+function renderBasic(
   line: LineGeometryPoints,
   isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
-  const { perpX, perpY } = computeLineGeometry(line);
-  const baseHalf = 5;
-  const tipHalf = 1;
-
-  const p1a = { x: x1 + perpX * baseHalf, y: y1 + perpY * baseHalf };
-  const p1b = { x: x1 - perpX * baseHalf, y: y1 - perpY * baseHalf };
-  const p2a = { x: x2 + perpX * tipHalf, y: y2 + perpY * tipHalf };
-  const p2b = { x: x2 - perpX * tipHalf, y: y2 - perpY * tipHalf };
-
-  const points = `${p1a.x},${p1a.y} ${p2a.x},${p2a.y} ${p2b.x},${p2b.y} ${p1b.x},${p1b.y}`;
-
-  // 3 stripes at t = 0.25, 0.45, 0.65 — darker brown lines across the tail, tapering width with t
-  const stripes = [0.25, 0.45, 0.65].map((t) => {
-    const cx = x1 + (x2 - x1) * t;
-    const cy = y1 + (y2 - y1) * t;
-    const half = baseHalf + (tipHalf - baseHalf) * t;
-    return {
-      x1: cx + perpX * half,
-      y1: cy + perpY * half,
-      x2: cx - perpX * half,
-      y2: cy - perpY * half,
-    };
-  });
-
-  // 3 fluffy tuft circles near the tip, slightly overlapping, radius ~2-2.5px, centered around point2
-  const tufts = [
-    { dx: 0, dy: 0, r: 2.5 },
-    { dx: perpX * 2, dy: perpY * 2, r: 2 },
-    { dx: -perpX * 2, dy: -perpY * 2, r: 2 },
-  ];
 
   return (
     <>
       {isSelected && <SelectionHalo line={line} />}
-      <polygon points={points} fill="#D98E4A" />
-      {stripes.map((s, i) => (
-        <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke="#A8612A" strokeWidth={1} />
-      ))}
-      {tufts.map((t, i) => (
-        <circle key={i} cx={x2 + t.dx} cy={y2 + t.dy} r={t.r} fill="#D98E4A" />
-      ))}
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#E5E5E5" strokeWidth={3} strokeLinecap="round" />
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
@@ -147,49 +111,6 @@ function renderRibbon(
   );
 }
 
-const LIGHTNING_JITTER = [0, -8, 6, -10, 0];
-
-function renderLightning(
-  line: LineGeometryPoints,
-  isSelected: boolean,
-  onPointerDown?: LinePointerHandler
-) {
-  const { x1, y1, x2, y2 } = line;
-  const { perpX, perpY } = computeLineGeometry(line);
-
-  const segments = LIGHTNING_JITTER.length - 1;
-  const points = LIGHTNING_JITTER.map((jitter, i) => {
-    const t = i / segments;
-    const baseX = x1 + (x2 - x1) * t;
-    const baseY = y1 + (y2 - y1) * t;
-    return `${baseX + perpX * jitter},${baseY + perpY * jitter}`;
-  }).join(" ");
-
-  return (
-    <>
-      {isSelected && <SelectionHalo line={line} />}
-      <polyline
-        points={points}
-        fill="none"
-        stroke="#FFE14D"
-        strokeWidth={6}
-        strokeOpacity={0.3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <polyline
-        points={points}
-        fill="none"
-        stroke="#FFE14D"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <HitStroke line={line} onPointerDown={onPointerDown} />
-    </>
-  );
-}
-
 function renderRainbow(
   line: LineGeometryPoints,
   isSelected: boolean,
@@ -217,10 +138,10 @@ function renderRainbow(
   );
 }
 
+/** LINE_STYLES[0]("basic")이 기본 스타일 — getLineStyle의 fallback이자 picker의 첫 항목. */
 export const LINE_STYLES: LineStyleMeta[] = [
-  { id: "cat-tail", name: "고양이 꼬리", render: renderCatTail },
+  { id: "basic", name: "기본", render: renderBasic },
   { id: "ribbon", name: "리본", render: renderRibbon },
-  { id: "lightning", name: "번개", render: renderLightning },
   { id: "rainbow", name: "무지개", render: renderRainbow },
 ];
 

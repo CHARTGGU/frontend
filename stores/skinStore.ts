@@ -18,7 +18,7 @@ export interface KiyoungiArmState {
   angle: number;
 }
 
-export type LineStyleId = "cat-tail" | "ribbon" | "lightning" | "rainbow";
+export type LineStyleId = "basic" | "ribbon" | "rainbow";
 
 export interface CustomLine {
   id: string;
