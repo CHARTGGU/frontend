@@ -64,7 +64,7 @@ interface SkinState {
 |------|------|
 | `public/skins/kiyoungi-face.png` | 동그란 얼굴 + 점 눈 2개 + 웃는 입 + 위쪽에 뾰족뾰족한 갈색 머리카락(밈 참고 이미지의 횡보 구간 위 고점 라인 실루엣). 손그림풍 라인아트(`cat-running.svg`와 동일 스타일), 배경 투명. |
 | `public/skins/kiyoungi-sword-arm.png` | 대각선 팔(둥근 막대) + 끝에 길쭉한 빛의 검(삼각/지그재그 칼날 + 광선 줄무늬). 같은 갈색 라인 톤, 배경 투명. 회전 기준점(어깨)이 SVG의 한쪽 끝에 오도록 좌표 설계 → `transform-origin`을 그쪽으로 고정. |
-| `public/skins/kiyoungi-thumb.svg` | 위젯 카드 썸네일 (얼굴+팔 축소 합성, 단순 버전). |
+| `public/skins/kiyoungi-thumb.png` | 위젯 카드 썸네일 (얼굴+팔 축소 합성, 단순 버전). |
 
 마음에 안 들면 추후 에셋 파일만 교체 가능 (컴포넌트/로직 변경 없음).
 
@@ -107,7 +107,7 @@ interface SkinState {
     description: "횡보 구간엔 기영이, 급등 구간엔 빛의 검을 직접 배치하는 밈 위젯.",
     category: "widget",
     status: "available",
-    thumbnail: "/skins/kiyoungi-thumb.svg",
+    thumbnail: "/skins/kiyoungi-thumb.png",
   }
   ```
 - `features/skin/SkinSidebar.tsx`: `wg-kiyoungi` 카드의 applied 상태 = `kiyoungiEnabled`, onApply/onRemove = `toggleKiyoungi`. 별도 컨트롤 패널 없음 (위치/크기는 캔버스 위 직접 드래그로 조정).
@@ -155,7 +155,7 @@ interface SkinState {
 | 신규 | `lib/useDragHandle.ts` |
 | 신규 | `public/skins/kiyoungi-face.png` |
 | 신규 | `public/skins/kiyoungi-sword-arm.png` |
-| 신규 | `public/skins/kiyoungi-thumb.svg` |
+| 신규 | `public/skins/kiyoungi-thumb.png` |
 | 수정 | `stores/skinStore.ts` (kiyoungiEnabled/Body/Arm + 액션) |
 | 수정 | `features/skin/presets.ts` (wg-kiyoungi 항목) |
 | 수정 | `features/skin/SkinSidebar.tsx` (wg-kiyoungi 적용/해제) |

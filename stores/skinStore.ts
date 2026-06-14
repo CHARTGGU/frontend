@@ -65,7 +65,7 @@ export const useSkinStore = create<SkinState>()(
       fireHeight: 30,
       kiyoungiEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
-      kiyoungiArm: { offsetX: -60, offsetY: -40, length: 180, angle: -60 },
+      kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),

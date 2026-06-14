@@ -97,7 +97,7 @@ git commit -m "feat: add kiyoungi widget state to skinStore"
 **Files:**
 - Create: `public/skins/kiyoungi-face.png`
 - Create: `public/skins/kiyoungi-sword-arm.png`
-- Create: `public/skins/kiyoungi-thumb.svg`
+- Create: `public/skins/kiyoungi-thumb.png`
 - Modify: `features/skin/presets.ts`
 
 - [ ] **Step 1: 얼굴 SVG 작성**
@@ -132,7 +132,7 @@ git commit -m "feat: add kiyoungi widget state to skinStore"
 
 - [ ] **Step 3: 썸네일 SVG 작성**
 
-`public/skins/kiyoungi-thumb.svg` 새로 생성 (`cat-running.svg`와 동일한 120×120 카드 썸네일 규격):
+`public/skins/kiyoungi-thumb.png` 새로 생성 (`cat-running.svg`와 동일한 120×120 카드 썸네일 규격):
 
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
@@ -159,7 +159,7 @@ git commit -m "feat: add kiyoungi widget state to skinStore"
     description: "횡보 구간엔 기영이, 급등 구간엔 빛의 검을 직접 배치하는 밈 위젯.",
     category: "widget",
     status: "available",
-    thumbnail: "/skins/kiyoungi-thumb.svg",
+    thumbnail: "/skins/kiyoungi-thumb.png",
   },
 ```
 
@@ -171,7 +171,7 @@ Expected: 에러 없이 종료.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add public/skins/kiyoungi-face.png public/skins/kiyoungi-sword-arm.png public/skins/kiyoungi-thumb.svg features/skin/presets.ts
+git add public/skins/kiyoungi-face.png public/skins/kiyoungi-sword-arm.png public/skins/kiyoungi-thumb.png features/skin/presets.ts
 git commit -m "feat: add wg-kiyoungi widget preset and assets"
 ```
 
