@@ -18,7 +18,7 @@ export interface KiyoungiArmState {
   angle: number;
 }
 
-export type LineStyleId = "basic" | "ribbon" | "rainbow";
+export type LineStyleId = "basic" | "heart" | "rainbow";
 
 export interface CustomLine {
   id: string;

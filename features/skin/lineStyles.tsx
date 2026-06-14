@@ -2,7 +2,7 @@
 
 import { computeLineGeometry } from "@/lib/lineGeometry";
 
-export type LineStyleId = "basic" | "ribbon" | "rainbow";
+export type LineStyleId = "basic" | "heart" | "rainbow";
 
 export interface LineGeometryPoints {
   id: string;
@@ -61,32 +61,42 @@ function renderBasic(
   );
 }
 
-function renderRibbon(
+/** 단위 하트(중심 원점, 아래쪽 뾰족점)를 size에 맞춰 스케일한 path. */
+function heartPath(size: number) {
+  const m = size / 6;
+  const p = (n: number) => (n * m).toFixed(2);
+  return `M0,${p(6)} C${p(-6)},${p(0)} ${p(-10)},${p(-4)} ${p(-6)},${p(-7)} C${p(-3)},${p(-9)} 0,${p(-7)} 0,${p(-4)} C0,${p(-7)} ${p(3)},${p(-9)} ${p(6)},${p(-7)} C${p(10)},${p(-4)} ${p(6)},${p(0)} 0,${p(6)} Z`;
+}
+
+const HEART_PATH = heartPath(7);
+
+function renderHeart(
   line: LineGeometryPoints,
   _isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
-  const { perpX, perpY, angle } = computeLineGeometry(line);
-  const half = 4;
-
-  const p1a = { x: x1 + perpX * half, y: y1 + perpY * half };
-  const p1b = { x: x1 - perpX * half, y: y1 - perpY * half };
-  const p2a = { x: x2 + perpX * half, y: y2 + perpY * half };
-  const p2b = { x: x2 - perpX * half, y: y2 - perpY * half };
-
-  const points = `${p1a.x},${p1a.y} ${p2a.x},${p2a.y} ${p2b.x},${p2b.y} ${p1b.x},${p1b.y}`;
+  const glowId = `line-heart-glow-${line.id}`;
 
   return (
     <>
-      <polygon points={points} fill="#FF8FB1" />
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth={1} strokeDasharray="6 4" />
-      {/* bow knot at point2, rotated to line angle */}
-      <g transform={`translate(${x2}, ${y2}) rotate(${angle})`}>
-        <polygon points="0,0 9,-5 9,5" fill="#FF6FA0" />
-        <polygon points="0,0 -9,-5 -9,5" fill="#FF6FA0" />
-        <circle cx={0} cy={0} r={2.5} fill="#FFC1D6" />
-      </g>
+      <defs>
+        <filter id={glowId} x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2" />
+        </filter>
+      </defs>
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FF1493" strokeWidth={2} strokeLinecap="round" />
+      {/* 시작점 → 끝점으로 슝~ 이동하는 하트 */}
+      <path d={HEART_PATH} fill="#FF1493" filter={`url(#${glowId})`}>
+        <animateMotion
+          path={`M${x1},${y1} L${x2},${y2}`}
+          dur="1.6s"
+          repeatCount="indefinite"
+          keyPoints="0;1"
+          keyTimes="0;1"
+          calcMode="linear"
+        />
+      </path>
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
@@ -319,7 +329,7 @@ function renderRainbow(
 /** LINE_STYLES[0]("basic")이 기본 스타일 — getLineStyle의 fallback이자 picker의 첫 항목. */
 export const LINE_STYLES: LineStyleMeta[] = [
   { id: "basic", name: "기본", render: renderBasic },
-  { id: "ribbon", name: "리본", render: renderRibbon },
+  { id: "heart", name: "하트", render: renderHeart },
   { id: "rainbow", name: "무지개", render: renderRainbow },
 ];
 
