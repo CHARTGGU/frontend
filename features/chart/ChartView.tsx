@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useChartStore } from "@/stores/chartStore";
 import { useCaptureRef } from "@/features/export/captureContext";
 import BackgroundLayer from "@/features/skin/BackgroundLayer";
+import FireOverlay from "@/features/skin/FireOverlay";
 import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
@@ -29,6 +30,7 @@ export default function ChartView() {
       <ChartRefProvider>
         <div ref={captureRef} className="absolute inset-0 bg-[#131313]">
           <BackgroundLayer />
+          <FireOverlay />
           <ChartCanvas />
           <IndicatorOverlay />
           <VolumeProfileOverlay />
