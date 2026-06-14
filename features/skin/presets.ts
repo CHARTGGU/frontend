@@ -94,6 +94,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/cat-running.svg",
   },
   {
+    id: "wg-fire",
+    name: "불타는 효과",
+    author: "ChartSkin",
+    description: "화면 하단이 절차적으로 타오르는 화염 효과.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/fire-thumb.svg",
+  },
+  {
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",

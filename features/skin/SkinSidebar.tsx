@@ -5,6 +5,7 @@ import { useSkinStore } from "@/stores/skinStore";
 import { useCustomBgStore } from "@/stores/customBgStore";
 import BackgroundControls from "./BackgroundControls";
 import CustomBgUpload from "./CustomBgUpload";
+import FireControls from "./FireControls";
 import SkinCard from "./SkinCard";
 import {
   CATEGORY_META,
@@ -48,11 +49,13 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const backgroundSkinId = useSkinStore((s) => s.backgroundSkinId);
   const indicatorSkinId = useSkinStore((s) => s.indicatorSkinId);
   const catEnabled = useSkinStore((s) => s.catEnabled);
+  const fireEnabled = useSkinStore((s) => s.fireEnabled);
   const applyBackground = useSkinStore((s) => s.applyBackground);
   const removeBackground = useSkinStore((s) => s.removeBackground);
   const applyIndicator = useSkinStore((s) => s.applyIndicator);
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
   const toggleCat = useSkinStore((s) => s.toggleCat);
+  const toggleFire = useSkinStore((s) => s.toggleFire);
 
   const customItems = useCustomBgStore((s) => s.items);
   const loadCustom = useCustomBgStore((s) => s.load);
@@ -154,29 +157,36 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         indicatorSkinId === skin.id) ||
                       (category === "widget" &&
                         skin.id === "wg-running-cat" &&
-                        catEnabled);
+                        catEnabled) ||
+                      (category === "widget" &&
+                        skin.id === "wg-fire" &&
+                        fireEnabled);
 
                     return (
-                      <SkinCard
-                        key={skin.id}
-                        skin={skin}
-                        applied={applied}
-                        onApply={() => {
-                          if (category === "background") applyBackground(skin.id);
-                          else if (category === "indicator") applyIndicator(skin.id);
-                          else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
-                        }}
-                        onRemove={() => {
-                          if (category === "background") removeBackground();
-                          else if (category === "indicator") removeIndicator();
-                          else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
-                        }}
-                        onDelete={
-                          skin.id.startsWith("custom-")
-                            ? () => handleDeleteCustom(skin.id)
-                            : undefined
-                        }
-                      />
+                      <div key={skin.id}>
+                        <SkinCard
+                          skin={skin}
+                          applied={applied}
+                          onApply={() => {
+                            if (category === "background") applyBackground(skin.id);
+                            else if (category === "indicator") applyIndicator(skin.id);
+                            else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                            else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                          }}
+                          onRemove={() => {
+                            if (category === "background") removeBackground();
+                            else if (category === "indicator") removeIndicator();
+                            else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                            else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                          }}
+                          onDelete={
+                            skin.id.startsWith("custom-")
+                              ? () => handleDeleteCustom(skin.id)
+                              : undefined
+                          }
+                        />
+                        {skin.id === "wg-fire" && <FireControls />}
+                      </div>
                     );
                   })}
                 </div>
