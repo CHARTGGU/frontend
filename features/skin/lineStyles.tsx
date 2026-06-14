@@ -192,13 +192,13 @@ function CrossSparkle({
 }
 
 const CROSS_SPARKLE_SEEDS = [
-  { t: 0.1, side: 1, offset: 7, size: 2.5, delay: 0, dur: 1.6 },
-  { t: 0.35, side: -1, offset: 5, size: 2, delay: 0.5, dur: 1.9 },
-  { t: 0.6, side: 1, offset: 6, size: 2.5, delay: 1, dur: 1.4 },
-  { t: 0.85, side: -1, offset: 7, size: 2, delay: 0.3, dur: 1.7 },
+  { t: 0.1, side: 1, offset: 11, size: 2.5, delay: 0, dur: 1.6 },
+  { t: 0.35, side: -1, offset: 9, size: 2, delay: 0.5, dur: 1.9 },
+  { t: 0.6, side: 1, offset: 10, size: 2.5, delay: 1, dur: 1.4 },
+  { t: 0.85, side: -1, offset: 11, size: 2, delay: 0.3, dur: 1.7 },
 ];
 
-/** 라인 위를 왕복하며 흐르는 빛나는 점(코멧). */
+/** 라인을 따라 좌→우로만 흐르는 빛나는 점(코멧). */
 function Comet({
   x1,
   y1,
@@ -218,10 +218,13 @@ function Comet({
   dur: number;
   begin: number;
 }) {
+  const left = x1 <= x2 ? { x: x1, y: y1 } : { x: x2, y: y2 };
+  const right = x1 <= x2 ? { x: x2, y: y2 } : { x: x1, y: y1 };
+
   return (
     <circle r={3} fill={color} filter={`url(#${glowId})`} style={{ pointerEvents: "none" }}>
       <animateMotion
-        path={`M${x1},${y1} L${x2},${y2} L${x1},${y1}`}
+        path={`M${left.x},${left.y} L${right.x},${right.y}`}
         dur={`${dur}s`}
         begin={`${begin}s`}
         repeatCount="indefinite"
