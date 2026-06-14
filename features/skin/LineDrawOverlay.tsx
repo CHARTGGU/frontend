@@ -98,6 +98,8 @@ export default function LineDrawOverlay() {
               {style.render(line, line.id === selectedId, (e) => {
                 e.stopPropagation();
                 setSelectedId(line.id);
+                setMode("idle");
+                setPendingStyle(null);
               })}
             </g>
           );
