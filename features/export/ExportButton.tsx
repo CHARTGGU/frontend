@@ -27,6 +27,8 @@ export default function ExportButton() {
         pixelRatio: 2, // 2x 해상도
         backgroundColor: "#131313",
         cacheBust: true,
+        // 기영이 위젯의 리사이즈/회전 핸들은 결과 이미지에서 제외.
+        filter: (n) => n.dataset.exportIgnore !== "true",
       });
       const link = document.createElement("a");
       link.download = `chartskin-${symbol}-${Date.now()}.png`;

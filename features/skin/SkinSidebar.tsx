@@ -56,6 +56,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
   const toggleCat = useSkinStore((s) => s.toggleCat);
   const toggleFire = useSkinStore((s) => s.toggleFire);
+  const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
+  const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
 
   const customItems = useCustomBgStore((s) => s.items);
   const loadCustom = useCustomBgStore((s) => s.load);
@@ -160,7 +162,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         catEnabled) ||
                       (category === "widget" &&
                         skin.id === "wg-fire" &&
-                        fireEnabled);
+                        fireEnabled) ||
+                      (category === "widget" &&
+                        skin.id === "wg-kiyoungi" &&
+                        kiyoungiEnabled);
 
                     return (
                       <div key={skin.id}>
@@ -172,12 +177,14 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                             else if (category === "indicator") applyIndicator(skin.id);
                             else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                             else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                            else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
                           }}
                           onRemove={() => {
                             if (category === "background") removeBackground();
                             else if (category === "indicator") removeIndicator();
                             else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                             else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                            else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
                           }}
                           onDelete={
                             skin.id.startsWith("custom-")
