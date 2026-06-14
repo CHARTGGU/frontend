@@ -46,33 +46,15 @@ function HitStroke({
   );
 }
 
-/** 선택 시 표시되는 부드러운 흰색 하이라이트. */
-function SelectionHalo({ line }: { line: LineGeometryPoints }) {
-  return (
-    <line
-      x1={line.x1}
-      y1={line.y1}
-      x2={line.x2}
-      y2={line.y2}
-      stroke="white"
-      strokeOpacity={0.25}
-      strokeWidth={10}
-      strokeLinecap="round"
-      style={{ pointerEvents: "none" }}
-    />
-  );
-}
-
 function renderBasic(
   line: LineGeometryPoints,
-  isSelected: boolean,
+  _isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
 
   return (
     <>
-      {isSelected && <SelectionHalo line={line} />}
       <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#E5E5E5" strokeWidth={3} strokeLinecap="round" />
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
@@ -81,7 +63,7 @@ function renderBasic(
 
 function renderRibbon(
   line: LineGeometryPoints,
-  isSelected: boolean,
+  _isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
@@ -97,7 +79,6 @@ function renderRibbon(
 
   return (
     <>
-      {isSelected && <SelectionHalo line={line} />}
       <polygon points={points} fill="#FF8FB1" />
       <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeWidth={1} strokeDasharray="6 4" />
       {/* bow knot at point2, rotated to line angle */}
@@ -152,7 +133,7 @@ const SPARKLE_SEEDS = [
 
 function renderRainbow(
   line: LineGeometryPoints,
-  isSelected: boolean,
+  _isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
@@ -162,7 +143,6 @@ function renderRainbow(
 
   return (
     <>
-      {isSelected && <SelectionHalo line={line} />}
       <defs>
         <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
           <stop offset="0%" stopColor="#FF4D4D" />
