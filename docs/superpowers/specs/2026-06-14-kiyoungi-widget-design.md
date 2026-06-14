@@ -32,7 +32,7 @@
 
 ```ts
 interface BodyRect { x: number; y: number; width: number; height: number }
-interface ArmState { x: number; y: number; length: number; angle: number }
+interface ArmState { offsetX: number; offsetY: number; length: number; angle: number }
 
 interface SkinState {
   // ...기존
@@ -40,7 +40,7 @@ interface SkinState {
   kiyoungiEnabled: boolean;
   /** 기영이 본체(얼굴) 위치/크기. 컨테이너 기준 px. */
   kiyoungiBody: BodyRect;
-  /** 빛의 검 팔. (x,y)=어깨(앵커), length=검 길이(px), angle=각도(deg, 0=→, -90=↑). */
+  /** 빛의 검 팔. (offsetX,offsetY)=어깨(앵커) — kiyoungiBody 좌상단 기준 상대 오프셋(px), 본체 이동 시 팔도 같이 따라움. length=검 길이(px), angle=각도(deg, 0=→, -90=↑). */
   kiyoungiArm: ArmState;
 
   toggleKiyoungi: () => void;
@@ -51,8 +51,8 @@ interface SkinState {
 
 - 기본값:
   - `kiyoungiEnabled: false`
-  - `kiyoungiBody: { x: 200, y: 120, width: 200, height: 180 }`
-  - `kiyoungiArm: { x: 340, y: 160, length: 220, angle: -55 }`
+  - `kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 }`
+  - `kiyoungiArm: { offsetX: 140, offsetY: 20, length: 180, angle: -60 }` (= 본체 기준 절대좌표 300,280과 동일 위치)
 - 기존 `persist({ name: "skin-settings" })`에 자동 포함 (partialize 없음 → 전체 저장).
 - "어떤 파츠가 선택돼 핸들 표시 중인지"는 store에 두지 않음 — `KiyoungiOverlay` 컴포넌트 로컬 state (새로고침 시 선택 해제되는 게 정상).
 
@@ -85,8 +85,8 @@ interface SkinState {
 - `selected === 'body'`일 때만 4 모서리에 8×8px 리사이즈 핸들(`<div data-export-ignore="true">`) 렌더. 핸들 드래그 → 반대편 모서리 고정하며 `width/height` (+필요시 `x/y`) 갱신, 최소 60×60px 클램프.
 
 ### `features/skin/KiyoungiArm.tsx`
-- `<img src="/skins/kiyoungi-sword-arm.svg" draggable={false}>`를 앵커 `(kiyoungiArm.x, kiyoungiArm.y)` 기준 `transform: rotate(${angle}deg)` + `length`에 따른 `width` 스케일(`height`는 원본 비율 유지), `transform-origin`을 어깨쪽 끝으로 고정.
-- pointerdown(이미지 본문) → `onSelect('arm')` + 드래그 시작 → `setKiyoungiArm({ x, y })`(앵커 이동).
+- 앵커(어깨) = `(kiyoungiBody.x + kiyoungiArm.offsetX, kiyoungiBody.y + kiyoungiArm.offsetY)` — 본체 좌상단 기준 상대 오프셋이므로 본체를 드래그하면 팔도 같이 따라움. `<img src="/skins/kiyoungi-sword-arm.svg" draggable={false}>`를 이 앵커 기준 `transform: rotate(${angle+45}deg)` + `length` 정사각 박스로 배치, `transform-origin`을 어깨쪽 끝(`0% 100%`)으로 고정.
+- pointerdown(이미지 본문) → `onSelect('arm')` + 드래그 시작 → `setKiyoungiArm({ offsetX, offsetY })`(앵커를 본체 기준 오프셋으로 이동).
 - `selected === 'arm'`일 때만 검 끝점에 핸들 1개(`data-export-ignore="true"`) 렌더. 드래그 시 앵커 기준 `angle = atan2(dy, dx)` (deg), `length = Math.hypot(dx, dy)`로 재계산, `length`는 60~500px 클램프, `angle`은 클램프 없음(360° 자유).
 
 ### `lib/useDragHandle.ts` (공용 훅)
