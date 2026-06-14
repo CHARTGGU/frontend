@@ -122,6 +122,17 @@ function Sparkle({
           dur={`${dur}s`}
           begin={`${delay}s`}
           repeatCount="indefinite"
+          additive="sum"
+        />
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0"
+          to="360"
+          dur={`${dur * 2}s`}
+          begin={`${delay}s`}
+          repeatCount="indefinite"
+          additive="sum"
         />
       </path>
       <animate
@@ -140,14 +151,56 @@ const SPARKLE_COLORS = ["#FFFFFF", "#FFE14D", "#FF8FB1", "#4DDC74", "#4D9DFF", "
 
 // 라인을 따라 분포한 반짝임 위치(t)와 라인 측면(side), 크기/색상/박자/지속시간을 고정 시드로 정의.
 const SPARKLE_SEEDS = [
-  { t: 0.05, side: 1, offset: 6, size: 3, delay: 0, dur: 1.5 },
-  { t: 0.2, side: -1, offset: 8, size: 4, delay: 0.6, dur: 1.8 },
-  { t: 0.35, side: 1, offset: 5, size: 2.5, delay: 1.1, dur: 1.3 },
-  { t: 0.5, side: -1, offset: 7, size: 4.5, delay: 0.3, dur: 2 },
-  { t: 0.65, side: 1, offset: 6, size: 3, delay: 1.4, dur: 1.6 },
-  { t: 0.8, side: -1, offset: 8, size: 3.5, delay: 0.8, dur: 1.7 },
-  { t: 0.95, side: 1, offset: 5, size: 2.5, delay: 0.2, dur: 1.4 },
+  { t: 0.04, side: 1, offset: 6, size: 3, delay: 0, dur: 1.5 },
+  { t: 0.16, side: -1, offset: 8, size: 4, delay: 0.6, dur: 1.8 },
+  { t: 0.28, side: 1, offset: 5, size: 2.5, delay: 1.1, dur: 1.3 },
+  { t: 0.4, side: -1, offset: 7, size: 4.5, delay: 0.3, dur: 2 },
+  { t: 0.52, side: 1, offset: 6, size: 3, delay: 1.4, dur: 1.6 },
+  { t: 0.64, side: -1, offset: 8, size: 3.5, delay: 0.8, dur: 1.7 },
+  { t: 0.76, side: 1, offset: 5, size: 2.5, delay: 0.2, dur: 1.4 },
+  { t: 0.88, side: -1, offset: 7, size: 4, delay: 1.2, dur: 1.9 },
+  { t: 0.96, side: 1, offset: 6, size: 3.5, delay: 0.5, dur: 1.6 },
 ];
+
+/** 라인 위를 왕복하며 흐르는 빛나는 점(코멧). */
+function Comet({
+  x1,
+  y1,
+  x2,
+  y2,
+  glowId,
+  color,
+  dur,
+  begin,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  glowId: string;
+  color: string;
+  dur: number;
+  begin: number;
+}) {
+  return (
+    <circle r={3} fill={color} filter={`url(#${glowId})`} style={{ pointerEvents: "none" }}>
+      <animateMotion
+        path={`M${x1},${y1} L${x2},${y2} L${x1},${y1}`}
+        dur={`${dur}s`}
+        begin={`${begin}s`}
+        repeatCount="indefinite"
+      />
+      <animate
+        attributeName="opacity"
+        values="0;1;1;0"
+        keyTimes="0;0.08;0.92;1"
+        dur={`${dur}s`}
+        begin={`${begin}s`}
+        repeatCount="indefinite"
+      />
+    </circle>
+  );
+}
 
 function renderRainbow(
   line: LineGeometryPoints,
@@ -208,6 +261,8 @@ function renderRainbow(
           dur={s.dur}
         />
       ))}
+      <Comet x1={x1} y1={y1} x2={x2} y2={y2} glowId={glowId} color="#FFFFFF" dur={3} begin={0} />
+      <Comet x1={x1} y1={y1} x2={x2} y2={y2} glowId={glowId} color="#FFE14D" dur={3.6} begin={1.5} />
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
