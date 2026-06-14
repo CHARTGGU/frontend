@@ -111,13 +111,54 @@ function renderRibbon(
   );
 }
 
+/** 라인을 따라 점멸하는 작은 십자(+) 반짝임. */
+function Sparkle({
+  cx,
+  cy,
+  size,
+  delay,
+  dur,
+}: {
+  cx: number;
+  cy: number;
+  size: number;
+  delay: number;
+  dur: number;
+}) {
+  return (
+    <g transform={`translate(${cx} ${cy})`} style={{ pointerEvents: "none" }} opacity={0}>
+      <line x1={0} y1={-size} x2={0} y2={size} stroke="white" strokeWidth={1} strokeLinecap="round" />
+      <line x1={-size} y1={0} x2={size} y2={0} stroke="white" strokeWidth={1} strokeLinecap="round" />
+      <animate
+        attributeName="opacity"
+        values="0;1;0"
+        keyTimes="0;0.5;1"
+        dur={`${dur}s`}
+        begin={`${delay}s`}
+        repeatCount="indefinite"
+      />
+    </g>
+  );
+}
+
+// 라인을 따라 분포한 반짝임 위치(t)와 라인 측면(side), 박자/지속시간을 고정 시드로 정의.
+const SPARKLE_SEEDS = [
+  { t: 0.12, side: 1, offset: 7, size: 2.5, delay: 0, dur: 1.6 },
+  { t: 0.3, side: -1, offset: 5, size: 2, delay: 0.5, dur: 1.9 },
+  { t: 0.5, side: 1, offset: 6, size: 3, delay: 1, dur: 1.4 },
+  { t: 0.68, side: -1, offset: 7, size: 2, delay: 0.3, dur: 2 },
+  { t: 0.86, side: 1, offset: 5, size: 2.5, delay: 0.8, dur: 1.7 },
+];
+
 function renderRainbow(
   line: LineGeometryPoints,
   isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
+  const { perpX, perpY } = computeLineGeometry(line);
   const gradientId = `line-rainbow-${line.id}`;
+  const glowId = `line-rainbow-glow-${line.id}`;
 
   return (
     <>
@@ -131,8 +172,43 @@ function renderRainbow(
           <stop offset="80%" stopColor="#4D9DFF" />
           <stop offset="100%" stopColor="#A14DFF" />
         </linearGradient>
+        <filter id={glowId} x="-75%" y="-75%" width="250%" height="250%">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
       </defs>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={`url(#${gradientId})`} strokeWidth={5} strokeLinecap="round" />
+      {/* neon glow */}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={`url(#${gradientId})`}
+        strokeWidth={6}
+        strokeOpacity={0.45}
+        strokeLinecap="round"
+        filter={`url(#${glowId})`}
+      />
+      {/* slightly translucent core */}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={`url(#${gradientId})`}
+        strokeWidth={2}
+        strokeOpacity={0.8}
+        strokeLinecap="round"
+      />
+      {SPARKLE_SEEDS.map((s, i) => (
+        <Sparkle
+          key={i}
+          cx={x1 + (x2 - x1) * s.t + perpX * s.offset * s.side}
+          cy={y1 + (y2 - y1) * s.t + perpY * s.offset * s.side}
+          size={s.size}
+          delay={s.delay}
+          dur={s.dur}
+        />
+      ))}
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
