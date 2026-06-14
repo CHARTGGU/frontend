@@ -22,17 +22,26 @@ export const SYMBOLS = [
 
 export type SymbolId = (typeof SYMBOLS)[number]["id"];
 
-/** 기간 — MVP는 1d만 활성, 나머지는 비활성(준비중). */
+/** 기간. */
 export const INTERVALS = [
-  { id: "1m", label: "1m", enabled: false },
-  { id: "5m", label: "5m", enabled: false },
-  { id: "15m", label: "15m", enabled: false },
-  { id: "1h", label: "1h", enabled: false },
-  { id: "4h", label: "4h", enabled: false },
+  { id: "1m", label: "1m", enabled: true },
+  { id: "5m", label: "5m", enabled: true },
+  { id: "15m", label: "15m", enabled: true },
+  { id: "1h", label: "1h", enabled: true },
+  { id: "4h", label: "4h", enabled: true },
   { id: "1d", label: "1D", enabled: true },
 ] as const;
 
 export type IntervalId = (typeof INTERVALS)[number]["id"];
+
+/** 일봉 미만(분/시간봉) — 시간축에 시각 표시 필요. */
+export const INTRADAY_INTERVALS: readonly IntervalId[] = [
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+];
 
 /** MA 기간 (SMA 직접 계산). */
 export const MA_PERIODS = [5, 20, 60, 120] as const;

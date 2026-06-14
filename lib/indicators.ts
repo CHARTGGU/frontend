@@ -1,5 +1,5 @@
 import type { HistogramData, LineData, UTCTimestamp } from "lightweight-charts";
-import type { Candle, MaPeriod } from "./types";
+import type { Candle } from "./types";
 
 const MACD_HIST_UP = "rgba(38,166,154,0.6)";
 const MACD_HIST_DOWN = "rgba(239,83,80,0.6)";
@@ -8,7 +8,7 @@ const MACD_HIST_DOWN = "rgba(239,83,80,0.6)";
  * 단순 이동평균(SMA). lightweight-charts는 지표 0 제공 → 직접 계산.
  * 앞쪽 (period-1)개 구간은 값 없음 → 결과에서 제외 (라인 시작점 자연스럽게).
  */
-export function sma(candles: Candle[], period: MaPeriod): LineData[] {
+export function sma(candles: Candle[], period: number): LineData[] {
   if (candles.length < period) return [];
 
   const out: LineData[] = [];
@@ -216,6 +216,59 @@ export function macd(
   return { macd: macdLine, signal, histogram };
 }
 
+export type CrossType = "golden" | "dead";
+
+export interface Cross {
+  time: UTCTimestamp;
+  /** 교차 지점 가격 (slow MA값 — fast≈slow 이므로 마커 배치 기준으로 충분). */
+  price: number;
+  type: CrossType;
+}
+
+/**
+ * fast/slow SMA 교차점 감지 (골든=fast가 slow 위로, 데드=아래로).
+ * 두 MA가 모두 존재하는 시간만 비교. diff 부호가 마지막 비0 부호와 바뀌는 시점이 교차.
+ * diff===0(접점)은 부호 미확정 → 다음 비0까지 보류. [from,to](초) 범위 필터.
+ */
+export function detectCrossesInRange(
+  candles: Candle[],
+  from: number,
+  to: number,
+  fast = 20,
+  slow = 60,
+): Cross[] {
+  const fastMa = sma(candles, fast);
+  const slowMa = sma(candles, slow);
+  if (fastMa.length === 0 || slowMa.length === 0) return [];
+
+  const fastByTime = new Map<number, number>();
+  for (const p of fastMa) fastByTime.set(p.time as number, p.value);
+
+  const crosses: Cross[] = [];
+  let prevSign = 0;
+  for (const sp of slowMa) {
+    const t = sp.time as number;
+    const fv = fastByTime.get(t);
+    if (fv === undefined) continue;
+
+    const diff = fv - sp.value;
+    if (diff === 0) continue;
+    const sign = diff > 0 ? 1 : -1;
+
+    if (prevSign !== 0 && sign !== prevSign) {
+      if (t >= from && t <= to) {
+        crosses.push({
+          time: sp.time as UTCTimestamp,
+          price: sp.value,
+          type: sign > 0 ? "golden" : "dead",
+        });
+      }
+    }
+    prevSign = sign;
+  }
+  return crosses;
+}
+
 export interface VolumeBucket {
   priceLow: number;
   priceHigh: number;
@@ -257,4 +310,34 @@ export function volumeProfile(
     buckets[idx] = { ...buckets[idx], volume: buckets[idx].volume + c.volume };
   }
   return buckets;
+}
+
+export interface PocResult {
+  /** 전체 버킷 (벽돌 렌더가 전 구간 필요). */
+  buckets: VolumeBucket[];
+  /** 최대 volume 버킷 인덱스 (POC = Point of Control). */
+  pocIndex: number;
+}
+
+/**
+ * 가시 시간범위([from,to] 초) 캔들 → volumeProfile 재활용 → 전체 버킷 + POC 인덱스.
+ * 범위 내 캔들 없거나 버킷 생성 실패 시 null.
+ */
+export function detectPocInRange(
+  candles: Candle[],
+  from: number,
+  to: number,
+  bucketCount = 24,
+): PocResult | null {
+  const inRange = candles.filter(
+    (c) => (c.time as number) >= from && (c.time as number) <= to,
+  );
+  const buckets = volumeProfile(inRange, bucketCount);
+  if (buckets.length === 0) return null;
+
+  let pocIndex = 0;
+  for (let i = 1; i < buckets.length; i++) {
+    if (buckets[i].volume > buckets[pocIndex].volume) pocIndex = i;
+  }
+  return { buckets, pocIndex };
 }

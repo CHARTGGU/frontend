@@ -6,11 +6,17 @@ import { useCustomBgStore } from "@/stores/customBgStore";
 import BackgroundControls from "./BackgroundControls";
 import CustomBgUpload from "./CustomBgUpload";
 import FireControls from "./FireControls";
+import WaterfallControls from "./WaterfallControls";
 import SkinCard from "./SkinCard";
 import {
+  BRICK_SKIN_STYLE,
   CATEGORY_META,
+  CROSS_SKIN_STYLE,
+  INDICATOR_BINDING_META,
+  INDICATOR_BINDING_ORDER,
   SKINS_BY_CATEGORY,
   type BackgroundSkin,
+  type Skin,
   type SkinCategory,
 } from "./presets";
 
@@ -48,14 +54,20 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
 
   const backgroundSkinId = useSkinStore((s) => s.backgroundSkinId);
   const indicatorSkinId = useSkinStore((s) => s.indicatorSkinId);
+  const crossStyle = useSkinStore((s) => s.crossStyle);
+  const brickStyle = useSkinStore((s) => s.brickStyle);
   const catEnabled = useSkinStore((s) => s.catEnabled);
   const fireEnabled = useSkinStore((s) => s.fireEnabled);
+  const waterfallEnabled = useSkinStore((s) => s.waterfallEnabled);
   const applyBackground = useSkinStore((s) => s.applyBackground);
   const removeBackground = useSkinStore((s) => s.removeBackground);
   const applyIndicator = useSkinStore((s) => s.applyIndicator);
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
+  const setCrossStyle = useSkinStore((s) => s.setCrossStyle);
+  const setBrickStyle = useSkinStore((s) => s.setBrickStyle);
   const toggleCat = useSkinStore((s) => s.toggleCat);
   const toggleFire = useSkinStore((s) => s.toggleFire);
+  const toggleWaterfall = useSkinStore((s) => s.toggleWaterfall);
   const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
   const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
 
@@ -131,6 +143,68 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
               : SKINS_BY_CATEGORY[category];
           const isOpen = open[category];
 
+          // 스킨 카드 1장 렌더 (적용 상태 판정 + 적용/해제 핸들러 바인딩).
+          const renderCard = (skin: Skin) => {
+            // 바인딩 연출 스킨(크로스/벽돌)은 skinStore 스타일 토글로 처리.
+            const cross = CROSS_SKIN_STYLE[skin.id];
+            const brick = BRICK_SKIN_STYLE[skin.id];
+
+            const applied =
+              (category === "background" && backgroundSkinId === skin.id) ||
+              (category === "indicator" &&
+                !cross &&
+                !brick &&
+                indicatorSkinId === skin.id) ||
+              (!!cross && crossStyle === cross) ||
+              (!!brick && brickStyle === brick) ||
+              (category === "widget" &&
+                skin.id === "wg-running-cat" &&
+                catEnabled) ||
+              (category === "widget" && skin.id === "wg-fire" && fireEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-waterfall" &&
+                waterfallEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-kiyoungi" &&
+                kiyoungiEnabled);
+
+            return (
+              <div key={skin.id}>
+                <SkinCard
+                  skin={skin}
+                  applied={applied}
+                  onApply={() => {
+                    if (category === "background") applyBackground(skin.id);
+                    else if (cross) setCrossStyle(cross);
+                    else if (brick) setBrickStyle(brick);
+                    else if (category === "indicator") applyIndicator(skin.id);
+                    else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                    else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                    else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
+                    else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                  }}
+                  onRemove={() => {
+                    if (category === "background") removeBackground();
+                    else if (cross) setCrossStyle(cross);
+                    else if (brick) setBrickStyle(brick);
+                    else if (category === "indicator") removeIndicator();
+                    else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                    else if (category === "widget" && skin.id === "wg-fire") toggleFire();
+                    else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
+                    else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                  }}
+                  onDelete={
+                    skin.id.startsWith("custom-")
+                      ? () => handleDeleteCustom(skin.id)
+                      : undefined
+                  }
+                />
+                {skin.id === "wg-fire" && <FireControls />}
+                {skin.id === "wg-waterfall" && <WaterfallControls />}
+              </div>
+            );
+          };
+
           return (
             <section key={category}>
               <button
@@ -151,51 +225,32 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                       <CustomBgUpload />
                     </>
                   )}
-                  {skins.map((skin) => {
-                    const applied =
-                      (category === "background" &&
-                        backgroundSkinId === skin.id) ||
-                      (category === "indicator" &&
-                        indicatorSkinId === skin.id) ||
-                      (category === "widget" &&
-                        skin.id === "wg-running-cat" &&
-                        catEnabled) ||
-                      (category === "widget" &&
-                        skin.id === "wg-fire" &&
-                        fireEnabled) ||
-                      (category === "widget" &&
-                        skin.id === "wg-kiyoungi" &&
-                        kiyoungiEnabled);
+                  {category === "indicator"
+                    ? // 지표 스킨은 연동 지표(binding)별 서브그룹으로 구분 표시.
+                      INDICATOR_BINDING_ORDER.map((binding) => {
+                        const groupSkins = skins.filter(
+                          (s) => s.binding === binding,
+                        );
+                        if (groupSkins.length === 0) return null;
+                        const bm = INDICATOR_BINDING_META[binding];
 
-                    return (
-                      <div key={skin.id}>
-                        <SkinCard
-                          skin={skin}
-                          applied={applied}
-                          onApply={() => {
-                            if (category === "background") applyBackground(skin.id);
-                            else if (category === "indicator") applyIndicator(skin.id);
-                            else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
-                            else if (category === "widget" && skin.id === "wg-fire") toggleFire();
-                            else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
-                          }}
-                          onRemove={() => {
-                            if (category === "background") removeBackground();
-                            else if (category === "indicator") removeIndicator();
-                            else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
-                            else if (category === "widget" && skin.id === "wg-fire") toggleFire();
-                            else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
-                          }}
-                          onDelete={
-                            skin.id.startsWith("custom-")
-                              ? () => handleDeleteCustom(skin.id)
-                              : undefined
-                          }
-                        />
-                        {skin.id === "wg-fire" && <FireControls />}
-                      </div>
-                    );
-                  })}
+                        return (
+                          <div key={binding}>
+                            <div
+                              title={bm.hint}
+                              className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted"
+                            >
+                              <span>{bm.icon}</span>
+                              <span>{bm.label}</span>
+                              <span className="ml-auto">
+                                {groupSkins.length}
+                              </span>
+                            </div>
+                            {groupSkins.map(renderCard)}
+                          </div>
+                        );
+                      })
+                    : skins.map(renderCard)}
                 </div>
               )}
             </section>

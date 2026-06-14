@@ -86,11 +86,14 @@
 - [ ] `app/api/*` Route Handlers (주식/AI 프록시 등 — MVP는 자리만)
 
 ### 지표 스킨 바인딩 확장 (2-1b)
+- [x] 골든/데드크로스 (MA20×MA60) — 연출 3종: 네온 파동·예능 도장·무한도전 스티커(무야호/해골)
+  - `skinStore.crossStyle`, `features/skin/bindings/CrossOverlay`, `detectCrossesInRange`
+- [x] 매물대 벽돌 바인딩 — 픽셀 벽돌·골드바 2종, POC 금색 강조
+  - `skinStore.brickStyle`, `features/skin/bindings/BrickOverlay`, `detectPocInRange`
+- [x] 후보 PoC 플레이그라운드 (`/poc`) — 결정적 fixture로 후보 비교
 - [ ] 매수/매도 지점 (사용자 지정)
-- [ ] 골든크로스/데드크로스 (반짝임)
 - [ ] 일목균형표 (구름 + 가격 돌파 시 비행기 연출)
 - [ ] 지지선/저항선
-- [ ] 매물대 바인딩 (현재 toolbar 보조지표로만 존재, 캐릭터 바인딩 아님)
 - [ ] 사용자 정의 가격선
 
 ### Phase 2 — 스킨 시스템 고도화

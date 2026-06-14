@@ -28,6 +28,7 @@ import {
   RSI_LEVEL_COLOR,
   RSI_LEVELS,
   RSI_PERIOD,
+  INTRADAY_INTERVALS,
   type MaPeriod,
 } from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
@@ -44,6 +45,10 @@ export default function ChartCanvas() {
   const candleRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const maSeriesRef = useRef<Map<MaPeriod, ISeriesApi<"Line">>>(new Map());
+  // 과거 페이징(prepend) 감지용 — 직전 캔들 개수/최초 시각.
+  const prevLenRef = useRef(0);
+  const prevFirstTimeRef = useRef<number | null>(null);
+  const prevEpochRef = useRef(-1);
 
   // 볼린저밴드 3선 (price pane). 활성 시 생성, 해제 시 제거.
   const bbRef = useRef<{
@@ -150,13 +155,32 @@ export default function ChartCanvas() {
 
   // 캔들·거래량 데이터셋 적용 (전체 교체). fit은 별도 effect.
   useEffect(() => {
+    const chart = chartRef.current;
     const candleSeries = candleRef.current;
     const volumeSeries = volumeRef.current;
-    if (!candleSeries || !volumeSeries) return;
+    if (!chart || !candleSeries || !volumeSeries) return;
     if (candles.length === 0) {
+      prevLenRef.current = 0;
+      prevFirstTimeRef.current = null;
       setReady(false);
       return;
     }
+
+    // 과거 페이징(앞쪽 prepend) 여부 판정 — 최초 시각이 더 과거로 이동했고
+    // 직전 데이터가 있던 경우. setData가 논리 인덱스를 0부터 다시 매기므로
+    // 추가된 개수만큼 보이는 구간을 우측으로 이동해 화면 점프를 막는다.
+    const firstTime = candles[0].time as number;
+    const prevFirstTime = prevFirstTimeRef.current;
+    const freshLoad = dataEpoch !== prevEpochRef.current;
+    const isPrepend =
+      !freshLoad &&
+      prevFirstTime !== null &&
+      prevLenRef.current > 0 &&
+      firstTime < prevFirstTime;
+    const addedCount = isPrepend ? candles.length - prevLenRef.current : 0;
+    const savedRange = isPrepend
+      ? chart.timeScale().getVisibleLogicalRange()
+      : null;
 
     candleSeries.setData(
       candles.map((c) => ({
@@ -174,8 +198,19 @@ export default function ChartCanvas() {
         color: volColor(c.close >= c.open),
       })),
     );
+
+    if (savedRange && addedCount > 0) {
+      chart.timeScale().setVisibleLogicalRange({
+        from: savedRange.from + addedCount,
+        to: savedRange.to + addedCount,
+      });
+    }
+
+    prevLenRef.current = candles.length;
+    prevFirstTimeRef.current = firstTime;
+    prevEpochRef.current = dataEpoch;
     setReady(true);
-  }, [candles, setReady]);
+  }, [candles, dataEpoch, setReady]);
 
   // fresh 로드(초기·심볼·기간 변경)에만 화면 맞춤. 페이징·실시간엔 뷰 유지.
   useEffect(() => {
@@ -203,6 +238,13 @@ export default function ChartCanvas() {
       color: volColor(liveBar.close >= liveBar.open),
     });
   }, [liveBar]);
+
+  // 시간축 표시 — 분/시간봉은 시각까지, 일봉은 날짜만.
+  useEffect(() => {
+    chartRef.current?.applyOptions({
+      timeScale: { timeVisible: INTRADAY_INTERVALS.includes(interval) },
+    });
+  }, [interval]);
 
   // WS 실시간 구독 (종목/기간별 재연결).
   useEffect(() => {

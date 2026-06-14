@@ -12,6 +12,40 @@ export const CATEGORY_META: Record<
   set: { label: "세트 테마", icon: "🎨" },
 };
 
+/**
+ * 지표 스킨이 어느 지표에 바인딩되는지 구분.
+ * 같은 카테고리(지표 스킨) 안에서도 연동 지표가 달라 서브그룹으로 표시.
+ */
+export type IndicatorBinding = "price-extreme" | "cross" | "volume-profile";
+
+export const INDICATOR_BINDING_META: Record<
+  IndicatorBinding,
+  { label: string; icon: string; hint: string }
+> = {
+  "price-extreme": {
+    label: "고가·저가",
+    icon: "📈",
+    hint: "기간 최고·최저점에 연동",
+  },
+  cross: {
+    label: "골든·데드크로스",
+    icon: "✨",
+    hint: "MA20 × MA60 교차에 연동",
+  },
+  "volume-profile": {
+    label: "매물대",
+    icon: "🧱",
+    hint: "가격대별 거래량(거래량 프로파일)에 연동",
+  },
+};
+
+/** 지표 스킨 서브그룹 표시 순서. */
+export const INDICATOR_BINDING_ORDER: IndicatorBinding[] = [
+  "price-extreme",
+  "cross",
+  "volume-profile",
+];
+
 interface BaseSkin {
   id: string;
   name: string;
@@ -22,6 +56,8 @@ interface BaseSkin {
   status: "available" | "soon";
   /** 카드 썸네일 (배경색 또는 이미지). */
   thumbnail: string;
+  /** 지표 스킨일 때 연동 지표 구분(서브그룹). 그 외 카테고리는 미사용. */
+  binding?: IndicatorBinding;
 }
 
 export interface BackgroundSkin extends BaseSkin {
@@ -62,6 +98,17 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     image: "/skins/bg-candy.svg",
     defaultFit: "tile",
   },
+  {
+    id: "bg-gazua",
+    name: "가즈아",
+    author: "ChartSkin",
+    description: "폭락 전광판 앞에서 기도하는 아이. 존버 트레이더의 간절함.",
+    category: "background",
+    status: "available",
+    thumbnail: "/skins/bg-gazua.png",
+    image: "/skins/bg-gazua.png",
+    defaultFit: "cover",
+  },
 ];
 
 /** 지표 스킨 — 최고/최저점에 캐릭터+말풍선, 실제 적용 가능. */
@@ -72,6 +119,7 @@ export const INDICATOR_SKINS: IndicatorSkin[] = [
     author: "ChartSkin",
     description: "기간 최고점엔 신난 고양이, 최저점엔 슬픈 고양이가 붙어요.",
     category: "indicator",
+    binding: "price-extreme",
     status: "available",
     thumbnail: "/skins/cat-photo-happy.png",
     characters: {
@@ -79,6 +127,64 @@ export const INDICATOR_SKINS: IndicatorSkin[] = [
       sad: "/skins/cat-photo-sad.png",
       neutral: "/skins/cat-photo-neutral.png",
     },
+  },
+];
+
+/**
+ * 지표 바인딩 연출 스킨 — 골든/데드크로스(MA20×MA60)·매물대 벽돌.
+ * 캐릭터 없음(BaseSkin). 적용은 skinStore.crossStyle/brickStyle 토글.
+ * id ↔ 스타일 매핑은 SkinSidebar에서 처리.
+ */
+export const BINDING_SKINS: BaseSkin[] = [
+  {
+    id: "ind-cross-muhan",
+    name: "무한도전 크로스",
+    author: "ChartSkin",
+    description: "골든크로스엔 무야~호~, 데드크로스엔 해골 스티커가 떠요.",
+    category: "indicator",
+    binding: "cross",
+    status: "available",
+    thumbnail: "/skins/muhan-muyaho.png",
+  },
+  {
+    id: "ind-cross-neon",
+    name: "네온 크로스",
+    author: "ChartSkin",
+    description: "MA20×MA60 교차점에 네온 링이 확산되는 사이버펑크 연출.",
+    category: "indicator",
+    binding: "cross",
+    status: "available",
+    thumbnail: "/skins/cross-neon.svg",
+  },
+  {
+    id: "ind-cross-burst",
+    name: "이모지 분수 크로스",
+    author: "ChartSkin",
+    description: "교차점에서 🚀💎🙌(골든)·📉💀(데드) 이모지가 솟구쳐요.",
+    category: "indicator",
+    binding: "cross",
+    status: "available",
+    thumbnail: "/skins/cross-burst.svg",
+  },
+  {
+    id: "ind-brick-pixel",
+    name: "픽셀 벽돌 매물대",
+    author: "ChartSkin",
+    description: "가격대별 거래량을 픽셀 벽돌로 쌓아요. 최대 매물대는 금색 벽.",
+    category: "indicator",
+    binding: "volume-profile",
+    status: "available",
+    thumbnail: "/skins/brick-pixel.svg",
+  },
+  {
+    id: "ind-brick-gold",
+    name: "골드바 매물대",
+    author: "ChartSkin",
+    description: "거래량을 골드바로 표현. 최대 매물대(POC)는 금괴로 강조.",
+    category: "indicator",
+    binding: "volume-profile",
+    status: "available",
+    thumbnail: "/skins/brick-gold.svg",
   },
 ];
 
@@ -101,6 +207,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     category: "widget",
     status: "available",
     thumbnail: "/skins/fire-thumb.svg",
+  },
+  {
+    id: "wg-waterfall",
+    name: "폭포수 효과",
+    author: "ChartSkin",
+    description: "화면 위에서 물줄기가 쏟아져 포말로 부서지는 폭포 효과.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/waterfall-thumb.svg",
   },
   {
     id: "wg-kiyoungi",
@@ -146,9 +261,21 @@ export const SET_SKINS: BaseSkin[] = [
 
 export const SKINS_BY_CATEGORY: Record<SkinCategory, Skin[]> = {
   background: BACKGROUND_SKINS,
-  indicator: INDICATOR_SKINS,
+  indicator: [...INDICATOR_SKINS, ...BINDING_SKINS],
   widget: WIDGET_SKINS,
   set: SET_SKINS,
+};
+
+/** 바인딩 스킨 id ↔ skinStore 스타일 매핑 (SkinSidebar 토글용). */
+export const CROSS_SKIN_STYLE: Record<string, "neon" | "burst" | "muhan"> = {
+  "ind-cross-neon": "neon",
+  "ind-cross-burst": "burst",
+  "ind-cross-muhan": "muhan",
+};
+
+export const BRICK_SKIN_STYLE: Record<string, "pixel" | "gold"> = {
+  "ind-brick-pixel": "pixel",
+  "ind-brick-gold": "gold",
 };
 
 export function findBackgroundSkin(id: string | null): BackgroundSkin | null {

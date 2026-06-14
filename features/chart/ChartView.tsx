@@ -5,7 +5,10 @@ import { useChartStore } from "@/stores/chartStore";
 import { useCaptureRef } from "@/features/export/captureContext";
 import BackgroundLayer from "@/features/skin/BackgroundLayer";
 import FireOverlay from "@/features/skin/FireOverlay";
+import WaterfallOverlay from "@/features/skin/WaterfallOverlay";
 import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
+import CrossOverlay from "@/features/skin/bindings/CrossOverlay";
+import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
@@ -32,8 +35,11 @@ export default function ChartView() {
         <div ref={captureRef} className="absolute inset-0 bg-[#131313]">
           <BackgroundLayer />
           <FireOverlay />
+          <WaterfallOverlay />
           <ChartCanvas />
           <IndicatorOverlay />
+          <CrossOverlay />
+          <BrickOverlay />
           <VolumeProfileOverlay />
           <KiyoungiOverlay />
         </div>
