@@ -69,7 +69,7 @@ export default function KiyoungiBody({ selected, onSelect }: Props) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/skins/kiyoungi-face.svg"
+        src="/skins/kiyoungi-face.png"
         alt=""
         draggable={false}
         style={{ width: "100%", height: "100%", display: "block" }}

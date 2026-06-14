@@ -40,7 +40,7 @@ interface SkinState {
   kiyoungiEnabled: boolean;
   /** 기영이 본체(얼굴) 위치/크기. 컨테이너 기준 px. */
   kiyoungiBody: BodyRect;
-  /** 빛의 검 팔. (offsetX,offsetY)=어깨(앵커) — kiyoungiBody 좌상단 기준 상대 오프셋(px), 본체 이동 시 팔도 같이 따라움. length=검 길이(px), angle=각도(deg, 0=→, -90=↑). */
+  /** 빛의 검 팔. (offsetX,offsetY)=어깨(앵커) — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px), 본체 이동/리사이즈 시 팔도 같이 따라움. length=검 길이(px), angle=각도(deg, 0=→, -90=↑). */
   kiyoungiArm: ArmState;
 
   toggleKiyoungi: () => void;
@@ -52,7 +52,7 @@ interface SkinState {
 - 기본값:
   - `kiyoungiEnabled: false`
   - `kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 }`
-  - `kiyoungiArm: { offsetX: 140, offsetY: 20, length: 180, angle: -60 }` (= 본체 기준 절대좌표 300,280과 동일 위치)
+  - `kiyoungiArm: { offsetX: -60, offsetY: -40, length: 180, angle: -60 }` (= 본체 우하단 모서리(360,440) 기준, 절대좌표 300,400과 동일 위치)
 - 기존 `persist({ name: "skin-settings" })`에 자동 포함 (partialize 없음 → 전체 저장).
 - "어떤 파츠가 선택돼 핸들 표시 중인지"는 store에 두지 않음 — `KiyoungiOverlay` 컴포넌트 로컬 state (새로고침 시 선택 해제되는 게 정상).
 
@@ -62,8 +62,8 @@ interface SkinState {
 
 | 파일 | 내용 |
 |------|------|
-| `public/skins/kiyoungi-face.svg` | 동그란 얼굴 + 점 눈 2개 + 웃는 입 + 위쪽에 뾰족뾰족한 갈색 머리카락(밈 참고 이미지의 횡보 구간 위 고점 라인 실루엣). 손그림풍 라인아트(`cat-running.svg`와 동일 스타일), 배경 투명. |
-| `public/skins/kiyoungi-sword-arm.svg` | 대각선 팔(둥근 막대) + 끝에 길쭉한 빛의 검(삼각/지그재그 칼날 + 광선 줄무늬). 같은 갈색 라인 톤, 배경 투명. 회전 기준점(어깨)이 SVG의 한쪽 끝에 오도록 좌표 설계 → `transform-origin`을 그쪽으로 고정. |
+| `public/skins/kiyoungi-face.png` | 동그란 얼굴 + 점 눈 2개 + 웃는 입 + 위쪽에 뾰족뾰족한 갈색 머리카락(밈 참고 이미지의 횡보 구간 위 고점 라인 실루엣). 손그림풍 라인아트(`cat-running.svg`와 동일 스타일), 배경 투명. |
+| `public/skins/kiyoungi-sword-arm.png` | 대각선 팔(둥근 막대) + 끝에 길쭉한 빛의 검(삼각/지그재그 칼날 + 광선 줄무늬). 같은 갈색 라인 톤, 배경 투명. 회전 기준점(어깨)이 SVG의 한쪽 끝에 오도록 좌표 설계 → `transform-origin`을 그쪽으로 고정. |
 | `public/skins/kiyoungi-thumb.svg` | 위젯 카드 썸네일 (얼굴+팔 축소 합성, 단순 버전). |
 
 마음에 안 들면 추후 에셋 파일만 교체 가능 (컴포넌트/로직 변경 없음).
@@ -80,12 +80,12 @@ interface SkinState {
 - `<KiyoungiBody selected={...} onSelect={...} />`, `<KiyoungiArm selected={...} onSelect={...} />` 렌더.
 
 ### `features/skin/KiyoungiBody.tsx`
-- `<img src="/skins/kiyoungi-face.svg" draggable={false}>`를 `kiyoungiBody` rect(`left/top/width/height`)로 절대배치. `pointer-events: auto`.
+- `<img src="/skins/kiyoungi-face.png" draggable={false}>`를 `kiyoungiBody` rect(`left/top/width/height`)로 절대배치. `pointer-events: auto`.
 - pointerdown(이미지 본문) → `onSelect('body')` + 드래그 시작 → `setKiyoungiBody({ x, y })` 갱신.
 - `selected === 'body'`일 때만 4 모서리에 8×8px 리사이즈 핸들(`<div data-export-ignore="true">`) 렌더. 핸들 드래그 → 반대편 모서리 고정하며 `width/height` (+필요시 `x/y`) 갱신, 최소 60×60px 클램프.
 
 ### `features/skin/KiyoungiArm.tsx`
-- 앵커(어깨) = `(kiyoungiBody.x + kiyoungiArm.offsetX, kiyoungiBody.y + kiyoungiArm.offsetY)` — 본체 좌상단 기준 상대 오프셋이므로 본체를 드래그하면 팔도 같이 따라움. `<img src="/skins/kiyoungi-sword-arm.svg" draggable={false}>`를 이 앵커 기준 `transform: rotate(${angle+45}deg)` + `length` 정사각 박스로 배치, `transform-origin`을 어깨쪽 끝(`0% 100%`)으로 고정.
+- 앵커(어깨) = `(kiyoungiBody.x + kiyoungiBody.width + kiyoungiArm.offsetX, kiyoungiBody.y + kiyoungiBody.height + kiyoungiArm.offsetY)` — 본체 우하단 모서리 기준 상대 오프셋이므로 본체를 드래그/리사이즈하면 팔도 같이 따라움. `<img src="/skins/kiyoungi-sword-arm.png" draggable={false}>`를 이 앵커 기준 `transform: rotate(${angle+45}deg)` + `length` 정사각 박스로 배치, `transform-origin`을 어깨쪽 끝(`0% 100%`)으로 고정.
 - pointerdown(이미지 본문) → `onSelect('arm')` + 드래그 시작 → `setKiyoungiArm({ offsetX, offsetY })`(앵커를 본체 기준 오프셋으로 이동).
 - `selected === 'arm'`일 때만 검 끝점에 핸들 1개(`data-export-ignore="true"`) 렌더. 드래그 시 앵커 기준 `angle = atan2(dy, dx)` (deg), `length = Math.hypot(dx, dy)`로 재계산, `length`는 60~500px 클램프, `angle`은 클램프 없음(360° 자유).
 
@@ -153,8 +153,8 @@ interface SkinState {
 | 신규 | `features/skin/KiyoungiBody.tsx` |
 | 신규 | `features/skin/KiyoungiArm.tsx` |
 | 신규 | `lib/useDragHandle.ts` |
-| 신규 | `public/skins/kiyoungi-face.svg` |
-| 신규 | `public/skins/kiyoungi-sword-arm.svg` |
+| 신규 | `public/skins/kiyoungi-face.png` |
+| 신규 | `public/skins/kiyoungi-sword-arm.png` |
 | 신규 | `public/skins/kiyoungi-thumb.svg` |
 | 수정 | `stores/skinStore.ts` (kiyoungiEnabled/Body/Arm + 액션) |
 | 수정 | `features/skin/presets.ts` (wg-kiyoungi 항목) |

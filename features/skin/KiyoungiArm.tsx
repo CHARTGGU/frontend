@@ -12,8 +12,8 @@ interface Props {
 }
 
 /**
- * 기영이의 빛의 검 팔. 앵커(어깨)는 kiyoungiBody 좌상단 기준 상대 오프셋으로 완전 고정 →
- * 본체를 드래그하면 팔도 같이 따라오고, 앵커만 따로 옮길 수는 없음.
+ * 기영이의 빛의 검 팔. 앵커(어깨)는 kiyoungiBody 우하단 모서리 기준 상대 오프셋으로 완전 고정 →
+ * 본체를 드래그하거나 리사이즈하면 팔도 같이 따라오고, 앵커만 따로 옮길 수는 없음.
  * 클릭=선택(끝점 핸들 표시), 끝점 핸들=각도+길이 조절.
  */
 export default function KiyoungiArm({ selected, onSelect }: Props) {
@@ -22,8 +22,8 @@ export default function KiyoungiArm({ selected, onSelect }: Props) {
   const setArm = useSkinStore((s) => s.setKiyoungiArm);
   const startDrag = useDragHandle();
 
-  const anchorX = body.x + arm.offsetX;
-  const anchorY = body.y + arm.offsetY;
+  const anchorX = body.x + body.width + arm.offsetX;
+  const anchorY = body.y + body.height + arm.offsetY;
 
   const handleTipPointerDown = (e: React.PointerEvent) => {
     const start = { ...arm };
@@ -61,7 +61,7 @@ export default function KiyoungiArm({ selected, onSelect }: Props) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/skins/kiyoungi-sword-arm.svg"
+        src="/skins/kiyoungi-sword-arm.png"
         alt=""
         draggable={false}
         style={{ width: "100%", height: "100%", display: "block" }}

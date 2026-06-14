@@ -36,7 +36,7 @@ interface SkinState {
   kiyoungiEnabled: boolean;
   /** 기영이 본체(얼굴) 위치/크기 (컨테이너 기준 px). */
   kiyoungiBody: KiyoungiBodyRect;
-  /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 좌상단 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
+  /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
   kiyoungiArm: KiyoungiArmState;
 
   applyBackground: (id: string) => void;
@@ -65,7 +65,7 @@ export const useSkinStore = create<SkinState>()(
       fireHeight: 30,
       kiyoungiEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
-      kiyoungiArm: { offsetX: 140, offsetY: 20, length: 180, angle: -60 },
+      kiyoungiArm: { offsetX: -60, offsetY: -40, length: 180, angle: -60 },
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
