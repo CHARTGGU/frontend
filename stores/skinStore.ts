@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { UTCTimestamp } from "lightweight-charts";
 
 export type FitMode = "cover" | "contain" | "tile";
 
@@ -22,11 +23,11 @@ export type LineStyleId = "cat-tail" | "ribbon" | "lightning" | "rainbow";
 export interface CustomLine {
   id: string;
   styleId: LineStyleId;
-  /** 컨테이너 기준 px 좌표. 차트 좌표와 무관 (kiyoungi와 동일 방식). */
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
+  /** 차트 좌표(시간/가격) 기준 — 줌/스크롤 시 priceToCoordinate/timeToCoordinate로 재배치. */
+  time1: UTCTimestamp;
+  price1: number;
+  time2: UTCTimestamp;
+  price2: number;
 }
 
 interface SkinState {
@@ -110,6 +111,16 @@ export const useSkinStore = create<SkinState>()(
       removeCustomLine: (id) =>
         set((s) => ({ customLines: s.customLines.filter((l) => l.id !== id) })),
     }),
-    { name: "skin-settings" }
+    {
+      name: "skin-settings",
+      version: 1,
+      // v0 → v1: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 초기화.
+      migrate: (state, version) => {
+        if (version < 1 && state && typeof state === "object") {
+          return { ...state, customLines: [] };
+        }
+        return state;
+      },
+    }
   )
 );
