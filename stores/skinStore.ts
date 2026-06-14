@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { UTCTimestamp } from "lightweight-charts";
 
 export type FitMode = "cover" | "contain" | "tile";
 
@@ -20,6 +21,18 @@ export interface KiyoungiArmState {
   offsetY: number;
   length: number;
   angle: number;
+}
+
+export type LineStyleId = "basic" | "heart" | "rainbow";
+
+export interface CustomLine {
+  id: string;
+  styleId: LineStyleId;
+  /** 차트 좌표(시간/가격) 기준 — 줌/스크롤 시 priceToCoordinate/timeToCoordinate로 재배치. */
+  time1: UTCTimestamp;
+  price1: number;
+  time2: UTCTimestamp;
+  price2: number;
 }
 
 interface SkinState {
@@ -51,6 +64,8 @@ interface SkinState {
   kiyoungiBody: KiyoungiBodyRect;
   /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
   kiyoungiArm: KiyoungiArmState;
+  /** 사용자가 그린 커스텀 라인 목록. */
+  customLines: CustomLine[];
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -69,6 +84,9 @@ interface SkinState {
   toggleKiyoungi: () => void;
   setKiyoungiBody: (patch: Partial<KiyoungiBodyRect>) => void;
   setKiyoungiArm: (patch: Partial<KiyoungiArmState>) => void;
+  addCustomLine: (line: CustomLine) => void;
+  updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
+  removeCustomLine: (id: string) => void;
 }
 
 export const useSkinStore = create<SkinState>()(
@@ -88,6 +106,7 @@ export const useSkinStore = create<SkinState>()(
       kiyoungiEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
+      customLines: [],
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
@@ -110,7 +129,34 @@ export const useSkinStore = create<SkinState>()(
         set((s) => ({ kiyoungiBody: { ...s.kiyoungiBody, ...patch } })),
       setKiyoungiArm: (patch) =>
         set((s) => ({ kiyoungiArm: { ...s.kiyoungiArm, ...patch } })),
+      addCustomLine: (line) =>
+        set((s) => ({ customLines: [...s.customLines, line] })),
+      updateCustomLine: (id, patch) =>
+        set((s) => ({
+          customLines: s.customLines.map((l) =>
+            l.id === id ? { ...l, ...patch } : l,
+          ),
+        })),
+      removeCustomLine: (id) =>
+        set((s) => ({ customLines: s.customLines.filter((l) => l.id !== id) })),
     }),
-    { name: "skin-settings" }
+    {
+      name: "skin-settings",
+      version: 2,
+      // v0 → v2: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 옛 형식 제거.
+      migrate: (state, version) => {
+        if (version < 2 && state && typeof state === "object" && "customLines" in state) {
+          const lines = (state as { customLines: unknown }).customLines;
+          const valid = Array.isArray(lines)
+            ? lines.filter(
+                (l): l is CustomLine =>
+                  typeof l === "object" && l !== null && typeof (l as CustomLine).time1 === "number"
+              )
+            : [];
+          return { ...state, customLines: valid };
+        }
+        return state;
+      },
+    }
   )
 );

@@ -10,6 +10,7 @@ import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
 import CrossOverlay from "@/features/skin/bindings/CrossOverlay";
 import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
+import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
@@ -42,6 +43,7 @@ export default function ChartView() {
           <BrickOverlay />
           <VolumeProfileOverlay />
           <KiyoungiOverlay />
+          <LineDrawOverlay />
         </div>
 
         {status === "loading" && (
