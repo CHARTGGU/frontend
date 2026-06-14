@@ -24,3 +24,55 @@ body {
 .thin-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* ── 지표 바인딩 PoC 후보 모션 ───────────────────────── */
+
+/* C1 만화 폭발 — pop-in scale + 흔들림 */
+@keyframes poc-pop {
+  0% { transform: scale(0.2); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes poc-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/* C2 네온 파동 — 링 확산 fade */
+@keyframes poc-ring {
+  0% { transform: scale(0.3); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes poc-glitch {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-1.5px, 1px); }
+  40% { transform: translate(1.5px, -1px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+}
+
+/* C3 도장 — 회전하며 쾅 찍힘 */
+@keyframes poc-stamp {
+  0% { transform: rotate(-18deg) scale(2.2); opacity: 0; }
+  55% { transform: rotate(-12deg) scale(0.92); opacity: 1; }
+  75% { transform: rotate(-12deg) scale(1.06); }
+  100% { transform: rotate(-12deg) scale(1); opacity: 1; }
+}
+
+/* C4 이모지 분수 — 솟구치며 fade */
+@keyframes poc-burst {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(var(--poc-rise, -60px)) scale(1.1); opacity: 0; }
+}
+
+/* 벽돌 등장 — 아래서 쌓이듯 */
+@keyframes poc-brick-rise {
+  0% { transform: translateY(8px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes poc-poc-glow {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(255,200,0,0.6)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255,200,0,1)); }
+}

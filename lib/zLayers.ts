@@ -12,6 +12,8 @@ export const Z_LAYER = {
   background: 0,
   /** 불타는 효과 위젯 — 배경 위, 차트 캔들 아래. */
   fire: 0,
+  /** 폭포수 효과 위젯 — 배경 위, 차트 캔들 아래. */
+  waterfall: 0,
   /** (참고) lightweight-charts 캔들/거래량 canvas — 라이브러리 내부 고정값. */
   chart: 3,
   /** 지표 스킨 오버레이 — 캔들 위. */
