@@ -69,8 +69,53 @@ function heartPath(size: number) {
 }
 
 const HEART_PATH = heartPath(7);
-/** 하트 1개당 라인 길이(px) — 이 간격마다 하트 1개씩 추가. */
-const HEART_SPACING = 70;
+
+// 라인을 따라 분포한 하트 반짝임 위치(t)와 라인 측면(side), 크기/박자/지속시간을 고정 시드로 정의.
+const HEART_SPARKLE_SEEDS = [
+  { t: 0.12, side: 1, offset: 9, size: 4, delay: 0, dur: 1.8 },
+  { t: 0.32, side: -1, offset: 8, size: 3, delay: 0.6, dur: 2.1 },
+  { t: 0.52, side: 1, offset: 10, size: 3.5, delay: 1.2, dur: 1.6 },
+  { t: 0.72, side: -1, offset: 8, size: 3, delay: 0.4, dur: 2 },
+  { t: 0.9, side: 1, offset: 9, size: 4, delay: 0.9, dur: 1.9 },
+];
+
+/** 라인 주위에서 점멸하는 작은 하트 반짝임. */
+function HeartSparkle({
+  cx,
+  cy,
+  size,
+  glowId,
+  delay,
+  dur,
+}: {
+  cx: number;
+  cy: number;
+  size: number;
+  glowId: string;
+  delay: number;
+  dur: number;
+}) {
+  const scale = size / 7;
+
+  return (
+    <g
+      transform={`translate(${cx} ${cy}) scale(${scale})`}
+      filter={`url(#${glowId})`}
+      style={{ pointerEvents: "none" }}
+      opacity={0}
+    >
+      <path d={HEART_PATH} fill="#FF1493" />
+      <animate
+        attributeName="opacity"
+        values="0;1;0"
+        keyTimes="0;0.5;1"
+        dur={`${dur}s`}
+        begin={`${delay}s`}
+        repeatCount="indefinite"
+      />
+    </g>
+  );
+}
 
 function renderHeart(
   line: LineGeometryPoints,
@@ -78,32 +123,27 @@ function renderHeart(
   onPointerDown?: LinePointerHandler
 ) {
   const { x1, y1, x2, y2 } = line;
+  const { perpX, perpY } = computeLineGeometry(line);
   const glowId = `line-heart-glow-${line.id}`;
-  const length = Math.hypot(x2 - x1, y2 - y1);
-  const heartCount = Math.max(1, Math.min(6, Math.round(length / HEART_SPACING)));
-  const dur = 3.5;
 
   return (
     <>
       <defs>
         <filter id={glowId} x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="2" />
+          <feGaussianBlur stdDeviation="1.5" />
         </filter>
       </defs>
       <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FF1493" strokeWidth={2} strokeLinecap="round" />
-      {/* 시작점 → 끝점으로 슝~ 이동하는 하트들 (라인 길이에 비례한 개수, 균일 간격) */}
-      {Array.from({ length: heartCount }, (_, i) => (
-        <path key={i} d={HEART_PATH} fill="#FF1493" filter={`url(#${glowId})`}>
-          <animateMotion
-            path={`M${x1},${y1} L${x2},${y2}`}
-            dur={`${dur}s`}
-            begin={`${-(dur * i) / heartCount}s`}
-            repeatCount="indefinite"
-            keyPoints="0;1"
-            keyTimes="0;1"
-            calcMode="linear"
-          />
-        </path>
+      {HEART_SPARKLE_SEEDS.map((s, i) => (
+        <HeartSparkle
+          key={i}
+          cx={x1 + (x2 - x1) * s.t + perpX * s.offset * s.side}
+          cy={y1 + (y2 - y1) * s.t + perpY * s.offset * s.side}
+          size={s.size}
+          glowId={glowId}
+          delay={s.delay}
+          dur={s.dur}
+        />
       ))}
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
