@@ -14,6 +14,10 @@ interface SkinState {
   fitMode: FitMode;
   /** 뛰어다니는 고양이 위젯 활성화 여부. */
   catEnabled: boolean;
+  /** 불타는 효과 위젯 활성화 여부. */
+  fireEnabled: boolean;
+  /** 불 이펙트 영역 높이 (10~80, 화면 높이 %). */
+  fireHeight: number;
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -22,6 +26,8 @@ interface SkinState {
   setBackgroundOpacity: (opacity: number) => void;
   setFitMode: (mode: FitMode) => void;
   toggleCat: () => void;
+  toggleFire: () => void;
+  setFireHeight: (height: number) => void;
 }
 
 export const useSkinStore = create<SkinState>()(
@@ -32,6 +38,8 @@ export const useSkinStore = create<SkinState>()(
       backgroundOpacity: 0.5,
       fitMode: "cover",
       catEnabled: false,
+      fireEnabled: false,
+      fireHeight: 30,
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
@@ -40,6 +48,8 @@ export const useSkinStore = create<SkinState>()(
       setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
       setFitMode: (fitMode) => set({ fitMode }),
       toggleCat: () => set((s) => ({ catEnabled: !s.catEnabled })),
+      toggleFire: () => set((s) => ({ fireEnabled: !s.fireEnabled })),
+      setFireHeight: (fireHeight) => set({ fireHeight }),
     }),
     { name: "skin-settings" }
   )
