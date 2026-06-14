@@ -69,6 +69,8 @@ function heartPath(size: number) {
 }
 
 const HEART_PATH = heartPath(7);
+/** 라인 위를 이동하는 하트(점멸용보다 작게). */
+const MOVING_HEART_PATH = heartPath(4);
 
 // 라인을 따라 분포한 하트 반짝임 위치(t)와 라인 측면(side), 크기/박자/지속시간을 고정 시드로 정의.
 const HEART_SPARKLE_SEEDS = [
@@ -145,6 +147,17 @@ function renderHeart(
           dur={s.dur}
         />
       ))}
+      {/* 시작점 → 끝점으로 슝~ 이동하는 하트 (느리고 작게) */}
+      <path d={MOVING_HEART_PATH} fill="#FF1493" filter={`url(#${glowId})`}>
+        <animateMotion
+          path={`M${x1},${y1} L${x2},${y2}`}
+          dur="6s"
+          repeatCount="indefinite"
+          keyPoints="0;1"
+          keyTimes="0;1"
+          calcMode="linear"
+        />
+      </path>
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
