@@ -12,9 +12,9 @@ interface Props {
 }
 
 /**
- * 기영이의 빛의 검 팔. 앵커(어깨)는 kiyoungiBody 좌상단 기준 상대 오프셋으로 저장 →
- * 본체를 드래그해도 팔이 함께 따라옴. 클릭=선택(끝점 핸들 표시), 드래그=어깨(앵커) 이동(오프셋 조절),
- * 끝점 핸들=각도+길이 조절.
+ * 기영이의 빛의 검 팔. 앵커(어깨)는 kiyoungiBody 좌상단 기준 상대 오프셋으로 완전 고정 →
+ * 본체를 드래그하면 팔도 같이 따라오고, 앵커만 따로 옮길 수는 없음.
+ * 클릭=선택(끝점 핸들 표시), 끝점 핸들=각도+길이 조절.
  */
 export default function KiyoungiArm({ selected, onSelect }: Props) {
   const body = useSkinStore((s) => s.kiyoungiBody);
@@ -24,14 +24,6 @@ export default function KiyoungiArm({ selected, onSelect }: Props) {
 
   const anchorX = body.x + arm.offsetX;
   const anchorY = body.y + arm.offsetY;
-
-  const handleMovePointerDown = (e: React.PointerEvent) => {
-    onSelect();
-    const start = { ...arm };
-    startDrag(e, (dx, dy) => {
-      setArm({ offsetX: start.offsetX + dx, offsetY: start.offsetY + dy });
-    });
-  };
 
   const handleTipPointerDown = (e: React.PointerEvent) => {
     const start = { ...arm };
@@ -53,7 +45,7 @@ export default function KiyoungiArm({ selected, onSelect }: Props) {
 
   return (
     <div
-      onPointerDown={handleMovePointerDown}
+      onPointerDown={onSelect}
       style={{
         position: "absolute",
         left: anchorX,
@@ -63,7 +55,7 @@ export default function KiyoungiArm({ selected, onSelect }: Props) {
         transform: `rotate(${arm.angle + 45}deg)`,
         transformOrigin: "0% 100%",
         pointerEvents: "auto",
-        cursor: "move",
+        cursor: "pointer",
         outline: selected ? "2px dashed #f5d76e" : "none",
       }}
     >
