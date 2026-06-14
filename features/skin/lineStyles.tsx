@@ -69,6 +69,8 @@ function heartPath(size: number) {
 }
 
 const HEART_PATH = heartPath(7);
+/** 하트 1개당 라인 길이(px) — 이 간격마다 하트 1개씩 추가. */
+const HEART_SPACING = 70;
 
 function renderHeart(
   line: LineGeometryPoints,
@@ -77,6 +79,9 @@ function renderHeart(
 ) {
   const { x1, y1, x2, y2 } = line;
   const glowId = `line-heart-glow-${line.id}`;
+  const length = Math.hypot(x2 - x1, y2 - y1);
+  const heartCount = Math.max(1, Math.min(6, Math.round(length / HEART_SPACING)));
+  const dur = 3.5;
 
   return (
     <>
@@ -86,17 +91,20 @@ function renderHeart(
         </filter>
       </defs>
       <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FF1493" strokeWidth={2} strokeLinecap="round" />
-      {/* 시작점 → 끝점으로 슝~ 이동하는 하트 */}
-      <path d={HEART_PATH} fill="#FF1493" filter={`url(#${glowId})`}>
-        <animateMotion
-          path={`M${x1},${y1} L${x2},${y2}`}
-          dur="1.6s"
-          repeatCount="indefinite"
-          keyPoints="0;1"
-          keyTimes="0;1"
-          calcMode="linear"
-        />
-      </path>
+      {/* 시작점 → 끝점으로 슝~ 이동하는 하트들 (라인 길이에 비례한 개수, 균일 간격) */}
+      {Array.from({ length: heartCount }, (_, i) => (
+        <path key={i} d={HEART_PATH} fill="#FF1493" filter={`url(#${glowId})`}>
+          <animateMotion
+            path={`M${x1},${y1} L${x2},${y2}`}
+            dur={`${dur}s`}
+            begin={`${-(dur * i) / heartCount}s`}
+            repeatCount="indefinite"
+            keyPoints="0;1"
+            keyTimes="0;1"
+            calcMode="linear"
+          />
+        </path>
+      ))}
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );
