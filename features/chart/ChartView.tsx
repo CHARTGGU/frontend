@@ -6,6 +6,7 @@ import { useCaptureRef } from "@/features/export/captureContext";
 import BackgroundLayer from "@/features/skin/BackgroundLayer";
 import FireOverlay from "@/features/skin/FireOverlay";
 import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
+import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
@@ -34,6 +35,7 @@ export default function ChartView() {
           <ChartCanvas />
           <IndicatorOverlay />
           <VolumeProfileOverlay />
+          <KiyoungiOverlay />
         </div>
 
         {status === "loading" && (
