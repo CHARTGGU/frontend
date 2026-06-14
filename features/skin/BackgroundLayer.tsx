@@ -2,6 +2,7 @@
 
 import { useSkinStore } from "@/stores/skinStore";
 import { useCustomBgStore, isCustomBgId } from "@/stores/customBgStore";
+import { Z_LAYER } from "@/lib/zLayers";
 import { findBackgroundSkin } from "./presets";
 
 /**
@@ -39,5 +40,10 @@ export default function BackgroundLayer() {
           opacity,
         };
 
-  return <div className="pointer-events-none absolute inset-0" style={style} />;
+  return (
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ ...style, zIndex: Z_LAYER.background }}
+    />
+  );
 }

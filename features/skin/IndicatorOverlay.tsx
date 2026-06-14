@@ -5,6 +5,7 @@ import { useChartStore } from "@/stores/chartStore";
 import { useSkinStore } from "@/stores/skinStore";
 import { useChartOverlay } from "@/features/chart/useChartOverlay";
 import { useChartRefs } from "@/features/chart/ChartRefContext";
+import { Z_LAYER } from "@/lib/zLayers";
 import CharacterMarker from "./CharacterMarker";
 import { findIndicatorSkin } from "./presets";
 
@@ -41,7 +42,10 @@ export default function IndicatorOverlay() {
   const lowPos = toCoord(hl.low.time, hl.low.price);
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      style={{ zIndex: Z_LAYER.indicator }}
+    >
       {highPos && (
         <CharacterMarker
           x={highPos.x}

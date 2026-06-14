@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, type RefObject } from 'react'
+import { Z_LAYER } from '@/lib/zLayers'
 
 interface Props {
   hostRef: RefObject<HTMLDivElement | null>
@@ -226,7 +227,7 @@ export function CatOverlay({
     }
   }, [hostRef])
 
-  // zIndex 4: lightweight-charts 내부 canvas(z-index:3) 위에 그림
+  // lightweight-charts 내부 canvas(z-index:3) 위에 그림 (Z_LAYER.cat)
   return (
     <canvas
       ref={canvasRef}
@@ -234,7 +235,7 @@ export function CatOverlay({
         position: 'absolute',
         inset: 0,
         pointerEvents: 'none',
-        zIndex: 4,
+        zIndex: Z_LAYER.cat,
       }}
     />
   )

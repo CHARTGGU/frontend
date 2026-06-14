@@ -49,6 +49,12 @@
 
 ### 그 외
 - [x] 위젯: 뛰어다니는 고양이 (`CatOverlay`, canvas)
+- [x] 위젯: 불타는 효과 (`FireOverlay`) — Doom Fire 알고리즘
+  - 시뮬 격자를 컨테이너 크기에 맞춤(셀=`CELL_PX`) → 높이 변경 시 찌그러짐 없음
+  - `fireHeight`가 컨테이너 크기 대신 불꽃 감쇄율 제어 → 어떤 높이에서도 윗부분 클립 없이 투명 영역으로 페이드
+  - 저해상도 버퍼 → smoothing 업스케일 + 블러 + 강도별 alpha로 도트감 제거, 반투명(`FIRE_ALPHA`)으로 배경 비침
+  - 높이 슬라이더(`FireControls`, 10~80%)
+- [x] 레이어 z-index 단일화 (`lib/zLayers.ts`) — 배경/불/지표/고양이 앞뒤 한 곳 관리
 
 ---
 

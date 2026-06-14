@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSkinStore } from "@/stores/skinStore";
+import { Z_LAYER } from "@/lib/zLayers";
 
 /** Doom Fire 37색 팔레트 (검정 → 빨강 → 주황 → 노랑 → 흰색). */
 const FIRE_PALETTE: readonly [number, number, number][] = [
@@ -143,7 +144,7 @@ export default function FireOverlay() {
     <div
       ref={containerRef}
       className="pointer-events-none absolute inset-0 overflow-hidden"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: Z_LAYER.fire }}
     >
       <canvas ref={canvasRef} className="h-full w-full" />
     </div>
