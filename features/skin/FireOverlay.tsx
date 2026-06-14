@@ -51,22 +51,24 @@ export default function FireOverlay() {
     const image = ctx.createImageData(FIRE_WIDTH, FIRE_HEIGHT);
 
     // 한 칸 위 행의 같은(또는 좌우로 흔들린) 칸으로 강도를 감쇄 전파.
-    const spreadFire = (src: number) => {
+    // x, y를 명시적으로 받아 edge 칼럼 wraparound 방지.
+    const spreadFire = (x: number, y: number) => {
+      const src = y * FIRE_WIDTH + x;
       const pixel = pixels[src];
       if (pixel === 0) {
         pixels[src - FIRE_WIDTH] = 0;
         return;
       }
-      const decay = Math.floor(Math.random() * 3) & 3; // 0|1|2
-      const dst = src - decay + 1;
-      pixels[dst - FIRE_WIDTH] = pixel - (decay & 1); // 0 또는 1만큼 감쇄
+      const decay = Math.floor(Math.random() * 3); // 0|1|2
+      const dstX = Math.min(FIRE_WIDTH - 1, Math.max(0, x - decay + 1));
+      pixels[(y - 1) * FIRE_WIDTH + dstX] = pixel - (decay & 1); // 0 또는 1만큼 감쇄
     };
 
     let raf = 0;
     const tick = () => {
       for (let x = 0; x < FIRE_WIDTH; x++) {
         for (let y = 1; y < FIRE_HEIGHT; y++) {
-          spreadFire(y * FIRE_WIDTH + x);
+          spreadFire(x, y);
         }
       }
 
