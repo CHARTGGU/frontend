@@ -218,6 +218,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/waterfall-thumb.svg",
   },
   {
+    id: "wg-kiyoungi",
+    name: "기영이 위젯",
+    author: "ChartSkin",
+    description: "기영이 매매법을 적용 가능한 위젯",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/kiyoungi-thumb.png",
+  },
+  {
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",

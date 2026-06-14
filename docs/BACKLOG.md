@@ -55,6 +55,11 @@
   - 저해상도 버퍼 → smoothing 업스케일 + 블러 + 강도별 alpha로 도트감 제거, 반투명(`FIRE_ALPHA`)으로 배경 비침
   - 높이 슬라이더(`FireControls`, 10~80%)
 - [x] 레이어 z-index 단일화 (`lib/zLayers.ts`) — 배경/불/지표/고양이 앞뒤 한 곳 관리
+- [x] 위젯: 기영이 위젯 (`KiyoungiOverlay`) — 얼굴(본체)+빛의 검(팔), 최상단 인터랙티브 레이어
+  - 본체: 드래그 이동, 모서리 핸들 리사이즈(최소 60×60px)
+  - 팔: 본체 우하단 모서리 기준 상대 오프셋으로 앵커 — 본체 이동/리사이즈에 같이 따라움, 끝점 핸들로 각도(360° 자유)/길이(60~500px) 조정
+  - 공용 `lib/useDragHandle.ts` 훅으로 드래그/리사이즈/회전 패턴 통합
+  - PNG 내보내기 시 `data-export-ignore` 핸들 제외, localStorage persist
 
 ---
 
