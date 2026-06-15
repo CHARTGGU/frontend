@@ -11,6 +11,7 @@ import CrossOverlay from "@/features/skin/bindings/CrossOverlay";
 import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import StickerOverlay from "@/features/skin/StickerOverlay";
+import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
@@ -46,6 +47,7 @@ export default function ChartView() {
             <BrickOverlay />
             <VolumeProfileOverlay />
             <KiyoungiOverlay />
+            <LineDrawOverlay />
             <StickerOverlay />
           </PlotClip>
         </div>
