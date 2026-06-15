@@ -213,10 +213,12 @@ export default function ChartCanvas() {
   }, [candles, dataEpoch, setReady]);
 
   // fresh 로드(초기·심볼·기간 변경)에만 화면 맞춤. 페이징·실시간엔 뷰 유지.
+  // dataEpoch는 loadCandles에서만 증가(loadOlder/prepend는 불변) → 페이징 시 fitContent
+  // 미발동. candles.length를 dep에 넣으면 prepend마다 fitContent가 뷰를 리셋하므로 제외.
   useEffect(() => {
-    if (candles.length === 0) return;
+    if (useChartStore.getState().candles.length === 0) return;
     chartRef.current?.timeScale().fitContent();
-  }, [dataEpoch, candles.length]);
+  }, [dataEpoch]);
 
   // 실시간 진행 캔들 — series.update (전체 setData 없이 마지막 바만 갱신).
   useEffect(() => {
