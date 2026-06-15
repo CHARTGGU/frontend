@@ -24,4 +24,6 @@ export const Z_LAYER = {
   kiyoungi: 7,
   /** 커스텀 라인 그리기 위젯 — 최상단, 인터랙티브(그리기/드래그/스타일변경/삭제). */
   lineDrawing: 8,
+  /** 뉴스 마커 — 시간축 위 이벤트 아이콘 + 호버 툴팁. */
+  newsMarker: 9,
 } as const;

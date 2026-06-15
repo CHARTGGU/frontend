@@ -70,6 +70,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleWaterfall = useSkinStore((s) => s.toggleWaterfall);
   const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
   const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
+  const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
+  const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
 
   const customItems = useCustomBgStore((s) => s.items);
   const loadCustom = useCustomBgStore((s) => s.load);
@@ -166,7 +168,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                 waterfallEnabled) ||
               (category === "widget" &&
                 skin.id === "wg-kiyoungi" &&
-                kiyoungiEnabled);
+                kiyoungiEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-news-marker" &&
+                newsMarkersEnabled);
 
             return (
               <div key={skin.id}>
@@ -182,6 +187,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
                   onRemove={() => {
                     if (category === "background") removeBackground();
@@ -192,6 +198,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
                   onDelete={
                     skin.id.startsWith("custom-")

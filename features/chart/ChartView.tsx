@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useChartStore } from "@/stores/chartStore";
+import { useSkinStore } from "@/stores/skinStore";
 import { useCaptureRef } from "@/features/export/captureContext";
 import BackgroundLayer from "@/features/skin/BackgroundLayer";
 import FireOverlay from "@/features/skin/FireOverlay";
@@ -13,6 +14,7 @@ import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
+import NewsMarkerOverlay from "./NewsMarkerOverlay";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
 
 /**
@@ -23,6 +25,7 @@ export default function ChartView() {
   const status = useChartStore((s) => s.status);
   const error = useChartStore((s) => s.error);
   const loadCandles = useChartStore((s) => s.loadCandles);
+  const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
   const captureRef = useCaptureRef();
 
   // 최초 마운트 시 초기 데이터 로드 (BTCUSDT · 1d).
@@ -38,6 +41,7 @@ export default function ChartView() {
           <FireOverlay />
           <WaterfallOverlay />
           <ChartCanvas />
+          {newsMarkersEnabled && <NewsMarkerOverlay />}
           <IndicatorOverlay />
           <CrossOverlay />
           <BrickOverlay />

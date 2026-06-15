@@ -230,9 +230,9 @@ export const WIDGET_SKINS: BaseSkin[] = [
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",
-    description: "종목 뉴스를 차트 시간축에 표시. (준비중)",
+    description: "5% 급등락 날짜에 뉴스 이유를 시간축 아이콘으로 표시.",
     category: "widget",
-    status: "soon",
+    status: "available",
     thumbnail: "/skins/news-marker.svg",
   },
 ];
