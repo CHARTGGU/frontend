@@ -27,8 +27,11 @@ export default function ExportButton() {
         pixelRatio: 2, // 2x 해상도
         backgroundColor: "#131313",
         cacheBust: true,
-        // 기영이 위젯의 리사이즈/회전 핸들은 결과 이미지에서 제외.
-        filter: (n) => n.dataset.exportIgnore !== "true",
+        // 핸들·삭제버튼 등 data-export-ignore 요소는 결과 이미지에서 제외.
+        // html-to-image는 텍스트 노드 등 비-HTMLElement에도 filter를 호출하므로
+        // dataset 접근 전 타입 가드 필수 (없으면 TypeError로 캡처 전체 실패).
+        filter: (n) =>
+          !(n instanceof HTMLElement) || n.dataset.exportIgnore !== "true",
       });
       const link = document.createElement("a");
       link.download = `chartskin-${symbol}-${Date.now()}.png`;
