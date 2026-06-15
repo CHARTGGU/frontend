@@ -10,9 +10,11 @@ import IndicatorOverlay from "@/features/skin/IndicatorOverlay";
 import CrossOverlay from "@/features/skin/bindings/CrossOverlay";
 import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
+import StickerOverlay from "@/features/skin/StickerOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
+import PlotClip from "./PlotClip";
 
 /**
  * 차트 영역 합성: [배경 스킨] → [차트 캔들/거래량] → [지표 스킨 오버레이].
@@ -37,11 +39,15 @@ export default function ChartView() {
           <FireOverlay />
           <WaterfallOverlay />
           <ChartCanvas />
-          <IndicatorOverlay />
-          <CrossOverlay />
-          <BrickOverlay />
-          <VolumeProfileOverlay />
-          <KiyoungiOverlay />
+          {/* 캔들 위 오버레이는 PlotClip으로 축(Y·X) 거터를 비워 축이 최상단 유지. */}
+          <PlotClip>
+            <IndicatorOverlay />
+            <CrossOverlay />
+            <BrickOverlay />
+            <VolumeProfileOverlay />
+            <KiyoungiOverlay />
+            <StickerOverlay />
+          </PlotClip>
         </div>
 
         {status === "loading" && (
