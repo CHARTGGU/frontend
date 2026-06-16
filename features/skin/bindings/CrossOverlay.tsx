@@ -1,6 +1,7 @@
 "use client";
 
 import { Z_LAYER } from "@/lib/zLayers";
+import { isPastRightEdge } from "@/lib/plotGuard";
 import { useSkinStore } from "@/stores/skinStore";
 import { useBindingData, positionCrosses } from "./useBindingData";
 
@@ -19,10 +20,13 @@ const DEAD_EMOJI = ["📉", "💀", "🥶", "😭", "🩸"];
  */
 export default function CrossOverlay() {
   const crossStyle = useSkinStore((s) => s.crossStyle);
-  const { crosses, toCoord, ready } = useBindingData();
+  const { crosses, toCoord, width, ready } = useBindingData();
 
   if (!crossStyle || !ready) return null;
-  const items = positionCrosses(crosses, toCoord);
+  // 앵커 x가 가격축(Y축)·마켓플레이스에 근접한 크로스는 제외 (width=플롯 우경계).
+  const items = positionCrosses(crosses, toCoord).filter(
+    ({ x }) => !isPastRightEdge(width, x),
+  );
   if (items.length === 0) return null;
 
   return (

@@ -5,6 +5,7 @@ import type { Coordinate, UTCTimestamp } from "lightweight-charts";
 import { useSkinStore } from "@/stores/skinStore";
 import { useChartRefs } from "@/features/chart/ChartRefContext";
 import { useChartOverlay } from "@/features/chart/useChartOverlay";
+import { getPlotRight, isPastRightEdge } from "@/lib/plotGuard";
 import { Z_LAYER } from "@/lib/zLayers";
 import KiyoungiBody, { type KiyoungiBox } from "./KiyoungiBody";
 import KiyoungiArm from "./KiyoungiArm";
@@ -88,13 +89,17 @@ export default function KiyoungiOverlay() {
       ? toPx(body.time, body.price)
       : null;
 
+  // 우측 끝이 가격축(Y축)·마켓플레이스에 근접하면 숨김 (CLAUDE.md §5 가드).
+  const hiddenByEdge =
+    px !== null && isPastRightEdge(getPlotRight(chart), px.x + body.width);
+
   return (
     <div
       ref={containerRef}
       className="pointer-events-none absolute inset-0"
       style={{ zIndex: Z_LAYER.kiyoungi }}
     >
-      {px && (
+      {px && !hiddenByEdge && (
         <>
           <KiyoungiBody
             box={{ x: px.x, y: px.y, width: body.width, height: body.height }}

@@ -270,7 +270,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
 
               {isOpen && (
                 <div
-                  style={{ borderLeftColor: `${meta.accent}40` }}
+                  style={{ borderLeftColor: "rgba(255,255,255,0.55)" }}
                   className="border-l-[3px] pb-1"
                 >
                   {category === "background" && (
@@ -289,18 +289,43 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         const bm = INDICATOR_BINDING_META[binding];
 
                         return (
-                          <div key={binding}>
+                          <div key={binding} className="mt-1.5 first:mt-0.5">
                             <div
                               title={bm.hint}
-                              className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted"
+                              style={{ borderLeftColor: bm.accent }}
+                              className="flex items-center gap-1.5 border-l-2 px-2.5 pb-1 pt-2"
                             >
-                              <span>{bm.icon}</span>
-                              <span>{bm.label}</span>
-                              <span className="ml-auto">
+                              <span
+                                style={{
+                                  backgroundColor: `${bm.accent}26`,
+                                  color: bm.accent,
+                                }}
+                                className="flex h-5 w-5 items-center justify-center rounded text-[11px]"
+                              >
+                                {bm.icon}
+                              </span>
+                              <span
+                                style={{ color: bm.accent }}
+                                className="text-[10px] font-bold uppercase tracking-wide"
+                              >
+                                {bm.label}
+                              </span>
+                              <span
+                                style={{
+                                  backgroundColor: `${bm.accent}26`,
+                                  color: bm.accent,
+                                }}
+                                className="ml-auto rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums"
+                              >
                                 {groupSkins.length}
                               </span>
                             </div>
-                            {groupSkins.map(renderCard)}
+                            <div
+                              style={{ borderLeftColor: `${bm.accent}40` }}
+                              className="border-l-2"
+                            >
+                              {groupSkins.map(renderCard)}
+                            </div>
                           </div>
                         );
                       })
