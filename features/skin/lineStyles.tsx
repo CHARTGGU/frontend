@@ -10,6 +10,8 @@ export interface LineGeometryPoints {
   y1: number;
   x2: number;
   y2: number;
+  /** basic 스타일 전용 색상. */
+  color?: string;
 }
 
 export type LinePointerHandler = (e: React.PointerEvent<SVGElement>) => void;
@@ -51,11 +53,11 @@ function renderBasic(
   _isSelected: boolean,
   onPointerDown?: LinePointerHandler
 ) {
-  const { x1, y1, x2, y2 } = line;
+  const { x1, y1, x2, y2, color = "#E5E5E5" } = line;
 
   return (
     <>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#E5E5E5" strokeWidth={3} strokeLinecap="round" />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={3} strokeLinecap="round" />
       <HitStroke line={line} onPointerDown={onPointerDown} />
     </>
   );

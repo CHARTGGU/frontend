@@ -9,6 +9,8 @@ interface SkinCardProps {
   onRemove: () => void;
   /** 사용자 업로드 배경 등 삭제 가능한 카드에만 전달 → 🗑 버튼 노출. */
   onDelete?: () => void;
+  /** 부적 스티커 카드: 적용→추가, 삭제→전체 삭제 */
+  isSticker?: boolean;
 }
 
 /**
@@ -22,6 +24,7 @@ export default function SkinCard({
   onApply,
   onRemove,
   onDelete,
+  isSticker,
 }: SkinCardProps) {
   const soon = skin.status === "soon";
 
@@ -60,6 +63,13 @@ export default function SkinCard({
         <div className="mt-1.5 flex items-center gap-1.5">
           {soon ? (
             <span className="text-[11px] text-text-muted">준비중</span>
+          ) : isSticker ? (
+            <button
+              onClick={onApply}
+              className="rounded bg-accent px-2 py-0.5 text-[11px] text-white hover:bg-accent-hover"
+            >
+              추가
+            </button>
           ) : applied ? (
             <button
               onClick={onRemove}
@@ -78,11 +88,11 @@ export default function SkinCard({
           {onDelete && (
             <button
               onClick={onDelete}
-              title="삭제"
-              aria-label="삭제"
+              title={isSticker ? "전체 삭제" : "삭제"}
+              aria-label={isSticker ? "전체 삭제" : "삭제"}
               className="rounded border border-panel-border px-1.5 py-0.5 text-[11px] text-text-muted hover:bg-panel-border hover:text-text-primary"
             >
-              🗑
+              {isSticker ? "전체 삭제" : "🗑"}
             </button>
           )}
         </div>

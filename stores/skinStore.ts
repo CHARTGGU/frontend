@@ -26,10 +26,13 @@ export interface KiyoungiArmState {
 }
 
 export type LineStyleId = "basic" | "heart" | "rainbow";
+export type LineDrawMode = "idle" | "drawing";
 
 export interface CustomLine {
   id: string;
   styleId: LineStyleId;
+  /** basic 스타일 전용 색상. 없으면 기본색 사용. */
+  color?: string;
   /** 차트 좌표(시간/가격) 기준 — 줌/스크롤 시 priceToCoordinate/timeToCoordinate로 재배치. */
   time1: UTCTimestamp;
   price1: number;
@@ -70,6 +73,12 @@ interface SkinState {
   newsMarkersEnabled: boolean;
   /** 사용자가 그린 커스텀 라인 목록. */
   customLines: CustomLine[];
+  /** 기본선 스타일 색상. */
+  basicLineColor: string;
+  /** 라인 그리기 모드 (비persist). */
+  lineDrawMode: LineDrawMode;
+  /** 그릴 라인 스타일 (비persist). */
+  lineDrawPendingStyle: LineStyleId | null;
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -92,6 +101,10 @@ interface SkinState {
   addCustomLine: (line: CustomLine) => void;
   updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
   removeCustomLine: (id: string) => void;
+  clearCustomLines: () => void;
+  setBasicLineColor: (color: string) => void;
+  setLineDrawMode: (mode: LineDrawMode) => void;
+  setLineDrawPendingStyle: (styleId: LineStyleId | null) => void;
 }
 
 export const useSkinStore = create<SkinState>()(
@@ -113,6 +126,9 @@ export const useSkinStore = create<SkinState>()(
       kiyoungiBody: { time: null, price: null, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
       customLines: [],
+      basicLineColor: "#E5E5E5",
+      lineDrawMode: "idle",
+      lineDrawPendingStyle: null,
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
@@ -146,10 +162,15 @@ export const useSkinStore = create<SkinState>()(
         })),
       removeCustomLine: (id) =>
         set((s) => ({ customLines: s.customLines.filter((l) => l.id !== id) })),
+      clearCustomLines: () => set({ customLines: [] }),
+      setBasicLineColor: (basicLineColor) => set({ basicLineColor }),
+      setLineDrawMode: (lineDrawMode) => set({ lineDrawMode }),
+      setLineDrawPendingStyle: (lineDrawPendingStyle) => set({ lineDrawPendingStyle }),
     }),
     {
       name: "skin-settings",
       version: 3,
+      partialize: ({ lineDrawMode: _m, lineDrawPendingStyle: _p, ...rest }) => rest,
       // v0 → v2: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 옛 형식 제거.
       // v2 → v3: kiyoungiBody가 화면 px(x/y)에서 차트 앵커(time/price)로 변경됨 — 호환 불가, 미배치(null)로 초기화.
       migrate: (state, version) => {
