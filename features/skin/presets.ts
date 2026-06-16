@@ -253,6 +253,29 @@ export const WIDGET_SKINS: BaseSkin[] = [
   },
 ];
 
+/**
+ * 부적 스티커 — 차트 위에 여러 장 자유 배치(드래그·리사이즈·삭제).
+ * 위젯 카테고리에 표시. 적용은 stickerStore.addSticker(image)로 인스턴스 추가.
+ * id ↔ 이미지 매핑은 STICKER_IMAGE에서 처리.
+ */
+export const STICKER_SKINS: BaseSkin[] = [
+  {
+    id: "wg-bujeok-rich",
+    name: "부자 부적",
+    author: "ChartSkin",
+    description:
+      "수상한 기운을 불러오는 부자 부적. 붙이기를 누르면 차트에 부적이 추가돼요.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/bujeok-rich.jpeg",
+  },
+];
+
+/** 스티커 스킨 id ↔ 부착할 이미지 경로 매핑. */
+export const STICKER_IMAGE: Record<string, string> = {
+  "wg-bujeok-rich": "/skins/bujeok-rich.jpeg",
+};
+
 /** 세트 테마 — Phase 2. 카테고리 자리만(준비중). */
 export const SET_SKINS: BaseSkin[] = [
   {
@@ -278,7 +301,7 @@ export const SET_SKINS: BaseSkin[] = [
 export const SKINS_BY_CATEGORY: Record<SkinCategory, Skin[]> = {
   background: BACKGROUND_SKINS,
   indicator: [...INDICATOR_SKINS, ...BINDING_SKINS],
-  widget: WIDGET_SKINS,
+  widget: [...WIDGET_SKINS, ...STICKER_SKINS],
   set: SET_SKINS,
 };
 

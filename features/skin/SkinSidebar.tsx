@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSkinStore } from "@/stores/skinStore";
 import { useCustomBgStore } from "@/stores/customBgStore";
 import { useChartStore } from "@/stores/chartStore";
+import { useStickerStore } from "@/stores/stickerStore";
 import BackgroundControls from "./BackgroundControls";
 import CustomBgUpload from "./CustomBgUpload";
 import FireControls from "./FireControls";
@@ -16,6 +17,7 @@ import {
   INDICATOR_BINDING_META,
   INDICATOR_BINDING_ORDER,
   SKINS_BY_CATEGORY,
+  STICKER_IMAGE,
   type BackgroundSkin,
   type Skin,
   type SkinCategory,
@@ -75,6 +77,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
   const activeIndicators = useChartStore((s) => s.activeIndicators);
   const toggleIndicator = useChartStore((s) => s.toggleIndicator);
+
+  const stickerCount = useStickerStore((s) => s.stickers.length);
+  const addSticker = useStickerStore((s) => s.addSticker);
+  const clearStickers = useStickerStore((s) => s.clearStickers);
 
   const customItems = useCustomBgStore((s) => s.items);
   const loadCustom = useCustomBgStore((s) => s.load);
@@ -153,6 +159,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
             // 바인딩 연출 스킨(크로스/벽돌)은 skinStore 스타일 토글로 처리.
             const cross = CROSS_SKIN_STYLE[skin.id];
             const brick = BRICK_SKIN_STYLE[skin.id];
+            // 부적 스티커는 토글이 아니라 인스턴스 추가 → 항상 "적용"(붙이기) 버튼.
+            const stickerImg = STICKER_IMAGE[skin.id];
 
             const applied =
               (category === "background" && backgroundSkinId === skin.id) ||
@@ -188,6 +196,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
                     else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
+                    else if (stickerImg) addSticker(stickerImg);
                     else if (category === "indicator") applyIndicator(skin.id);
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
@@ -210,7 +219,9 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                   onDelete={
                     skin.id.startsWith("custom-")
                       ? () => handleDeleteCustom(skin.id)
-                      : undefined
+                      : stickerImg && stickerCount > 0
+                        ? () => clearStickers()
+                        : undefined
                   }
                 />
                 {skin.id === "wg-fire" && <FireControls />}
