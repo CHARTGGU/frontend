@@ -217,19 +217,48 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
           };
 
           return (
-            <section key={category}>
+            <section
+              key={category}
+              className="border-t border-panel-border first:border-t-0"
+            >
               <button
                 onClick={() => toggleSection(category)}
-                className="flex w-full items-center gap-1.5 bg-panel-alt px-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-wide text-text-primary hover:bg-panel-hover"
+                style={{ borderLeftColor: meta.accent }}
+                className={`flex w-full items-center gap-2 border-l-[3px] px-3 py-2.5 text-left transition-colors hover:bg-panel-hover ${
+                  isOpen ? "bg-panel-hover" : "bg-panel-alt"
+                }`}
               >
-                <span className="text-text-muted">{isOpen ? "▾" : "▸"}</span>
-                <span>{meta.icon}</span>
-                <span>{meta.label}</span>
-                <span className="ml-auto text-text-muted">{skins.length}</span>
+                <span className="text-[10px] text-text-muted">
+                  {isOpen ? "▾" : "▸"}
+                </span>
+                <span
+                  style={{
+                    backgroundColor: `${meta.accent}26`,
+                    color: meta.accent,
+                  }}
+                  className="flex h-6 w-6 items-center justify-center rounded-md text-sm"
+                >
+                  {meta.icon}
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wide text-text-primary">
+                  {meta.label}
+                </span>
+                <span
+                  style={{
+                    backgroundColor: `${meta.accent}26`,
+                    color: meta.accent,
+                  }}
+                  className="ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums"
+                >
+                  {skins.length}
+                </span>
               </button>
 
               {isOpen && (
-                <div>
+                <div
+                  style={{ borderLeftColor: `${meta.accent}40` }}
+                  className="border-l-[3px] pb-1"
+                >
                   {category === "background" && (
                     <>
                       <BackgroundControls />
