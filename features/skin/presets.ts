@@ -21,27 +21,32 @@ export type IndicatorBinding = "price-extreme" | "cross" | "volume-profile" | "i
 
 export const INDICATOR_BINDING_META: Record<
   IndicatorBinding,
-  { label: string; icon: string; hint: string }
+  { label: string; icon: string; hint: string; accent: string }
 > = {
+  // accent: 지표 스킨 안의 하위 그룹(바인딩)별 고유 색 — 아이콘 칩·라벨·좌측 바·배지에 사용해 구분.
   "price-extreme": {
     label: "고가·저가",
     icon: "📈",
     hint: "기간 최고·최저점에 연동",
+    accent: "#34c3a4",
   },
   cross: {
     label: "골든·데드크로스",
     icon: "✨",
     hint: "MA20 × MA60 교차에 연동",
+    accent: "#f5c14b",
   },
   "volume-profile": {
     label: "매물대",
     icon: "🧱",
     hint: "가격대별 거래량(거래량 프로파일)에 연동",
+    accent: "#e8794b",
   },
   ichimoku: {
     label: "일목균형표",
     icon: "☁️",
     hint: "전환선·기준선·선행스팬A/B·후행스팬 + 구름 채움",
+    accent: "#7c9fe0",
   },
 };
 
