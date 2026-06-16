@@ -14,11 +14,12 @@ import {
   type LogicalRange,
 } from "lightweight-charts";
 import { subscribeKline } from "@/lib/binance";
-import { bollinger, macd, rsi, sma } from "@/lib/indicators";
+import { bollinger, ichimoku, macd, rsi, sma } from "@/lib/indicators";
 import {
   BB_COLORS,
   BB_MULT,
   BB_PERIOD,
+  ICHIMOKU_COLORS,
   MA_COLORS,
   MACD_COLORS,
   MACD_FAST,
@@ -68,6 +69,15 @@ export default function ChartCanvas() {
     macd: ISeriesApi<"Line">;
     signal: ISeriesApi<"Line">;
     hist: ISeriesApi<"Histogram">;
+  } | null>(null);
+
+  // 일목균형표 5선 (price pane). 구름 채움은 IchimokuCloudOverlay 캔버스가 담당.
+  const ichimokuRef = useRef<{
+    tenkan: ISeriesApi<"Line">;
+    kijun: ISeriesApi<"Line">;
+    senkouA: ISeriesApi<"Line">;
+    senkouB: ISeriesApi<"Line">;
+    chikou: ISeriesApi<"Line">;
   } | null>(null);
 
   const { setRefs, setReady } = useChartRefs();
@@ -148,6 +158,7 @@ export default function ChartCanvas() {
       bbRef.current = null;
       rsiRef.current = null;
       macdRef.current = null;
+      ichimokuRef.current = null;
       setRefs({ chart: null, candleSeries: null });
       setReady(false);
     };
@@ -423,6 +434,60 @@ export default function ChartCanvas() {
     macdRef.current.hist.setData(result.histogram);
     macdRef.current.macd.setData(result.macd);
     macdRef.current.signal.setData(result.signal);
+  }, [candles, activeIndicators]);
+
+  // 일목균형표 5선 (price pane 오버레이) 동기화. 구름 채움은 IchimokuCloudOverlay 캔버스.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const on = activeIndicators.includes("ichimoku");
+    if (!on) {
+      if (ichimokuRef.current) {
+        chart.removeSeries(ichimokuRef.current.tenkan);
+        chart.removeSeries(ichimokuRef.current.kijun);
+        chart.removeSeries(ichimokuRef.current.senkouA);
+        chart.removeSeries(ichimokuRef.current.senkouB);
+        chart.removeSeries(ichimokuRef.current.chikou);
+        ichimokuRef.current = null;
+      }
+      return;
+    }
+
+    if (!ichimokuRef.current) {
+      const base = {
+        lineWidth: 1 as const,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      };
+      ichimokuRef.current = {
+        tenkan: chart.addSeries(LineSeries, { ...base, color: ICHIMOKU_COLORS.tenkan }),
+        kijun: chart.addSeries(LineSeries, { ...base, color: ICHIMOKU_COLORS.kijun }),
+        senkouA: chart.addSeries(LineSeries, {
+          ...base,
+          color: ICHIMOKU_COLORS.senkouA,
+          lineStyle: LineStyle.Dashed,
+        }),
+        senkouB: chart.addSeries(LineSeries, {
+          ...base,
+          color: ICHIMOKU_COLORS.senkouB,
+          lineStyle: LineStyle.Dashed,
+        }),
+        chikou: chart.addSeries(LineSeries, {
+          ...base,
+          color: ICHIMOKU_COLORS.chikou,
+          lineStyle: LineStyle.Dotted,
+        }),
+      };
+    }
+
+    const result = ichimoku(candles);
+    ichimokuRef.current.tenkan.setData(result.tenkan);
+    ichimokuRef.current.kijun.setData(result.kijun);
+    ichimokuRef.current.senkouA.setData(result.senkouA);
+    ichimokuRef.current.senkouB.setData(result.senkouB);
+    ichimokuRef.current.chikou.setData(result.chikou);
   }, [candles, activeIndicators]);
 
   const getYAtX = (x: number): number | null => {

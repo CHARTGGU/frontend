@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSkinStore } from "@/stores/skinStore";
 import { useCustomBgStore } from "@/stores/customBgStore";
+import { useChartStore } from "@/stores/chartStore";
 import { useStickerStore } from "@/stores/stickerStore";
 import BackgroundControls from "./BackgroundControls";
 import CustomBgUpload from "./CustomBgUpload";
@@ -72,6 +73,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleWaterfall = useSkinStore((s) => s.toggleWaterfall);
   const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
   const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
+  const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
+  const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
+  const activeIndicators = useChartStore((s) => s.activeIndicators);
+  const toggleIndicator = useChartStore((s) => s.toggleIndicator);
 
   const stickerCount = useStickerStore((s) => s.stickers.length);
   const addSticker = useStickerStore((s) => s.addSticker);
@@ -174,7 +179,12 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                 waterfallEnabled) ||
               (category === "widget" &&
                 skin.id === "wg-kiyoungi" &&
-                kiyoungiEnabled);
+                kiyoungiEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-news-marker" &&
+                newsMarkersEnabled) ||
+              (skin.id === "ind-ichimoku-cloud" &&
+                activeIndicators.includes("ichimoku"));
 
             return (
               <div key={skin.id}>
@@ -185,22 +195,26 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     if (category === "background") applyBackground(skin.id);
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
+                    else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
                     else if (stickerImg) addSticker(stickerImg);
                     else if (category === "indicator") applyIndicator(skin.id);
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
                   onRemove={() => {
                     if (category === "background") removeBackground();
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
+                    else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
                     else if (category === "indicator") removeIndicator();
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
                   onDelete={
                     skin.id.startsWith("custom-")

@@ -17,7 +17,7 @@ export const CATEGORY_META: Record<
  * 지표 스킨이 어느 지표에 바인딩되는지 구분.
  * 같은 카테고리(지표 스킨) 안에서도 연동 지표가 달라 서브그룹으로 표시.
  */
-export type IndicatorBinding = "price-extreme" | "cross" | "volume-profile";
+export type IndicatorBinding = "price-extreme" | "cross" | "volume-profile" | "ichimoku";
 
 export const INDICATOR_BINDING_META: Record<
   IndicatorBinding,
@@ -38,6 +38,11 @@ export const INDICATOR_BINDING_META: Record<
     icon: "🧱",
     hint: "가격대별 거래량(거래량 프로파일)에 연동",
   },
+  ichimoku: {
+    label: "일목균형표",
+    icon: "☁️",
+    hint: "전환선·기준선·선행스팬A/B·후행스팬 + 구름 채움",
+  },
 };
 
 /** 지표 스킨 서브그룹 표시 순서. */
@@ -45,6 +50,7 @@ export const INDICATOR_BINDING_ORDER: IndicatorBinding[] = [
   "price-extreme",
   "cross",
   "volume-profile",
+  "ichimoku",
 ];
 
 interface BaseSkin {
@@ -187,6 +193,16 @@ export const BINDING_SKINS: BaseSkin[] = [
     status: "available",
     thumbnail: "/skins/brick-gold.svg",
   },
+  {
+    id: "ind-ichimoku-cloud",
+    name: "일목균형표",
+    author: "ChartSkin",
+    description: "전환선·기준선·선행스팬A·B·후행스팬 5선 + 구름 채움. 돌파 시 ✈️ 연출.",
+    category: "indicator",
+    binding: "ichimoku",
+    status: "available",
+    thumbnail: "/skins/ichimoku-thumb.svg",
+  },
 ];
 
 /** 위젯 — Phase 2. 카테고리 자리만(준비중). */
@@ -231,9 +247,9 @@ export const WIDGET_SKINS: BaseSkin[] = [
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",
-    description: "종목 뉴스를 차트 시간축에 표시. (준비중)",
+    description: "5% 급등락 날짜에 뉴스 이유를 시간축 아이콘으로 표시.",
     category: "widget",
-    status: "soon",
+    status: "available",
     thumbnail: "/skins/news-marker.svg",
   },
 ];

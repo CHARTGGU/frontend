@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useChartStore } from "@/stores/chartStore";
+import { useSkinStore } from "@/stores/skinStore";
 import { useCaptureRef } from "@/features/export/captureContext";
 import BackgroundLayer from "@/features/skin/BackgroundLayer";
 import FireOverlay from "@/features/skin/FireOverlay";
@@ -14,6 +15,8 @@ import StickerOverlay from "@/features/skin/StickerOverlay";
 import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
+import IchimokuCloudOverlay from "./IchimokuCloudOverlay";
+import NewsMarkerOverlay from "./NewsMarkerOverlay";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
 import PlotClip from "./PlotClip";
 
@@ -25,6 +28,7 @@ export default function ChartView() {
   const status = useChartStore((s) => s.status);
   const error = useChartStore((s) => s.error);
   const loadCandles = useChartStore((s) => s.loadCandles);
+  const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
   const captureRef = useCaptureRef();
 
   // 최초 마운트 시 초기 데이터 로드 (BTCUSDT · 1d).
@@ -44,6 +48,8 @@ export default function ChartView() {
             <VolumeProfileOverlay />
           </PlotClip>
           <ChartCanvas />
+          <IchimokuCloudOverlay />
+          {newsMarkersEnabled && <NewsMarkerOverlay />}
           {/* 캔들 위 오버레이는 PlotClip으로 축(Y·X) 거터를 비워 축이 최상단 유지. */}
           <PlotClip>
             <IndicatorOverlay />
