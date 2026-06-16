@@ -341,3 +341,82 @@ export function detectPocInRange(
   }
   return { buckets, pocIndex };
 }
+
+// ── 일목균형표 ────────────────────────────────────────────
+
+/**
+ * [period] 기간의 고가·저가 중간값 ((high + low) / 2).
+ * idx < period - 1 이면 데이터 부족 → null.
+ */
+function periodMid(candles: Candle[], period: number, idx: number): number | null {
+  if (idx < period - 1) return null;
+  let hi = candles[idx - period + 1].high;
+  let lo = candles[idx - period + 1].low;
+  for (let j = idx - period + 2; j <= idx; j++) {
+    if (candles[j].high > hi) hi = candles[j].high;
+    if (candles[j].low < lo) lo = candles[j].low;
+  }
+  return (hi + lo) / 2;
+}
+
+export interface IchimokuResult {
+  /** 전환선 (9기간 중간값). */
+  tenkan: LineData[];
+  /** 기준선 (26기간 중간값). */
+  kijun: LineData[];
+  /** 선행스팬 A — (전환+기준)/2 를 +displacement 캔들 앞에 표시. */
+  senkouA: LineData[];
+  /** 선행스팬 B — 52기간 중간값을 +displacement 캔들 앞에 표시. 구름 경계. */
+  senkouB: LineData[];
+  /** 후행스팬 — 현재 종가를 -displacement 캔들 뒤에 표시. */
+  chikou: LineData[];
+}
+
+/**
+ * 일목균형표 5선 계산.
+ * - 선행스팬 A/B: 캔들 배열의 미래 인덱스(candles[i+displacement]) 타임스탬프 사용.
+ * - 후행스팬: 과거 인덱스(candles[i-displacement]) 타임스탬프 사용.
+ * candles는 시간순 정렬 가정. 반환 배열은 모두 시간순.
+ */
+export function ichimoku(
+  candles: Candle[],
+  tenkanPeriod = 9,
+  kijunPeriod = 26,
+  senkouBPeriod = 52,
+  displacement = 26,
+): IchimokuResult {
+  const n = candles.length;
+  const tenkan: LineData[] = [];
+  const kijun: LineData[] = [];
+  const senkouA: LineData[] = [];
+  const senkouB: LineData[] = [];
+  const chikou: LineData[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const t = periodMid(candles, tenkanPeriod, i);
+    const k = periodMid(candles, kijunPeriod, i);
+
+    if (t !== null) tenkan.push({ time: candles[i].time, value: t });
+    if (k !== null) kijun.push({ time: candles[i].time, value: k });
+
+    // 선행스팬: +displacement 위치 타임스탬프에 그림 (미래 캔들이 있을 때만).
+    const fwd = i + displacement;
+    if (fwd < n) {
+      if (t !== null && k !== null) {
+        senkouA.push({ time: candles[fwd].time, value: (t + k) / 2 });
+      }
+      const sb = periodMid(candles, senkouBPeriod, i);
+      if (sb !== null) {
+        senkouB.push({ time: candles[fwd].time, value: sb });
+      }
+    }
+
+    // 후행스팬: -displacement 위치 타임스탬프에 현재 종가를 그림.
+    const bwd = i - displacement;
+    if (bwd >= 0) {
+      chikou.push({ time: candles[bwd].time, value: candles[i].close });
+    }
+  }
+
+  return { tenkan, kijun, senkouA, senkouB, chikou };
+}

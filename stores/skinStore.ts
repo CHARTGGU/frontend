@@ -64,6 +64,8 @@ interface SkinState {
   kiyoungiBody: KiyoungiBodyRect;
   /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
   kiyoungiArm: KiyoungiArmState;
+  /** 뉴스 마커 위젯 활성화 여부. */
+  newsMarkersEnabled: boolean;
   /** 사용자가 그린 커스텀 라인 목록. */
   customLines: CustomLine[];
 
@@ -84,6 +86,7 @@ interface SkinState {
   toggleKiyoungi: () => void;
   setKiyoungiBody: (patch: Partial<KiyoungiBodyRect>) => void;
   setKiyoungiArm: (patch: Partial<KiyoungiArmState>) => void;
+  toggleNewsMarkers: () => void;
   addCustomLine: (line: CustomLine) => void;
   updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
   removeCustomLine: (id: string) => void;
@@ -104,6 +107,7 @@ export const useSkinStore = create<SkinState>()(
       waterfallEnabled: false,
       waterfallHeight: 50,
       kiyoungiEnabled: false,
+      newsMarkersEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
       customLines: [],
@@ -125,6 +129,7 @@ export const useSkinStore = create<SkinState>()(
         set((s) => ({ waterfallEnabled: !s.waterfallEnabled })),
       setWaterfallHeight: (waterfallHeight) => set({ waterfallHeight }),
       toggleKiyoungi: () => set((s) => ({ kiyoungiEnabled: !s.kiyoungiEnabled })),
+      toggleNewsMarkers: () => set((s) => ({ newsMarkersEnabled: !s.newsMarkersEnabled })),
       setKiyoungiBody: (patch) =>
         set((s) => ({ kiyoungiBody: { ...s.kiyoungiBody, ...patch } })),
       setKiyoungiArm: (patch) =>
