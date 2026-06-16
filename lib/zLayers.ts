@@ -26,4 +26,9 @@ export const Z_LAYER = {
   lineDrawing: 8,
   /** 뉴스 마커 — 시간축 위 이벤트 아이콘 + 호버 툴팁. */
   newsMarker: 9,
+  /**
+   * 일목균형표 구름 캔버스 (선행스팬 A·B 채움).
+   * 캔들(차트 내부 z:3) 위에 반투명 오버레이로 표시.
+   */
+  ichimokuCloud: 4,
 } as const;

@@ -14,6 +14,7 @@ import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
+import IchimokuCloudOverlay from "./IchimokuCloudOverlay";
 import NewsMarkerOverlay from "./NewsMarkerOverlay";
 import VolumeProfileOverlay from "./VolumeProfileOverlay";
 
@@ -41,6 +42,7 @@ export default function ChartView() {
           <FireOverlay />
           <WaterfallOverlay />
           <ChartCanvas />
+          <IchimokuCloudOverlay />
           {newsMarkersEnabled && <NewsMarkerOverlay />}
           <IndicatorOverlay />
           <CrossOverlay />

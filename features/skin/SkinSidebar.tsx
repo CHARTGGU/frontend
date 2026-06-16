@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSkinStore } from "@/stores/skinStore";
 import { useCustomBgStore } from "@/stores/customBgStore";
+import { useChartStore } from "@/stores/chartStore";
 import BackgroundControls from "./BackgroundControls";
 import CustomBgUpload from "./CustomBgUpload";
 import FireControls from "./FireControls";
@@ -72,6 +73,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
   const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
   const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
+  const activeIndicators = useChartStore((s) => s.activeIndicators);
+  const toggleIndicator = useChartStore((s) => s.toggleIndicator);
 
   const customItems = useCustomBgStore((s) => s.items);
   const loadCustom = useCustomBgStore((s) => s.load);
@@ -171,7 +174,9 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                 kiyoungiEnabled) ||
               (category === "widget" &&
                 skin.id === "wg-news-marker" &&
-                newsMarkersEnabled);
+                newsMarkersEnabled) ||
+              (skin.id === "ind-ichimoku-cloud" &&
+                activeIndicators.includes("ichimoku"));
 
             return (
               <div key={skin.id}>
@@ -182,6 +187,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     if (category === "background") applyBackground(skin.id);
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
+                    else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
                     else if (category === "indicator") applyIndicator(skin.id);
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
@@ -193,6 +199,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     if (category === "background") removeBackground();
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
+                    else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
                     else if (category === "indicator") removeIndicator();
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();

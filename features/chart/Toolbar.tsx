@@ -15,7 +15,7 @@ import { useChartStore } from "@/stores/chartStore";
 import ExportButton from "@/features/export/ExportButton";
 
 /** 토글 가능한 보조지표 목록. */
-const INDICATOR_IDS: IndicatorId[] = ["bb", "rsi", "macd", "volProfile"];
+const INDICATOR_IDS: IndicatorId[] = ["bb", "rsi", "macd", "volProfile", "ichimoku"];
 
 export default function Toolbar() {
   const symbol = useChartStore((s) => s.symbol);

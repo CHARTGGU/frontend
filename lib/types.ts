@@ -58,13 +58,14 @@ export const MA_COLORS: Record<MaPeriod, string> = {
 export type LoadStatus = "idle" | "loading" | "ready" | "error";
 
 /** 보조지표 ID. */
-export type IndicatorId = "bb" | "rsi" | "macd" | "volProfile";
+export type IndicatorId = "bb" | "rsi" | "macd" | "volProfile" | "ichimoku";
 
 export const INDICATOR_LABELS: Record<IndicatorId, string> = {
   bb: "볼린저밴드",
   rsi: "RSI",
   macd: "MACD",
   volProfile: "매물대",
+  ichimoku: "일목균형표",
 };
 
 /** Toolbar 체크박스 대표색. */
@@ -73,7 +74,26 @@ export const INDICATOR_DOT: Record<IndicatorId, string> = {
   rsi: "#cc5de8",
   macd: "#20c997",
   volProfile: "#ffa94d",
+  ichimoku: "#ff9f43",
 };
+
+/** 일목균형표 색상. */
+export const ICHIMOKU_COLORS = {
+  /** 전환선 (9) — 빨강 계열. */
+  tenkan: "#ef5350",
+  /** 기준선 (26) — 파랑. */
+  kijun: "#2962ff",
+  /** 선행스팬 A 경계선 — 청록. */
+  senkouA: "#26a69a",
+  /** 선행스팬 B 경계선 — 오렌지. */
+  senkouB: "#ff9f43",
+  /** 후행스팬 — 보라. */
+  chikou: "#9c27b0",
+  /** 구름 채우기 — A > B (상승 구름). */
+  cloudUp: "rgba(38,166,154,0.18)",
+  /** 구름 채우기 — B > A (하락 구름). */
+  cloudDown: "rgba(239,83,80,0.18)",
+} as const;
 
 /** 고정 표준 파라미터. */
 export const RSI_PERIOD = 14;
