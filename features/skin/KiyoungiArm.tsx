@@ -2,22 +2,24 @@
 
 import { useSkinStore } from "@/stores/skinStore";
 import { useDragHandle } from "@/lib/useDragHandle";
+import type { KiyoungiBox } from "./KiyoungiBody";
 
 const MIN_LENGTH = 60;
 const MAX_LENGTH = 500;
 
 interface Props {
+  /** 본체의 현재 화면 px box(좌상단+크기). 상위가 차트 앵커에서 계산해 내려줌. */
+  body: KiyoungiBox;
   selected: boolean;
   onSelect: () => void;
 }
 
 /**
- * 기영이의 빛의 검 팔. 앵커(어깨)는 kiyoungiBody 우하단 모서리 기준 상대 오프셋으로 완전 고정 →
+ * 기영이의 빛의 검 팔. 앵커(어깨)는 본체(body) 우하단 모서리 기준 상대 오프셋으로 완전 고정 →
  * 본체를 드래그하거나 리사이즈하면 팔도 같이 따라오고, 앵커만 따로 옮길 수는 없음.
  * 클릭=선택(끝점 핸들 표시), 끝점 핸들=각도+길이 조절.
  */
-export default function KiyoungiArm({ selected, onSelect }: Props) {
-  const body = useSkinStore((s) => s.kiyoungiBody);
+export default function KiyoungiArm({ body, selected, onSelect }: Props) {
   const arm = useSkinStore((s) => s.kiyoungiArm);
   const setArm = useSkinStore((s) => s.setKiyoungiArm);
   const startDrag = useDragHandle();

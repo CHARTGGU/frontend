@@ -43,6 +43,10 @@ export default function ChartView() {
           <BackgroundLayer />
           <FireOverlay />
           <WaterfallOverlay />
+          {/* 매물대는 차트보다 먼저 그려 캔들 뒤로 깔리게 함(투명 차트 배경으로 비침). */}
+          <PlotClip>
+            <VolumeProfileOverlay />
+          </PlotClip>
           <ChartCanvas />
           <IchimokuCloudOverlay />
           {newsMarkersEnabled && <NewsMarkerOverlay />}
@@ -51,7 +55,6 @@ export default function ChartView() {
             <IndicatorOverlay />
             <CrossOverlay />
             <BrickOverlay />
-            <VolumeProfileOverlay />
             <KiyoungiOverlay />
             <LineDrawOverlay />
             <StickerOverlay />

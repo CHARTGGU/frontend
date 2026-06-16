@@ -10,8 +10,10 @@ export type CrossStyle = "neon" | "burst" | "muhan";
 export type BrickStyle = "pixel" | "gold";
 
 export interface KiyoungiBodyRect {
-  x: number;
-  y: number;
+  /** 차트 시간축 앵커(UTCTimestamp 초). null=미배치 → 오버레이가 중앙에 배치. 부적 스티커와 동일하게 스크롤·줌 시 차트와 함께 이동. */
+  time: number | null;
+  /** 차트 가격축 앵커. */
+  price: number | null;
   width: number;
   height: number;
 }
@@ -60,7 +62,7 @@ interface SkinState {
   waterfallHeight: number;
   /** 기영이 위젯 활성화 여부. */
   kiyoungiEnabled: boolean;
-  /** 기영이 본체(얼굴) 위치/크기 (컨테이너 기준 px). */
+  /** 기영이 본체(얼굴). 위치는 차트 좌표(time/price) 앵커, 크기(width/height)는 px 고정. */
   kiyoungiBody: KiyoungiBodyRect;
   /** 빛의 검 팔. offsetX,offsetY=어깨(앵커) 위치 — kiyoungiBody 우하단 모서리 기준 상대 오프셋(px). length=검 길이(px), angle=방향(deg, 0=→, -90=↑). */
   kiyoungiArm: KiyoungiArmState;
@@ -108,7 +110,7 @@ export const useSkinStore = create<SkinState>()(
       waterfallHeight: 50,
       kiyoungiEnabled: false,
       newsMarkersEnabled: false,
-      kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
+      kiyoungiBody: { time: null, price: null, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
       customLines: [],
 
@@ -147,20 +149,34 @@ export const useSkinStore = create<SkinState>()(
     }),
     {
       name: "skin-settings",
-      version: 2,
+      version: 3,
       // v0 → v2: customLines가 px 좌표(x1..y2)에서 차트 좌표(time1/price1/time2/price2)로 변경됨 — 호환 불가, 옛 형식 제거.
+      // v2 → v3: kiyoungiBody가 화면 px(x/y)에서 차트 앵커(time/price)로 변경됨 — 호환 불가, 미배치(null)로 초기화.
       migrate: (state, version) => {
-        if (version < 2 && state && typeof state === "object" && "customLines" in state) {
-          const lines = (state as { customLines: unknown }).customLines;
+        let next = state;
+        if (version < 2 && next && typeof next === "object" && "customLines" in next) {
+          const lines = (next as { customLines: unknown }).customLines;
           const valid = Array.isArray(lines)
             ? lines.filter(
                 (l): l is CustomLine =>
                   typeof l === "object" && l !== null && typeof (l as CustomLine).time1 === "number"
               )
             : [];
-          return { ...state, customLines: valid };
+          next = { ...(next as object), customLines: valid };
         }
-        return state;
+        if (version < 3 && next && typeof next === "object" && "kiyoungiBody" in next) {
+          const prev = (next as { kiyoungiBody: Partial<KiyoungiBodyRect> }).kiyoungiBody;
+          next = {
+            ...(next as object),
+            kiyoungiBody: {
+              time: null,
+              price: null,
+              width: prev?.width ?? 200,
+              height: prev?.height ?? 180,
+            },
+          };
+        }
+        return next;
       },
     }
   )

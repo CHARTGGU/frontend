@@ -4,12 +4,13 @@ export type SkinCategory = "background" | "indicator" | "widget" | "set";
 
 export const CATEGORY_META: Record<
   SkinCategory,
-  { label: string; icon: string }
+  { label: string; icon: string; accent: string }
 > = {
-  background: { label: "배경 스킨", icon: "🖼️" },
-  indicator: { label: "지표 스킨", icon: "📍" },
-  widget: { label: "위젯", icon: "🐾" },
-  set: { label: "세트 테마", icon: "🎨" },
+  // accent: 카테고리별 고유 색 — 헤더 좌측 바·아이콘 칩·카운트 배지에 사용해 구분.
+  background: { label: "배경 스킨", icon: "🖼️", accent: "#4aa3ff" },
+  indicator: { label: "지표 스킨", icon: "📍", accent: "#f5b945" },
+  widget: { label: "위젯", icon: "🐾", accent: "#e06ec5" },
+  set: { label: "세트 테마", icon: "🎨", accent: "#5fd38d" },
 };
 
 /**
