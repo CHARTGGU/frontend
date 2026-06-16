@@ -4,8 +4,9 @@
  * 모든 오버레이가 같은 컨테이너(`ChartView`)에 절대배치되므로 앞뒤는 z-index로 결정된다.
  * 값이 흩어지면 충돌·헷갈림 → 여기 한 곳에서 관리하고 각 컴포넌트는 이 상수를 import.
  *
- * 주의: 차트 캔들/거래량 canvas(z-index:3)는 lightweight-charts **내부** 기본값이라
- * 여기서 못 바꾼다. 다른 레이어를 캔들 앞/뒤로 두려면 3을 기준으로 값을 잡을 것.
+ * 주의: 차트 캔들/거래량 canvas는 lightweight-charts **내부** 기본값(v5 기준 z-index 1~2)이라
+ * 여기서 못 바꾼다. 이 canvas들은 부모가 stacking context를 만들지 않아 root에서 경쟁한다.
+ * → 캔들 "위"에 두려면 ≥3, 캔들 "뒤"에 두려면 0/auto(양수면 canvas와 tie/침범)로 잡을 것.
  */
 export const Z_LAYER = {
   /** 배경 스킨 — 맨 뒤. */
@@ -14,7 +15,13 @@ export const Z_LAYER = {
   fire: 0,
   /** 폭포수 효과 위젯 — 배경 위, 차트 캔들 아래. */
   waterfall: 0,
-  /** (참고) lightweight-charts 캔들/거래량 canvas — 라이브러리 내부 고정값. */
+  /**
+   * 매물대 벽돌 스킨 — 캔들 뒤로 깔아 캔들을 가리지 않음.
+   * canvas(z:1~2)보다 확실히 뒤에 두려면 0이어야 한다(양수면 canvas를 침범).
+   * 배경/불/폭포(z:0)보다는 DOM 순서상 뒤(=위)에 그려진다.
+   */
+  indicatorBehind: 0,
+  /** (참고) lightweight-charts 캔들/거래량 canvas — 라이브러리 내부값(v5: z 1~2). */
   chart: 3,
   /** 지표 스킨 오버레이 — 캔들 위. */
   indicator: 5,
