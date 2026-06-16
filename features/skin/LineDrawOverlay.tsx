@@ -10,10 +10,9 @@ import { useChartRefs } from "@/features/chart/ChartRefContext";
 import LineStylePicker from "./LineStylePicker";
 import { getLineStyle, type LineStyleId } from "./lineStyles";
 
-type Mode = "idle" | "picking" | "drawing";
-
 interface DraftLine {
   styleId: LineStyleId;
+  color?: string;
   x1: number;
   y1: number;
   x2: number;
@@ -41,13 +40,16 @@ export default function LineDrawOverlay() {
   const addCustomLine = useSkinStore((s) => s.addCustomLine);
   const updateCustomLine = useSkinStore((s) => s.updateCustomLine);
   const removeCustomLine = useSkinStore((s) => s.removeCustomLine);
+  const lineDrawMode = useSkinStore((s) => s.lineDrawMode);
+  const lineDrawPendingStyle = useSkinStore((s) => s.lineDrawPendingStyle);
+  const basicLineColor = useSkinStore((s) => s.basicLineColor);
+  const setLineDrawMode = useSkinStore((s) => s.setLineDrawMode);
+  const setLineDrawPendingStyle = useSkinStore((s) => s.setLineDrawPendingStyle);
   const startDrag = useDragHandle();
   const { toCoord, ready } = useChartOverlay();
   const { chart, candleSeries } = useChartRefs();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [mode, setMode] = useState<Mode>("idle");
-  const [pendingStyle, setPendingStyle] = useState<LineStyleId | null>(null);
   const [draft, setDraft] = useState<DraftLine | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -57,8 +59,6 @@ export default function LineDrawOverlay() {
       if (!container) return;
       if (!container.contains(e.target as Node)) {
         setSelectedId(null);
-        setMode("idle");
-        setPendingStyle(null);
       }
     };
     document.addEventListener("pointerdown", handlePointerDown);
@@ -75,13 +75,14 @@ export default function LineDrawOverlay() {
   };
 
   const handleSvgPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (mode !== "drawing" || !pendingStyle) return;
+    if (lineDrawMode !== "drawing" || !lineDrawPendingStyle) return;
     e.preventDefault();
 
     const rect = containerRef.current!.getBoundingClientRect();
     const x1 = e.clientX - rect.left;
     const y1 = e.clientY - rect.top;
-    setDraft({ styleId: pendingStyle, x1, y1, x2: x1, y2: y1 });
+    const color = lineDrawPendingStyle === "basic" ? basicLineColor : undefined;
+    setDraft({ styleId: lineDrawPendingStyle, color, x1, y1, x2: x1, y2: y1 });
 
     const handleMove = (ev: PointerEvent) => {
       setDraft((d) =>
@@ -100,7 +101,8 @@ export default function LineDrawOverlay() {
           const id = crypto.randomUUID();
           addCustomLine({
             id,
-            styleId: pendingStyle,
+            styleId: lineDrawPendingStyle,
+            color: lineDrawPendingStyle === "basic" ? basicLineColor : undefined,
             time1: p1.time,
             price1: p1.price,
             time2: p2.time,
@@ -110,8 +112,8 @@ export default function LineDrawOverlay() {
         }
       }
       setDraft(null);
-      setMode("idle");
-      setPendingStyle(null);
+      setLineDrawMode("idle");
+      setLineDrawPendingStyle(null);
     };
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", handleUp);
@@ -139,8 +141,8 @@ export default function LineDrawOverlay() {
       <svg
         className="absolute inset-0 h-full w-full"
         style={{
-          pointerEvents: mode === "drawing" ? "auto" : "none",
-          cursor: mode === "drawing" ? "crosshair" : "default",
+          pointerEvents: lineDrawMode === "drawing" ? "auto" : "none",
+          cursor: lineDrawMode === "drawing" ? "crosshair" : "default",
         }}
         onPointerDown={handleSvgPointerDown}
       >
@@ -148,11 +150,11 @@ export default function LineDrawOverlay() {
           const style = getLineStyle(line.styleId);
           return (
             <g key={line.id} style={{ pointerEvents: "auto" }}>
-              {style.render({ id: line.id, x1, y1, x2, y2 }, line.id === selectedId, (e) => {
+              {style.render({ id: line.id, x1, y1, x2, y2, color: line.color }, line.id === selectedId, (e) => {
                 e.stopPropagation();
                 setSelectedId(line.id);
-                setMode("idle");
-                setPendingStyle(null);
+                setLineDrawMode("idle");
+                setLineDrawPendingStyle(null);
               })}
             </g>
           );
@@ -160,40 +162,12 @@ export default function LineDrawOverlay() {
         {draft && (
           <g style={{ pointerEvents: "none", opacity: 0.7 }}>
             {getLineStyle(draft.styleId).render(
-              { id: "draft", x1: draft.x1, y1: draft.y1, x2: draft.x2, y2: draft.y2 },
+              { id: "draft", x1: draft.x1, y1: draft.y1, x2: draft.x2, y2: draft.y2, color: draft.color },
               false,
             )}
           </g>
         )}
       </svg>
-
-      <button
-        data-export-ignore="true"
-        onClick={() => {
-          setSelectedId(null);
-          setMode((m) => (m === "idle" ? "picking" : "idle"));
-          setPendingStyle(null);
-        }}
-        style={{ pointerEvents: "auto", position: "absolute", left: 8, top: 8 }}
-        className="rounded bg-panel-alt p-1.5 text-sm shadow hover:bg-panel-hover"
-        title="라인 그리기"
-      >
-        ✏️
-      </button>
-
-      {mode === "picking" && (
-        <div
-          data-export-ignore="true"
-          style={{ pointerEvents: "auto", position: "absolute", left: 8, top: 44 }}
-        >
-          <LineStylePicker
-            onSelect={(styleId) => {
-              setPendingStyle(styleId);
-              setMode("drawing");
-            }}
-          />
-        </div>
-      )}
 
       {selected && (
         <LineEditControls
@@ -201,7 +175,6 @@ export default function LineDrawOverlay() {
           startDrag={startDrag}
           coordToTimePrice={coordToTimePrice}
           onUpdate={(patch) => updateCustomLine(selected.line.id, patch)}
-          onStyleChange={(styleId) => updateCustomLine(selected.line.id, { styleId })}
           onDelete={() => {
             removeCustomLine(selected.line.id);
             setSelectedId(null);
@@ -217,16 +190,16 @@ function LineEditControls({
   startDrag,
   coordToTimePrice,
   onUpdate,
-  onStyleChange,
   onDelete,
 }: {
   screen: ScreenLine;
   startDrag: ReturnType<typeof useDragHandle>;
   coordToTimePrice: (x: number, y: number) => { time: UTCTimestamp; price: number } | null;
   onUpdate: (patch: Partial<CustomLine>) => void;
-  onStyleChange: (styleId: LineStyleId) => void;
   onDelete: () => void;
 }) {
+  const [showStylePicker, setShowStylePicker] = useState(false);
+
   const handlePointPointerDown =
     (point: "start" | "end") => (e: React.PointerEvent) => {
       const origin =
@@ -241,6 +214,8 @@ function LineEditControls({
 
   const midX = (screen.x1 + screen.x2) / 2;
   const midY = (screen.y1 + screen.y2) / 2;
+  const isBasic = screen.line.styleId === "basic";
+  const lineColor = screen.line.color ?? "#E5E5E5";
 
   return (
     <>
@@ -267,27 +242,98 @@ function LineEditControls({
         />
       ))}
 
+      {/* 아이콘 버튼 바 */}
       <div
         data-export-ignore="true"
         style={{
           position: "absolute",
           left: midX,
-          top: midY - 48,
+          top: midY - 44,
+          transform: "translateX(-50%)",
           pointerEvents: "auto",
           display: "flex",
           alignItems: "center",
           gap: 4,
         }}
       >
-        <LineStylePicker onSelect={onStyleChange} />
+        {isBasic && (
+          <label
+            title="색상 변경"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-panel-border bg-panel-alt shadow hover:border-accent"
+          >
+            <span
+              style={{ background: lineColor }}
+              className="h-3.5 w-3.5 rounded-full border border-white/20"
+            />
+            <input
+              type="color"
+              value={lineColor}
+              onChange={(e) => onUpdate({ color: e.target.value })}
+              className="sr-only"
+            />
+          </label>
+        )}
+
         <button
-          onClick={onDelete}
-          className="rounded bg-down px-2 py-1 text-xs text-white hover:opacity-80"
-          title="삭제"
+          title="스타일 변경"
+          onClick={() => setShowStylePicker((p) => !p)}
+          className={`flex h-7 w-7 items-center justify-center rounded border shadow ${
+            showStylePicker
+              ? "border-accent bg-accent/20 text-accent"
+              : "border-panel-border bg-panel-alt text-text-muted hover:border-accent hover:text-text-primary"
+          }`}
         >
-          ×
+          <StyleIcon />
+        </button>
+
+        <button
+          title="삭제"
+          onClick={onDelete}
+          className="flex h-7 w-7 items-center justify-center rounded border border-panel-border bg-panel-alt text-text-muted shadow hover:border-down hover:text-down"
+        >
+          <TrashIcon />
         </button>
       </div>
+
+      {showStylePicker && (
+        <div
+          data-export-ignore="true"
+          style={{
+            position: "absolute",
+            left: midX,
+            top: midY - 88,
+            transform: "translateX(-50%)",
+            pointerEvents: "auto",
+          }}
+        >
+          <LineStylePicker
+            onSelect={(styleId) => {
+              onUpdate({ styleId });
+              setShowStylePicker(false);
+            }}
+          />
+        </div>
+      )}
     </>
+  );
+}
+
+function StyleIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    </svg>
   );
 }

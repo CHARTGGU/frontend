@@ -1,6 +1,6 @@
 import type { FitMode } from "@/stores/skinStore";
 
-export type SkinCategory = "background" | "indicator" | "widget" | "set";
+export type SkinCategory = "background" | "indicator" | "widget" | "set" | "drawing";
 
 export const CATEGORY_META: Record<
   SkinCategory,
@@ -11,6 +11,7 @@ export const CATEGORY_META: Record<
   indicator: { label: "지표 스킨", icon: "📍", accent: "#f5b945" },
   widget: { label: "위젯", icon: "🐾", accent: "#e06ec5" },
   set: { label: "세트 테마", icon: "🎨", accent: "#5fd38d" },
+  drawing: { label: "그리기", icon: "✏️", accent: "#a78bfa" },
 };
 
 /**
@@ -76,6 +77,8 @@ export interface BackgroundSkin extends BaseSkin {
   category: "background";
   image: string;
   defaultFit: FitMode;
+  /** 적용 시 기본 투명도. 없으면 현재 투명도 유지. */
+  defaultOpacity?: number;
 }
 
 export interface IndicatorSkin extends BaseSkin {
@@ -119,6 +122,29 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     status: "available",
     thumbnail: "/skins/bg-gazua.png",
     image: "/skins/bg-gazua.png",
+    defaultFit: "cover",
+  },
+  {
+    id: "bg-budda",
+    name: "부다",
+    author: "ChartSkin",
+    description: "부처님의 가호로 수익을 기원합니다.",
+    category: "background",
+    status: "available",
+    thumbnail: "/skins/bg-budda.jpeg",
+    image: "/skins/bg-budda.jpeg",
+    defaultFit: "cover",
+    defaultOpacity: 0.3,
+  },
+  {
+    id: "bg-karina",
+    name: "카리나",
+    author: "ChartSkin",
+    description: "카리나와 함께하는 트레이딩.",
+    category: "background",
+    status: "available",
+    thumbnail: "/skins/bg-karina.png",
+    image: "/skins/bg-karina.png",
     defaultFit: "cover",
   },
 ];
@@ -240,15 +266,6 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/waterfall-thumb.svg",
   },
   {
-    id: "wg-kiyoungi",
-    name: "기영이 위젯",
-    author: "ChartSkin",
-    description: "기영이 매매법을 적용 가능한 위젯",
-    category: "widget",
-    status: "available",
-    thumbnail: "/skins/kiyoungi-thumb.png",
-  },
-  {
     id: "wg-news-marker",
     name: "뉴스 마커",
     author: "ChartSkin",
@@ -271,9 +288,22 @@ export const STICKER_SKINS: BaseSkin[] = [
     author: "ChartSkin",
     description:
       "수상한 기운을 불러오는 부자 부적. 붙이기를 누르면 차트에 부적이 추가돼요.",
-    category: "widget",
+    category: "drawing",
     status: "available",
     thumbnail: "/skins/bujeok-rich.jpeg",
+  },
+];
+
+/** 그리기 전용 위젯 (기영이). 라인그리기·부적과 같은 섹션에 표시. */
+export const DRAWING_SKINS: BaseSkin[] = [
+  {
+    id: "wg-kiyoungi",
+    name: "기영이 위젯",
+    author: "ChartSkin",
+    description: "기영이 매매법을 적용 가능한 위젯",
+    category: "drawing",
+    status: "available",
+    thumbnail: "/skins/kiyoungi-thumb.png",
   },
 ];
 
@@ -307,8 +337,9 @@ export const SET_SKINS: BaseSkin[] = [
 export const SKINS_BY_CATEGORY: Record<SkinCategory, Skin[]> = {
   background: BACKGROUND_SKINS,
   indicator: [...INDICATOR_SKINS, ...BINDING_SKINS],
-  widget: [...WIDGET_SKINS, ...STICKER_SKINS],
+  widget: WIDGET_SKINS,
   set: SET_SKINS,
+  drawing: [...DRAWING_SKINS, ...STICKER_SKINS],
 };
 
 /** 바인딩 스킨 id ↔ skinStore 스타일 매핑 (SkinSidebar 토글용). */

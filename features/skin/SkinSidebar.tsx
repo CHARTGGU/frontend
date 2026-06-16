@@ -10,6 +10,7 @@ import CustomBgUpload from "./CustomBgUpload";
 import FireControls from "./FireControls";
 import WaterfallControls from "./WaterfallControls";
 import SkinCard from "./SkinCard";
+import LineStylePicker from "./LineStylePicker";
 import {
   BRICK_SKIN_STYLE,
   CATEGORY_META,
@@ -26,6 +27,7 @@ import {
 const CATEGORY_ORDER: SkinCategory[] = [
   "background",
   "indicator",
+  "drawing",
   "widget",
   "set",
 ];
@@ -64,6 +66,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const waterfallEnabled = useSkinStore((s) => s.waterfallEnabled);
   const applyBackground = useSkinStore((s) => s.applyBackground);
   const removeBackground = useSkinStore((s) => s.removeBackground);
+  const setBackgroundOpacity = useSkinStore((s) => s.setBackgroundOpacity);
   const applyIndicator = useSkinStore((s) => s.applyIndicator);
   const removeIndicator = useSkinStore((s) => s.removeIndicator);
   const setCrossStyle = useSkinStore((s) => s.setCrossStyle);
@@ -77,6 +80,11 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
   const activeIndicators = useChartStore((s) => s.activeIndicators);
   const toggleIndicator = useChartStore((s) => s.toggleIndicator);
+
+  const lineDrawMode = useSkinStore((s) => s.lineDrawMode);
+  const setLineDrawMode = useSkinStore((s) => s.setLineDrawMode);
+  const setLineDrawPendingStyle = useSkinStore((s) => s.setLineDrawPendingStyle);
+
 
   const stickerCount = useStickerStore((s) => s.stickers.length);
   const addSticker = useStickerStore((s) => s.addSticker);
@@ -177,9 +185,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
               (category === "widget" &&
                 skin.id === "wg-waterfall" &&
                 waterfallEnabled) ||
-              (category === "widget" &&
-                skin.id === "wg-kiyoungi" &&
-                kiyoungiEnabled) ||
+              (skin.id === "wg-kiyoungi" && kiyoungiEnabled) ||
               (category === "widget" &&
                 skin.id === "wg-news-marker" &&
                 newsMarkersEnabled) ||
@@ -192,7 +198,11 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                   skin={skin}
                   applied={applied}
                   onApply={() => {
-                    if (category === "background") applyBackground(skin.id);
+                    if (category === "background") {
+                      applyBackground(skin.id);
+                      const bg = skin as import("./presets").BackgroundSkin;
+                      if (bg.defaultOpacity !== undefined) setBackgroundOpacity(bg.defaultOpacity);
+                    }
                     else if (cross) setCrossStyle(cross);
                     else if (brick) setBrickStyle(brick);
                     else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
@@ -201,7 +211,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
-                    else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (skin.id === "wg-kiyoungi") toggleKiyoungi();
                     else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
                   onRemove={() => {
@@ -213,9 +223,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
-                    else if (category === "widget" && skin.id === "wg-kiyoungi") toggleKiyoungi();
+                    else if (skin.id === "wg-kiyoungi") toggleKiyoungi();
                     else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
                   }}
+                  isSticker={!!stickerImg}
                   onDelete={
                     skin.id.startsWith("custom-")
                       ? () => handleDeleteCustom(skin.id)
@@ -233,7 +244,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
           return (
             <section
               key={category}
-              className="border-t border-panel-border first:border-t-0"
+              className="border-t border-panel-border first:border-t-0 last-of-type:border-b-0"
             >
               <button
                 onClick={() => toggleSection(category)}
@@ -330,11 +341,47 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         );
                       })
                     : skins.map(renderCard)}
+
+                  {category === "drawing" && (
+                    <div className="mt-1 border-t border-panel-border px-3 pb-3 pt-2.5">
+                      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                        <span>✏️</span>
+                        <span>라인 그리기</span>
+                      </div>
+                      <p className="mb-2 text-[10px] text-text-muted">
+                        스타일 선택 후 차트 드래그
+                      </p>
+                      <LineStylePicker
+                        onSelect={(styleId) => {
+                          setLineDrawPendingStyle(styleId);
+                          setLineDrawMode("drawing");
+                        }}
+                      />
+
+                      {lineDrawMode === "drawing" && (
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-[10px] font-semibold text-accent">
+                            ✏️ 그리는 중… 차트 드래그
+                          </span>
+                          <button
+                            onClick={() => {
+                              setLineDrawMode("idle");
+                              setLineDrawPendingStyle(null);
+                            }}
+                            className="rounded bg-panel-hover px-2 py-0.5 text-[10px] text-text-muted hover:text-text-primary"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
           );
         })}
+
       </div>
 
       <footer className="border-t border-panel-border px-3 py-2 text-[10px] leading-tight text-text-muted">

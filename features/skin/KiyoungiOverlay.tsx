@@ -22,6 +22,7 @@ type Part = "body" | "arm" | null;
  */
 export default function KiyoungiOverlay() {
   const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
+  const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
   const body = useSkinStore((s) => s.kiyoungiBody);
   const setBody = useSkinStore((s) => s.setKiyoungiBody);
   const [selected, setSelected] = useState<Part>(null);
@@ -105,6 +106,7 @@ export default function KiyoungiOverlay() {
             box={{ x: px.x, y: px.y, width: body.width, height: body.height }}
             selected={selected === "body"}
             onSelect={() => setSelected("body")}
+            onRemove={toggleKiyoungi}
             onCommit={(next: KiyoungiBox) => {
               const anchor = toAnchor(next.x, next.y);
               setBody(
