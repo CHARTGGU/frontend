@@ -50,7 +50,9 @@ export default function ChartView() {
         <div
           ref={captureRef}
           className="absolute inset-0 transition-colors duration-300"
-          style={{ backgroundColor: theme.pageBg }}
+          // isolate: 차트 오버레이(일목 비행기 등)의 z-index를 이 컨테이너 안에 가둬
+          // 루트로 새어나가 마켓플레이스 사이드바를 침범하는 현상을 막는다.
+          style={{ backgroundColor: theme.pageBg, isolation: "isolate" }}
         >
           {/* 마켓플레이스 스킨·위젯 오버레이는 skinsVisible로 일괄 표시/숨김.
               숨겨도 각 스킨의 적용 상태/설정은 store에 보존되어 다시 켜면 그대로 복원된다.

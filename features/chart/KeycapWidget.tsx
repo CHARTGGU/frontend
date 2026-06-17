@@ -244,9 +244,10 @@ export default function KeycapWidget() {
               border: "none",
               cursor: "pointer",
               borderRadius: "12%",
-              background: pressed === id ? "rgba(0,0,0,0.18)" : "transparent",
+              // 눌러도 배경 박스를 깔지 않음 — 키캡 눌림 애니메이션(transform)만 유지.
+              background: "transparent",
               transform: pressed === id ? "translateY(3px) scale(0.97)" : "translateY(0) scale(1)",
-              transition: "transform 65ms ease-out, background 65ms ease-out",
+              transition: "transform 65ms ease-out",
             }}
             onPointerDown={handleKeyPointerDown(id)}
           />
