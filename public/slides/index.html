@@ -92,10 +92,12 @@
   /* 유용 */
   .useshot{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(20px,2.6vw,44px);align-items:center;margin-top:20px;flex:1;min-height:0}
   .uselist{display:flex;flex-direction:column;gap:14px}
-  .ubadge{font-size:clamp(15px,1.6vw,21px);font-weight:700;color:var(--ink);
+  .ubadge{color:var(--ink);
     background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;
-    box-shadow:0 10px 22px -16px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center}
-  .ubadge .e{font-size:24px}
+    box-shadow:0 10px 22px -16px rgba(0,0,0,.5);display:flex;gap:13px;align-items:flex-start}
+  .ubadge .e{font-size:26px;flex:0 0 auto;line-height:1.1}
+  .ubadge b{font-size:clamp(16px,1.55vw,20px);font-weight:800}
+  .ubadge p{font-size:clamp(13px,1.3vw,15.5px);color:var(--muted);line-height:1.45;margin-top:3px}
 
   /* 시장 숫자 */
   .nums{display:flex;justify-content:center;gap:clamp(22px,3.2vw,56px);margin-top:34px;flex-wrap:wrap}
@@ -210,16 +212,32 @@
       <div class="useshot">
         <div class="frame" style="transform:rotate(-1deg)"><img src="assets/shot-useful.jpg" alt="유용한 스킨"></div>
         <div class="uselist">
-          <div class="ubadge"><span class="e">✨</span><span>골든·데드크로스, 한눈에</span></div>
-          <div class="ubadge"><span class="e">🧱</span><span>매물대가 어디인지 바로</span></div>
-          <div class="ubadge"><span class="e">😸</span><span>최고점엔 신난 고양이</span></div>
+          <div class="ubadge"><span class="e">✨</span><div><b>골든·데드크로스</b><p>MA20·MA60이 교차하는 순간을 네온·이펙트로 강조 — 매수·매도 타이밍 놓치지 않게.</p></div></div>
+          <div class="ubadge"><span class="e">🧱</span><div><b>매물대 (거래량 프로파일)</b><p>가격대별 거래량을 벽돌로 쌓아, 지지·저항 구간이 한눈에.</p></div></div>
+          <div class="ubadge"><span class="e">😸</span><div><b>고점·저점 자동 표시</b><p>보이는 구간의 최고·최저점에 캐릭터가 딱 붙어요.</p></div></div>
         </div>
       </div>
     </div>
-    <div class="pageno">5 / 7</div>
+    <div class="pageno">5 / 8</div>
   </section>
 
-  <!-- 5. 차트도 스킨 시장 -->
+  <!-- 5. 투자자 심리 케어 -->
+  <section class="slide">
+    <div class="label">WHAT · 멘탈까지</div>
+    <div class="body">
+      <div style="flex:0 0 auto"><span class="big sm">차트 보다 <span style="color:var(--pink-deep)">멘탈</span> 나가잖아요.</span>
+        <div class="sub">그래서 투자자 심리 케어 스킨도 넣었어요. (진심 반, 농담 반)</div></div>
+      <div class="cards3">
+        <div class="bcard"><div style="font-size:34px;line-height:1">🧧</div><h4>부자 부적</h4><p>차트에 부적 붙이고 존버. 오늘도 수익 기원입니다.</p></div>
+        <div class="bcard"><div style="font-size:34px;line-height:1">🙏</div><h4>목탁·부처 배경</h4><p>물려도 마음의 평화. 부처님 가호로 버팁니다.</p></div>
+        <div class="bcard"><div style="font-size:34px;line-height:1">🥹</div><h4>가즈아 기도</h4><p>폭락장 앞에서 기도하는 그 짤, 배경으로.</p></div>
+      </div>
+      <div class="big sm" style="text-align:center;margin-top:24px">차트 꾸미기, 사실 <span class="acc">멘탈 관리</span>예요.</div>
+    </div>
+    <div class="pageno">6 / 8</div>
+  </section>
+
+  <!-- 6. 차트도 스킨 시장 -->
   <section class="slide">
     <div class="label">시장</div>
     <div class="body" style="justify-content:center;align-items:center">
@@ -232,7 +250,7 @@
       </div>
       <div class="big sm" style="margin-top:34px;text-align:center">차트라고, 안 될 거 있나요?</div>
     </div>
-    <div class="pageno">6 / 7</div>
+    <div class="pageno">7 / 8</div>
   </section>
 
   <!-- 6. 수익 모델 -->
@@ -248,6 +266,7 @@
       <div class="big sm" style="text-align:center;margin-top:26px">이미 되는 시장을, <span class="acc">차트로</span> 옮기는 거예요.</div>
       <span class="doodle" style="bottom:5%;right:6%;font-size:clamp(15px,1.5vw,20px);color:var(--pink-deep);background:var(--pink-soft);padding:5px 13px;border-radius:4px;transform:rotate(-2deg)">ㅇㅎ 이 덱도 AI가 다 만듦 🤖</span>
     </div>
+    <div class="pageno">8 / 8</div>
   </section>
 
 </div>
