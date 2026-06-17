@@ -275,6 +275,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/news-marker.svg",
   },
   {
+    id: "wg-keycap",
+    name: "키캡 키링",
+    author: "ChartSkin",
+    description: "상승↑·하락↓·상한가·₿ 4키 — 누르면 기계식 키보드 소리가 나요. 드래그로 위치 이동.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/keycap-thumb.svg",
+  },
+  {
     id: "wg-jigeumiani",
     name: "지금이니? 🤔",
     author: "ChartSkin",

@@ -73,6 +73,10 @@ interface SkinState {
   newsMarkersEnabled: boolean;
   /** "지금이니?" 말풍선 위젯 활성화 여부. */
   jigeumianiEnabled: boolean;
+  /** 키캡 키링 위젯 활성화 여부. */
+  keycapEnabled: boolean;
+  /** 키캡 위젯 위치 (차트 컨테이너 기준 px). */
+  keycapPos: { x: number; y: number };
   /** 사용자가 그린 커스텀 라인 목록. */
   customLines: CustomLine[];
   /** 기본선 스타일 색상. */
@@ -101,6 +105,8 @@ interface SkinState {
   setKiyoungiArm: (patch: Partial<KiyoungiArmState>) => void;
   toggleNewsMarkers: () => void;
   toggleJigeumiani: () => void;
+  toggleKeycap: () => void;
+  setKeycapPos: (pos: { x: number; y: number }) => void;
   addCustomLine: (line: CustomLine) => void;
   updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
   removeCustomLine: (id: string) => void;
@@ -127,6 +133,8 @@ export const useSkinStore = create<SkinState>()(
       kiyoungiEnabled: false,
       newsMarkersEnabled: false,
       jigeumianiEnabled: false,
+      keycapEnabled: false,
+      keycapPos: { x: 20, y: 60 },
       kiyoungiBody: { time: null, price: null, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
       customLines: [],
@@ -153,6 +161,8 @@ export const useSkinStore = create<SkinState>()(
       toggleKiyoungi: () => set((s) => ({ kiyoungiEnabled: !s.kiyoungiEnabled })),
       toggleNewsMarkers: () => set((s) => ({ newsMarkersEnabled: !s.newsMarkersEnabled })),
       toggleJigeumiani: () => set((s) => ({ jigeumianiEnabled: !s.jigeumianiEnabled })),
+      toggleKeycap: () => set((s) => ({ keycapEnabled: !s.keycapEnabled })),
+      setKeycapPos: (keycapPos) => set({ keycapPos }),
       setKiyoungiBody: (patch) =>
         set((s) => ({ kiyoungiBody: { ...s.kiyoungiBody, ...patch } })),
       setKiyoungiArm: (patch) =>

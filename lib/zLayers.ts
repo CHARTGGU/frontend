@@ -42,4 +42,6 @@ export const Z_LAYER = {
   jigeumiani: 9,
   /** 부적 스티커 — 최상단, 인터랙티브(드래그/리사이즈/삭제). */
   sticker: 10,
+  /** 키캡 키링 위젯 — 플로팅, 드래그 가능. */
+  keycap: 12,
 } as const;
