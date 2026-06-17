@@ -135,6 +135,10 @@ function detectBreakouts(
   const aMap = new Map(ichi.senkouA.map((d) => [d.time as number, d.value]));
   const bMap = new Map(ichi.senkouB.map((d) => [d.time as number, d.value]));
   const ts = chart.timeScale();
+  // 가시 플롯 너비 — 이 범위 밖(스크롤로 화면을 벗어난) 마커는 만들지 않는다.
+  // 안 그러면 x가 음수(좌측)나 너비 초과(우측)로 절대배치돼 가격축·마켓플레이스
+  // 사이드바 위로 튀어나간다(마커는 클리핑되지 않으므로).
+  const plotWidth = ts.width();
   const breakouts: Breakout[] = [];
 
   for (let i = 1; i < candles.length; i++) {
@@ -155,7 +159,7 @@ function detectBreakouts(
     const prevBot = Math.min(prevA, prevB);
 
     const x = ts.timeToCoordinate(curr.time);
-    if (x == null) continue;
+    if (x == null || x < 0 || x > plotWidth) continue;
 
     if (prev.close <= prevTop && curr.close > currTop) {
       // 상향 돌파 — 구름 위로 이탈.
