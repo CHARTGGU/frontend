@@ -44,6 +44,11 @@ export default function ChartView() {
           <BackgroundLayer />
           <FireOverlay />
           <WaterfallOverlay />
+          {/* 매물대(지표·벽돌 스킨)는 차트보다 먼저 그려 캔들 뒤로 깔리게 함(투명 차트 배경으로 비침). */}
+          <PlotClip>
+            <VolumeProfileOverlay />
+            <BrickOverlay />
+          </PlotClip>
           <ChartCanvas />
           <IchimokuCloudOverlay />
           {newsMarkersEnabled && <NewsMarkerOverlay />}
@@ -51,8 +56,6 @@ export default function ChartView() {
           <PlotClip>
             <IndicatorOverlay />
             <CrossOverlay />
-            <BrickOverlay />
-            <VolumeProfileOverlay />
             <KiyoungiOverlay />
             <JigeumianiOverlay />
             <LineDrawOverlay />

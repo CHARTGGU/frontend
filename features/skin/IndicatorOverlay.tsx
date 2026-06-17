@@ -5,6 +5,7 @@ import { useChartStore } from "@/stores/chartStore";
 import { useSkinStore } from "@/stores/skinStore";
 import { useChartOverlay } from "@/features/chart/useChartOverlay";
 import { useChartRefs } from "@/features/chart/ChartRefContext";
+import { getPlotRight, isPastRightEdge } from "@/lib/plotGuard";
 import { Z_LAYER } from "@/lib/zLayers";
 import CharacterMarker from "./CharacterMarker";
 import { findIndicatorSkin } from "./presets";
@@ -41,12 +42,17 @@ export default function IndicatorOverlay() {
   const highPos = toCoord(hl.high.time, hl.high.price);
   const lowPos = toCoord(hl.low.time, hl.low.price);
 
+  // 앵커 x가 가격축(Y축)·마켓플레이스에 근접하면 마커 숨김.
+  const plotRight = getPlotRight(chart);
+  const showHigh = !!highPos && !isPastRightEdge(plotRight, highPos.x);
+  const showLow = !!lowPos && !isPastRightEdge(plotRight, lowPos.x);
+
   return (
     <div
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ zIndex: Z_LAYER.indicator }}
     >
-      {highPos && (
+      {showHigh && highPos && (
         <CharacterMarker
           x={highPos.x}
           y={highPos.y}
@@ -55,7 +61,7 @@ export default function IndicatorOverlay() {
           anchor="top"
         />
       )}
-      {lowPos && (
+      {showLow && lowPos && (
         <CharacterMarker
           x={lowPos.x}
           y={lowPos.y}

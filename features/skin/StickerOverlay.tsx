@@ -5,6 +5,7 @@ import type { Coordinate, UTCTimestamp } from "lightweight-charts";
 import { useStickerStore } from "@/stores/stickerStore";
 import { useChartRefs } from "@/features/chart/ChartRefContext";
 import { useChartOverlay } from "@/features/chart/useChartOverlay";
+import { getPlotRight, isPastRightEdge } from "@/lib/plotGuard";
 import { Z_LAYER } from "@/lib/zLayers";
 import StickerItem from "./StickerItem";
 
@@ -93,6 +94,9 @@ export default function StickerOverlay() {
 
   if (stickers.length === 0) return null;
 
+  // 우측 끝이 가격축(Y축)·마켓플레이스에 근접한 스티커는 숨김.
+  const plotRight = getPlotRight(chart);
+
   // 축 거터 클리핑은 상위 PlotClip이 담당 → 여기선 플롯 전체(inset-0)에 배치.
   return (
     <div
@@ -104,6 +108,7 @@ export default function StickerOverlay() {
         if (sticker.time === null || sticker.price === null) return null;
         const px = toPx(sticker.time, sticker.price);
         if (!px) return null;
+        if (isPastRightEdge(plotRight, px.x + sticker.width)) return null;
         return (
           <StickerItem
             key={sticker.id}

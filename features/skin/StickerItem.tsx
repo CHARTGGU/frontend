@@ -5,8 +5,8 @@ import { useStickerStore, type Sticker } from "@/stores/stickerStore";
 
 const MIN_SIZE = 48;
 
-type Corner = "nw" | "ne" | "sw" | "se";
-const CORNERS: Corner[] = ["nw", "ne", "sw", "se"];
+type Corner = "nw" | "sw" | "se";
+const CORNERS: Corner[] = ["nw", "sw", "se"];
 
 export interface StickerBox {
   x: number;
@@ -64,15 +64,6 @@ export default function StickerItem({
           w = Math.max(MIN_SIZE, start.width - dx);
           h = Math.max(MIN_SIZE, start.height + dy);
           nx = start.x + (start.width - w);
-        } else if (corner === "ne") {
-          w = Math.max(MIN_SIZE, start.width + dx);
-          h = Math.max(MIN_SIZE, start.height - dy);
-          ny = start.y + (start.height - h);
-        } else {
-          w = Math.max(MIN_SIZE, start.width - dx);
-          h = Math.max(MIN_SIZE, start.height - dy);
-          nx = start.x + (start.width - w);
-          ny = start.y + (start.height - h);
         }
         onCommit({ x: nx, y: ny, width: w, height: h });
       });
@@ -111,20 +102,8 @@ export default function StickerItem({
             }}
             title="스티커 삭제"
             aria-label="스티커 삭제"
-            style={{
-              position: "absolute",
-              top: -10,
-              right: -10,
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: "#d64545",
-              color: "#fff",
-              border: "1px solid #fff",
-              fontSize: 12,
-              lineHeight: "18px",
-              cursor: "pointer",
-            }}
+            className="absolute flex h-5 w-5 cursor-pointer items-center justify-center rounded-full border border-white bg-red-500 text-xs text-white"
+            style={{ top: -10, right: -10 }}
           >
             ×
           </button>
@@ -142,8 +121,6 @@ export default function StickerItem({
                 border: "1px solid #8b5e34",
                 borderRadius: 2,
                 cursor: `${corner}-resize`,
-                ...(corner === "nw" && { left: -5, top: -5 }),
-                ...(corner === "ne" && { right: -5, top: -5 }),
                 ...(corner === "sw" && { left: -5, bottom: -5 }),
                 ...(corner === "se" && { right: -5, bottom: -5 }),
               }}

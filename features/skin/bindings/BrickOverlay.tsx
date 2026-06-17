@@ -24,7 +24,7 @@ export default function BrickOverlay() {
     return (
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
-        style={{ zIndex: Z_LAYER.indicator }}
+        style={{ zIndex: Z_LAYER.indicatorBehind, opacity: 0.75 }}
       >
         {rows.map((row, i) => {
           const len = Math.max(6, row.ratio * BAR_MAX);
@@ -70,7 +70,7 @@ export default function BrickOverlay() {
   return (
     <div
       className="pointer-events-none absolute inset-0 overflow-hidden"
-      style={{ zIndex: Z_LAYER.indicator }}
+      style={{ zIndex: Z_LAYER.indicatorBehind, opacity: 0.55 }}
     >
       {rows.map((row, i) => {
         const len = row.ratio * BAR_MAX;
