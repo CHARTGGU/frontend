@@ -18,14 +18,136 @@ export interface NewsMarker {
 }
 
 /**
- * BTC·ETH 일 변동성 5% 초과 이벤트 목록 (2022~2025).
+ * BTC·ETH 주요 이벤트 목록 (2020~2025).
  *
- * 수집 기준: (high-low)/open > 5% 또는 |close-open|/open > 5% 이상 기록한
- * 날짜 중 명확한 뉴스 트리거가 있는 것만 선별.
+ * 수집 기준: (high-low)/open > 3% 또는 |close-open|/open > 3% 기록한
+ * 날짜 중 뉴스 트리거가 있는 것, 또는 시장에 영향을 준 주요 규제·온체인 이벤트.
  * 타이틀 ≤10자, 바디 ≤20자.
  */
 export const NEWS_MARKERS: NewsMarker[] = [
+  // ── 2020 ────────────────────────────────────────────────
+  {
+    id: "2020-03-12",
+    time: 1583971200 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "코로나 폭락",
+    body: "COVID-19 공포 BTC -40%",
+  },
+  {
+    id: "2020-05-11",
+    time: 1589155200 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "neutral",
+    title: "BTC 반감기",
+    body: "3번째 채굴 보상 반감",
+  },
+  {
+    id: "2020-10-21",
+    time: 1603238400 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "페이팔 코인",
+    body: "페이팔 암호화폐 결제 지원",
+  },
+  {
+    id: "2020-12-16",
+    time: 1608076800 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "BTC 2만달러",
+    body: "역대 신고가 $20,000 돌파",
+  },
+  // ── 2021 ────────────────────────────────────────────────
+  {
+    id: "2021-01-29",
+    time: 1611878400 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "머스크 BTC",
+    body: "트위터 바이오에 #Bitcoin 추가",
+  },
+  {
+    id: "2021-02-08",
+    time: 1612742400 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "테슬라 매수",
+    body: "테슬라 BTC 15억달러 매입",
+  },
+  {
+    id: "2021-04-14",
+    time: 1618358400 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "up",
+    title: "코인베이스 IPO",
+    body: "나스닥 직접 상장 사상 최고가",
+  },
+  {
+    id: "2021-05-12",
+    time: 1620777600 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "down",
+    title: "테슬라 매도",
+    body: "머스크 BTC 결제 중단 선언",
+  },
+  {
+    id: "2021-05-19",
+    time: 1621382400 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "중국 금지",
+    body: "중국 금융기관 코인 거래 금지",
+  },
+  {
+    id: "2021-06-09",
+    time: 1623196800 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "엘살바도르",
+    body: "BTC 법정화폐 세계 최초 채택",
+  },
+  {
+    id: "2021-09-07",
+    time: 1630972800 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "down",
+    title: "BTC 급락",
+    body: "엘살바도르 도입 당일 -17%",
+  },
+  {
+    id: "2021-10-20",
+    time: 1634688000 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "선물 ETF",
+    body: "ProShares BTC 선물 ETF 출시",
+  },
+  {
+    id: "2021-11-10",
+    time: 1636502400 as UTCTimestamp,
+    symbols: ["BTC"],
+    direction: "up",
+    title: "BTC 역대 ATH",
+    body: "$68,789 역대 최고가 달성",
+  },
   // ── 2022 ────────────────────────────────────────────────
+  {
+    id: "2022-01-21",
+    time: 1642723200 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "금리 공포",
+    body: "연준 금리인상 우려 -14%",
+  },
+  {
+    id: "2022-03-02",
+    time: 1646179200 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "up",
+    title: "우크라 지원",
+    body: "전쟁 난민 암호화폐 모금 급등",
+  },
   {
     id: "2022-05-09",
     time: 1652054400 as UTCTimestamp,
@@ -33,6 +155,14 @@ export const NEWS_MARKERS: NewsMarker[] = [
     direction: "down",
     title: "LUNA 붕괴",
     body: "테라 UST 디페그 쇼크",
+  },
+  {
+    id: "2022-06-13",
+    time: 1655078400 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "셀시우스 동결",
+    body: "셀시우스 출금 중단 BTC -15%",
   },
   {
     id: "2022-09-15",
@@ -51,6 +181,22 @@ export const NEWS_MARKERS: NewsMarker[] = [
     body: "대형 거래소 FTX 뱅크런",
   },
   // ── 2023 ────────────────────────────────────────────────
+  {
+    id: "2023-03-10",
+    time: 1678406400 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "SVB 파산",
+    body: "실리콘밸리뱅크 파산 공포",
+  },
+  {
+    id: "2023-06-06",
+    time: 1686009600 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "down",
+    title: "SEC 소송",
+    body: "SEC, 바이낸스·코인베이스 소송",
+  },
   {
     id: "2023-08-17",
     time: 1692230400 as UTCTimestamp,
@@ -158,12 +304,36 @@ export const NEWS_MARKERS: NewsMarker[] = [
   },
   // ── 2025 ────────────────────────────────────────────────
   {
+    id: "2025-01-20",
+    time: 1737331200 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "up",
+    title: "트럼프 취임",
+    body: "친코인 대통령 공식 취임 랠리",
+  },
+  {
+    id: "2025-01-23",
+    time: 1737590400 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "up",
+    title: "코인 행정명령",
+    body: "트럼프 암호화폐 우호 EO 서명",
+  },
+  {
     id: "2025-04-07",
     time: 1743984000 as UTCTimestamp,
     symbols: ["BTC", "ETH"],
     direction: "down",
     title: "관세 충격",
     body: "미중 무역전쟁 관세 폭탄 급락",
+  },
+  {
+    id: "2025-05-22",
+    time: 1747872000 as UTCTimestamp,
+    symbols: ["BTC", "ETH"],
+    direction: "up",
+    title: "미 코인법안",
+    body: "미 하원 암호화폐 법안 통과",
   },
   {
     id: "2025-10-10",

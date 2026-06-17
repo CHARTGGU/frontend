@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" width="120" height="80">
+  <!-- 배경 -->
+  <rect width="120" height="80" fill="#1a1d2e" rx="4"/>
+
+  <!-- 캔들 봉 (장대양봉) -->
+  <rect x="52" y="28" width="16" height="36" fill="#26a69a" rx="1"/>
+  <!-- 위아래 꼬리 -->
+  <line x1="60" y1="22" x2="60" y2="28" stroke="#26a69a" stroke-width="2"/>
+  <line x1="60" y1="64" x2="60" y2="70" stroke="#26a69a" stroke-width="2"/>
+
+  <!-- 말풍선 배경 -->
+  <rect x="24" y="4" width="72" height="20" fill="#fffde7" rx="5" stroke="#f9a825" stroke-width="1.5"/>
+  <!-- 말풍선 꼬리 -->
+  <polygon points="56,24 64,24 60,29" fill="#fffde7" stroke="#f9a825" stroke-width="1" stroke-linejoin="round"/>
+
+  <!-- 말풍선 텍스트 -->
+  <text x="60" y="18" text-anchor="middle" font-size="9" font-weight="700" fill="#5d4037" font-family="sans-serif">지금이니? 🤔</text>
+</svg>
