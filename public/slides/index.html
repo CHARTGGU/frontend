@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>찵꾸 — ChartSkin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sans:"Pretendard Variable", Pretendard, system-ui, sans-serif;
+    --hand:"Gaegu", cursive;
+    --bg:#fffdf9;
+    --ink:#1d2421;
+    /* 초록(메인) + 분홍(보조) */
+    --red:#16b87a; --red-deep:#0e9c64; --red-soft:#ffe3ee;
+    --pink:#ff5e9a; --pink-deep:#ec3f80; --pink-soft:#ffe3ee;
+    --muted:#8a8c89; --line:#e9eee7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#1a1a1c;font-family:var(--sans);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased;word-break:keep-all}
+
+  .deck{position:relative;z-index:2;height:100%}
+  .slide{position:absolute;inset:0;background:var(--bg);
+    display:flex;flex-direction:column;
+    padding:clamp(42px,4.4vw,62px) clamp(50px,6.4vw,100px);
+    opacity:0;visibility:hidden;transform:translateY(10px);
+    transition:opacity .42s ease, transform .42s ease, visibility .42s;
+    overflow:hidden}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;position:relative;z-index:3;margin-top:clamp(22px,2.6vw,38px)}
+  .pageno{position:absolute;right:clamp(36px,4vw,60px);bottom:clamp(26px,2.6vw,34px);font-weight:700;font-size:13px;color:#c9c7cc;z-index:5}
+  .nav{position:fixed;z-index:9;bottom:18px;left:20px;display:flex;gap:7px}
+  .nav button{font-size:15px;color:#9a979e;background:#fff;border:1px solid var(--line);width:34px;height:28px;border-radius:8px;cursor:pointer}
+  .nav button:hover{color:var(--red);border-color:var(--red)}
+
+  /* 섹션 라벨 (레드 마크 + 검정) */
+  .label{position:absolute;top:clamp(30px,3vw,44px);left:clamp(50px,6.4vw,100px);z-index:6;
+    font-size:clamp(15px,1.5vw,20px);font-weight:800;letter-spacing:.01em;color:var(--ink);display:flex;align-items:center}
+  .label::before{content:"";width:13px;height:13px;background:var(--red);border-radius:3px;margin-right:10px}
+
+  .big{font-weight:900;line-height:1.08;letter-spacing:-.035em;font-size:clamp(42px,5.8vw,84px)}
+  .big.sm{font-size:clamp(33px,4.5vw,62px)}
+  .klead{font-size:clamp(17px,1.6vw,23px);font-weight:700;color:var(--muted)}
+  .acc{color:var(--red)}
+  .sub{font-size:clamp(16px,1.5vw,21px);color:var(--muted);line-height:1.6;margin-top:14px}
+
+  .stk{position:absolute;z-index:7;filter:drop-shadow(0 2px 2px rgba(0,0,0,.12));pointer-events:none;line-height:1}
+  .doodle{font-family:var(--hand);font-weight:700;position:absolute;z-index:7}
+
+  /* 폴라로이드 */
+  .poetry{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.5vw,22px);margin-top:18px;flex:1;min-height:0}
+  .pola{background:#fff;padding:9px 9px 32px;border-radius:5px;min-height:0;
+    box-shadow:0 16px 30px -16px rgba(0,0,0,.32), 0 2px 8px rgba(0,0,0,.08);
+    position:relative;display:flex;flex-direction:column}
+  .pola img{width:100%;height:100%;object-fit:cover;display:block;flex:1;min-height:0;background:#f3f3f3;border-radius:2px}
+  .pola .cap{position:absolute;left:0;right:0;bottom:7px;text-align:center;font-weight:700;font-size:clamp(13px,1.45vw,18px);color:#3a3a3e}
+  .pola::before{content:"";position:absolute;top:-9px;left:50%;width:64px;height:18px;transform:translateX(-50%) rotate(-2deg);
+    background:rgba(170,170,175,.32);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+  /* 커버 */
+  .cover-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .logo{font-weight:900;font-size:clamp(110px,21vw,300px);line-height:.92;display:flex;gap:.01em;letter-spacing:-.045em}
+  .logo .a{color:var(--red)} .logo .b{color:var(--pink)}
+  .logo-en{font-weight:800;font-size:clamp(15px,1.5vw,20px);color:#bdbcc1;letter-spacing:.42em;margin-top:10px;padding-left:.42em}
+  .bubble{font-weight:800;font-size:clamp(20px,2.2vw,30px);color:var(--ink);
+    background:#fff;border:2px solid var(--ink);border-radius:18px 18px 18px 5px;padding:13px 24px;
+    margin-top:30px;box-shadow:5px 6px 0 rgba(0,0,0,.08)}
+
+  /* before/after 데모 */
+  .reveal{display:grid;grid-template-columns:1fr auto 1.12fr;gap:clamp(16px,2vw,32px);align-items:center;margin-top:18px;flex:1;min-height:0}
+  .frame{background:#fff;padding:9px;border-radius:8px;border:1px solid var(--line);box-shadow:0 18px 32px -18px rgba(0,0,0,.4);position:relative;display:flex}
+  .frame img{width:100%;height:100%;object-fit:cover;border-radius:4px;display:block}
+  .frame.gray img{filter:grayscale(1) brightness(.99)}
+  .revarr{font-weight:900;font-size:clamp(30px,3.4vw,52px);color:var(--red)}
+  .playbtn{font-weight:800;font-size:clamp(16px,1.7vw,21px);color:#fff;background:var(--red);border:none;
+    border-radius:14px;padding:13px 26px;cursor:pointer;box-shadow:0 12px 24px -8px rgba(245,51,60,.7);transition:.14s}
+  .playbtn:hover{transform:translateY(-2px)}
+  .demowrap{flex:1;min-height:0;display:flex;flex-direction:column}
+  .demobar{flex:0 0 auto;margin-bottom:10px;display:flex;justify-content:flex-end}
+  .demoframe{flex:1;min-height:0;position:relative}
+  .demoframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px;background:#1a1a1c}
+  .backbtn{font-weight:800;font-size:clamp(14px,1.4vw,17px);color:#fff;background:var(--red);border:none;
+    border-radius:12px;padding:10px 18px;cursor:pointer;box-shadow:0 10px 20px -8px rgba(245,51,60,.8);transition:.14s}
+  .backbtn:hover{transform:translateY(-1px)}
+
+  /* 유용 */
+  .useshot{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(20px,2.6vw,44px);align-items:center;margin-top:20px;flex:1;min-height:0}
+  .uselist{display:flex;flex-direction:column;gap:14px}
+  .ubadge{font-size:clamp(15px,1.6vw,21px);font-weight:700;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;
+    box-shadow:0 10px 22px -16px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center}
+  .ubadge .e{font-size:24px}
+
+  /* 시장 숫자 */
+  .nums{display:flex;justify-content:center;gap:clamp(22px,3.2vw,56px);margin-top:34px;flex-wrap:wrap}
+  .num{text-align:center}
+  .num .n{font-weight:900;font-size:clamp(46px,6vw,92px);line-height:1;letter-spacing:-.04em}
+  .num .l{font-weight:700;font-size:clamp(14px,1.45vw,19px);margin-top:8px;color:var(--muted)}
+  .num.c1 .n{color:var(--red)} .num.c2 .n{color:var(--pink)} .num.c3 .n{color:var(--red)}
+
+  /* 루프(마지막) */
+  .loop{display:flex;align-items:center;justify-content:center;gap:clamp(14px,2vw,30px);margin-top:34px;flex-wrap:wrap}
+  .lp{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:20px 30px;text-align:center;box-shadow:5px 6px 0 rgba(0,0,0,.07)}
+  .lp .e{font-size:34px} .lp b{display:block;font-weight:800;font-size:clamp(16px,1.6vw,21px);margin-top:8px}
+  .looparr{font-weight:900;font-size:30px;color:var(--red)}
+
+  /* 비즈니스 모델 카드 */
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,1.8vw,26px);margin-top:30px;width:100%}
+  .bcard{border:1px solid var(--line);border-radius:18px;padding:clamp(22px,2vw,30px);
+    box-shadow:0 16px 30px -22px rgba(0,0,0,.5)}
+  .bcard .num{font-weight:900;font-size:15px;color:var(--red)}
+  .bcard h4{font-weight:800;font-size:clamp(18px,1.7vw,23px);margin:10px 0 9px;line-height:1.2}
+  .bcard p{font-size:clamp(14px,1.4vw,17px);color:var(--muted);line-height:1.55}
+  .bcard .ref{margin-top:13px;font-size:13px;font-weight:700;color:var(--ink);background:#f4f4f5;border-radius:999px;padding:5px 13px;display:inline-block}
+
+  @media (max-width:900px){.poetry,.reveal,.useshot,.cards3{grid-template-columns:1fr}.revarr,.looparr{display:none}}
+</style>
+</head>
+<body>
+<div class="nav"><button id="prev">‹</button><button id="next">›</button></div>
+<div class="deck" id="deck">
+
+  <!-- 0. 커버 -->
+  <section class="slide">
+    <div class="cover-stage">
+      <span class="stk" style="top:13%;left:15%;font-size:42px;transform:rotate(-10deg)">✨</span>
+      <span class="stk" style="top:18%;right:16%;font-size:44px;transform:rotate(12deg)">😸</span>
+      <span class="stk" style="bottom:24%;right:18%;font-size:38px;transform:rotate(-8deg)">🩷</span>
+      <span class="stk" style="top:44%;left:7%;font-size:38px;transform:rotate(-16deg)">📈</span>
+      <span class="stk" style="bottom:20%;left:14%;font-size:40px;transform:rotate(9deg)">🎨</span>
+      <span class="stk" style="top:46%;right:8%;font-size:36px;transform:rotate(14deg)">⭐</span>
+      <span class="stk" style="bottom:30%;right:9%;font-size:34px;transform:rotate(-6deg)">🔥</span>
+      <div class="logo"><span class="a">찵</span><span class="b">꾸</span></div>
+      <div class="logo-en">CHARTSKIN</div>
+      <div class="bubble">차트도 꾸미면 안 돼요…?</div>
+    </div>
+    <div class="label" style="top:auto;bottom:7%;left:50%;transform:translateX(-50%)">TEAM 차트코어 · DuAI 런치톤 2026</div>
+  </section>
+
+  <!-- 1. 꾸밈의 민족 -->
+  <section class="slide">
+    <div class="label">WHY ①</div>
+    <div class="body">
+      <div style="flex:0 0 auto">
+        <span class="klead">우리가 어떤 민족입니까?</span>
+        <div class="big">꾸밈의 <span class="acc">민족</span>입니다.</div>
+      </div>
+      <div class="poetry">
+        <div class="pola" style="transform:rotate(-1.5deg)"><img src="assets/deco-laptop.png" alt=""><div class="cap">노트북도 꾸미고</div></div>
+        <div class="pola" style="transform:rotate(1deg)"><img src="assets/deco-keyboard.png" alt=""><div class="cap">키보드도 꾸미고</div></div>
+        <div class="pola" style="transform:rotate(-1deg)"><img src="assets/deco-terminal.png" alt=""><div class="cap">터미널까지 꾸미고</div></div>
+        <div class="pola" style="transform:rotate(1.5deg)"><img src="assets/deco-diary.png" alt=""><div class="cap">다이어리도 꾸미고</div></div>
+        <div class="pola" style="transform:rotate(-1deg)"><img src="assets/deco-bag.png" alt=""><div class="cap">가방도 꾸미고</div></div>
+        <div class="pola" style="transform:rotate(1deg)"><img src="assets/deco-ancestor.png" alt=""><div class="cap">조상님도 꾸미셨고</div></div>
+      </div>
+    </div>
+    <div class="pageno">2 / 7</div>
+  </section>
+
+  <!-- 2. 근데 왜 차트는? -->
+  <section class="slide">
+    <div class="label">WHY ②</div>
+    <div class="body" style="align-items:center;justify-content:center">
+      <span class="doodle" style="top:16%;left:14%;font-size:clamp(19px,2vw,28px);color:var(--pink-deep);transform:rotate(-6deg)">혼자 회색이야ㅠㅠ</span>
+      <span class="doodle" style="top:28%;right:12%;font-size:clamp(19px,2vw,28px);color:var(--muted);transform:rotate(5deg)">심심해…</span>
+      <span class="stk" style="top:23%;right:22%;font-size:34px;transform:rotate(8deg)">😶</span>
+      <div class="frame gray" style="width:min(54vw,620px);transform:rotate(-1deg)"><img src="assets/shot-before.png" alt="맨 차트"></div>
+      <div class="big" style="margin-top:26px;text-align:center">왜 <span class="acc">차트</span>만 안 꾸며요?</div>
+    </div>
+    <div class="pageno">3 / 7</div>
+  </section>
+
+  <!-- 3. 그래서 꾸며봤다 + 데모 -->
+  <section class="slide">
+    <div class="label">SO — 꾸며봤어요</div>
+    <div class="body" id="demoBody">
+      <div id="revealWrap" style="display:flex;flex-direction:column;height:100%">
+        <div style="flex:0 0 auto"><span class="big sm">그래서, <span class="acc">꾸며봤어요</span>.</span></div>
+        <div class="reveal">
+          <div><div class="frame gray" style="aspect-ratio:3/2"><img src="assets/shot-before.png" alt="맨 차트"></div><div class="sub" style="text-align:center;margin-top:8px;font-weight:700">그냥 차트</div></div>
+          <div class="revarr">➜</div>
+          <div style="position:relative">
+            <div class="frame" style="aspect-ratio:3/2;position:relative">
+              <img src="assets/shot-flashy.png" alt="꾸민 차트">
+              <button class="playbtn" id="demoPlay" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)">▶ 직접 꾸며보기</button>
+            </div>
+            <div class="sub" style="text-align:center;margin-top:8px;font-weight:700;color:var(--red)">내 맘대로 꾸민 차트</div>
+          </div>
+        </div>
+      </div>
+      <div class="demowrap" id="demowrap" style="display:none">
+        <div class="demobar"><button class="backbtn" id="demoBack">← 슬라이드로 돌아가기</button></div>
+        <div class="demoframe"><iframe id="demoFrame" allow="fullscreen" title="ChartSkin"></iframe></div>
+      </div>
+    </div>
+    <div class="pageno">4 / 7</div>
+  </section>
+
+  <!-- 4. 귀여운데 유용하기까지 -->
+  <section class="slide">
+    <div class="label">WHAT</div>
+    <div class="body">
+      <div style="flex:0 0 auto"><span class="big sm">귀여운데, <span style="color:var(--pink-deep)">유용하기까지</span> 해요.</span></div>
+      <div class="useshot">
+        <div class="frame" style="transform:rotate(-1deg)"><img src="assets/shot-useful.png" alt="유용한 스킨"></div>
+        <div class="uselist">
+          <div class="ubadge"><span class="e">✨</span><span>골든·데드크로스, 한눈에</span></div>
+          <div class="ubadge"><span class="e">🧱</span><span>매물대가 어디인지 바로</span></div>
+          <div class="ubadge"><span class="e">😸</span><span>최고점엔 신난 고양이</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="pageno">5 / 7</div>
+  </section>
+
+  <!-- 5. 차트도 스킨 시장 -->
+  <section class="slide">
+    <div class="label">시장</div>
+    <div class="body" style="justify-content:center;align-items:center">
+      <span class="stk" style="top:15%;right:16%;font-size:42px;transform:rotate(10deg)">💰</span>
+      <div class="big sm" style="text-align:center">사실 꾸미기, <span class="acc">돈 되는 거</span> 아시죠?</div>
+      <div class="nums">
+        <div class="num c1"><div class="n">1.2조</div><div class="l">카카오 이모티콘</div></div>
+        <div class="num c2"><div class="n">$43B</div><div class="l">포트나이트 스킨</div></div>
+        <div class="num c3"><div class="n">1,000억</div><div class="l">싸이월드 도토리</div></div>
+      </div>
+      <div class="big sm" style="margin-top:34px;text-align:center">차트라고, 안 될 거 있나요?</div>
+    </div>
+    <div class="pageno">6 / 7</div>
+  </section>
+
+  <!-- 6. 수익 모델 -->
+  <section class="slide">
+    <div class="label">수익 모델</div>
+    <div class="body">
+      <div style="flex:0 0 auto"><span class="big sm">꾸미기로 돈 버는 건, <span class="acc">이미 증명</span>됐어요.</span></div>
+      <div class="cards3">
+        <div class="bcard"><div class="num">01</div><h4>프리미엄 · AI 스킨</h4><p>기본 스킨은 무료, 고퀄·AI 생성 스킨은 유료로.</p><span class="ref">이모티콘 · 도토리 모델</span></div>
+        <div class="bcard"><div class="num">02</div><h4>크리에이터 마켓</h4><p>유저가 만든 스킨을 사고팔고, 거래액 일부를 수수료로.</p><span class="ref">제페토 모델</span></div>
+        <div class="bcard"><div class="num">03</div><h4>IP · 콜라보 테마</h4><p>아이돌·캐릭터 IP랑 한정 테마. 팬덤이 곧 매출로.</p><span class="ref">콜라보 모델</span></div>
+      </div>
+      <div class="big sm" style="text-align:center;margin-top:26px">이미 되는 시장을, <span class="acc">차트로</span> 옮기는 거예요.</div>
+      <span class="doodle" style="bottom:5%;right:6%;font-size:clamp(15px,1.5vw,20px);color:var(--pink-deep);background:var(--pink-soft);padding:5px 13px;border-radius:4px;transform:rotate(-2deg)">ㅇㅎ 이 덱도 AI가 다 만듦 🤖</span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const tot=slides.length;let idx=0;
+  function go(n){idx=Math.max(0,Math.min(tot-1,n));slides.forEach((s,i)=>s.classList.toggle('active',i===idx));location.hash=idx+1}
+  document.getElementById('next').onclick=()=>go(idx+1);
+  document.getElementById('prev').onclick=()=>go(idx-1);
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();go(idx+1)}
+    if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(idx-1)}
+    if(e.key==='Home')go(0);if(e.key==='End')go(tot-1);
+    if(e.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.();
+  });
+  go((parseInt(location.hash.replace('#',''))||1)-1);
+  window.addEventListener('hashchange',()=>go((parseInt(location.hash.replace('#',''))||1)-1));
+  const frame=document.getElementById('demoFrame');
+  const revealWrap=document.getElementById('revealWrap'),demowrap=document.getElementById('demowrap');
+  document.getElementById('demoPlay').onclick=()=>{
+    if(!frame.src)frame.src="https://frontend-alpha-nine-22.vercel.app/";
+    revealWrap.style.display='none';demowrap.style.display='flex';
+  };
+  document.getElementById('demoBack').onclick=()=>{
+    demowrap.style.display='none';revealWrap.style.display='flex';
+  };
+</script>
+</body>
+</html>
