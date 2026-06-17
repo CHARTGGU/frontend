@@ -6,6 +6,7 @@ import { useCustomBgStore } from "@/stores/customBgStore";
 import { useChartStore } from "@/stores/chartStore";
 import { useStickerStore } from "@/stores/stickerStore";
 import BackgroundControls from "./BackgroundControls";
+import BrickControls from "./BrickControls";
 import CustomBgUpload from "./CustomBgUpload";
 import FireControls from "./FireControls";
 import WaterfallControls from "./WaterfallControls";
@@ -29,7 +30,6 @@ const CATEGORY_ORDER: SkinCategory[] = [
   "indicator",
   "drawing",
   "widget",
-  "set",
 ];
 
 // 구현된(status='available') 스킨이 1개라도 있는 카테고리는 펼친 채로 시작.
@@ -51,7 +51,7 @@ interface SkinSidebarProps {
 /**
  * 마켓플레이스 사이드바 (VSCode 익스텐션 패널 스타일).
  * 카테고리별 접이식 섹션 → 스킨 카드 목록 → 적용/해제.
- * 배경·지표는 실제 적용 동작, 위젯·세트는 준비중(자리).
+ * 배경·지표는 실제 적용 동작, 위젯은 준비중(자리).
  * 접힌 상태에서는 얇은 세로 레일만 남고, 펼치기 버튼이 보인다.
  */
 export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
@@ -138,7 +138,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   }
 
   return (
-    <aside className="flex w-[300px] shrink-0 flex-col border-l border-panel-border bg-panel transition-[width]">
+    <aside
+      data-onboarding="skin"
+      className="flex w-[300px] shrink-0 flex-col border-l border-panel-border bg-panel transition-[width]"
+    >
       <header className="flex items-center justify-between border-b border-panel-border px-3 py-2.5">
         <h2 className="text-xs font-bold uppercase tracking-wide text-text-primary">
           마켓플레이스
@@ -237,6 +240,12 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                 />
                 {skin.id === "wg-fire" && <FireControls />}
                 {skin.id === "wg-waterfall" && <WaterfallControls />}
+                {skin.id === "ind-brick-pixel" && (
+                  <BrickControls style="pixel" />
+                )}
+                {skin.id === "ind-brick-gold" && (
+                  <BrickControls style="gold" />
+                )}
               </div>
             );
           };
@@ -385,7 +394,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
       </div>
 
       <footer className="border-t border-panel-border px-3 py-2 text-[10px] leading-tight text-text-muted">
-        위젯·세트 테마는 준비중입니다. 배경·지표 스킨을 적용해 보세요.
+        위젯은 준비중입니다. 배경·지표 스킨을 적용해 보세요.
       </footer>
     </aside>
   );

@@ -47,6 +47,7 @@ export default function ExportButton() {
 
   return (
     <button
+      data-onboarding="export"
       onClick={() => void handleExport()}
       disabled={busy || status !== "ready"}
       className="rounded bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
