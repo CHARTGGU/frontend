@@ -66,6 +66,8 @@ interface SkinState {
   kiyoungiArm: KiyoungiArmState;
   /** 뉴스 마커 위젯 활성화 여부. */
   newsMarkersEnabled: boolean;
+  /** "지금이니?" 말풍선 위젯 활성화 여부. */
+  jigeumianiEnabled: boolean;
   /** 사용자가 그린 커스텀 라인 목록. */
   customLines: CustomLine[];
 
@@ -87,6 +89,7 @@ interface SkinState {
   setKiyoungiBody: (patch: Partial<KiyoungiBodyRect>) => void;
   setKiyoungiArm: (patch: Partial<KiyoungiArmState>) => void;
   toggleNewsMarkers: () => void;
+  toggleJigeumiani: () => void;
   addCustomLine: (line: CustomLine) => void;
   updateCustomLine: (id: string, patch: Partial<CustomLine>) => void;
   removeCustomLine: (id: string) => void;
@@ -108,6 +111,7 @@ export const useSkinStore = create<SkinState>()(
       waterfallHeight: 50,
       kiyoungiEnabled: false,
       newsMarkersEnabled: false,
+      jigeumianiEnabled: false,
       kiyoungiBody: { x: 160, y: 260, width: 200, height: 180 },
       kiyoungiArm: { offsetX: -60, offsetY: 0, length: 180, angle: -60 },
       customLines: [],
@@ -130,6 +134,7 @@ export const useSkinStore = create<SkinState>()(
       setWaterfallHeight: (waterfallHeight) => set({ waterfallHeight }),
       toggleKiyoungi: () => set((s) => ({ kiyoungiEnabled: !s.kiyoungiEnabled })),
       toggleNewsMarkers: () => set((s) => ({ newsMarkersEnabled: !s.newsMarkersEnabled })),
+      toggleJigeumiani: () => set((s) => ({ jigeumianiEnabled: !s.jigeumianiEnabled })),
       setKiyoungiBody: (patch) =>
         set((s) => ({ kiyoungiBody: { ...s.kiyoungiBody, ...patch } })),
       setKiyoungiArm: (patch) =>

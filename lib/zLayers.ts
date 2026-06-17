@@ -31,6 +31,8 @@ export const Z_LAYER = {
   ichimokuCloud: 4,
   /** 뉴스 마커 — 시간축 위 이벤트 아이콘 + 호버 툴팁. */
   newsMarker: 9,
+  /** "지금이니?" 말풍선 — 장대양봉 고가 위. */
+  jigeumiani: 9,
   /** 부적 스티커 — 최상단, 인터랙티브(드래그/리사이즈/삭제). */
   sticker: 10,
 } as const;

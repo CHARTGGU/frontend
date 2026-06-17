@@ -13,6 +13,7 @@ import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import StickerOverlay from "@/features/skin/StickerOverlay";
 import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
+import JigeumianiOverlay from "./JigeumianiOverlay";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import IchimokuCloudOverlay from "./IchimokuCloudOverlay";
@@ -53,6 +54,7 @@ export default function ChartView() {
             <BrickOverlay />
             <VolumeProfileOverlay />
             <KiyoungiOverlay />
+            <JigeumianiOverlay />
             <LineDrawOverlay />
             <StickerOverlay />
           </PlotClip>

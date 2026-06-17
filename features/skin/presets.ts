@@ -251,6 +251,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     status: "available",
     thumbnail: "/skins/news-marker.svg",
   },
+  {
+    id: "wg-jigeumiani",
+    name: "지금이니? 🤔",
+    author: "ChartSkin",
+    description: "장대양봉(몸통 3% 이상, 몸통/범위 60% 이상) 캔들 위에 '지금이니? 🤔' 말풍선을 띄워요.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/jigeumiani-thumb.svg",
+  },
 ];
 
 /**
