@@ -14,6 +14,7 @@ const GAP = 2;
  */
 export default function BrickOverlay() {
   const brickStyle = useSkinStore((s) => s.brickStyle);
+  const brickOpacity = useSkinStore((s) => s.brickOpacity);
   const { poc, priceToY, width, ready } = useBindingData();
 
   if (!brickStyle || !ready || !poc || width === 0) return null;
@@ -24,7 +25,7 @@ export default function BrickOverlay() {
     return (
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
-        style={{ zIndex: Z_LAYER.indicatorBehind, opacity: 0.75 }}
+        style={{ zIndex: Z_LAYER.indicatorBehind, opacity: brickOpacity.gold }}
       >
         {rows.map((row, i) => {
           const len = Math.max(6, row.ratio * BAR_MAX);
@@ -70,7 +71,7 @@ export default function BrickOverlay() {
   return (
     <div
       className="pointer-events-none absolute inset-0 overflow-hidden"
-      style={{ zIndex: Z_LAYER.indicatorBehind, opacity: 0.55 }}
+      style={{ zIndex: Z_LAYER.indicatorBehind, opacity: brickOpacity.pixel }}
     >
       {rows.map((row, i) => {
         const len = row.ratio * BAR_MAX;

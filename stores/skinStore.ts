@@ -49,10 +49,17 @@ interface SkinState {
   crossStyle: CrossStyle | null;
   /** 적용된 매물대 벽돌 스타일 (null = 없음). */
   brickStyle: BrickStyle | null;
+  /** 매물대 벽돌 투명도 0~1 (스타일별 개별 저장). */
+  brickOpacity: Record<BrickStyle, number>;
   /** 배경 투명도 0~1. */
   backgroundOpacity: number;
   /** 배경 이미지 fit 모드. */
   fitMode: FitMode;
+  /**
+   * 배경 스킨에 맞춰 차트 색·페이지 톤을 자동으로 바꿀지 여부 (기본 true).
+   * false면 배경 이미지는 유지하되 색은 기본 팔레트(DEFAULT_THEME)로 복귀.
+   */
+  themingEnabled: boolean;
   /** 뛰어다니는 고양이 위젯 활성화 여부. */
   catEnabled: boolean;
   /** 불타는 효과 위젯 활성화 여부. */
@@ -85,6 +92,12 @@ interface SkinState {
   lineDrawMode: LineDrawMode;
   /** 그릴 라인 스타일 (비persist). */
   lineDrawPendingStyle: LineStyleId | null;
+  /**
+   * 마켓플레이스 스킨·위젯 전역 표시 여부 (true=보임). false면 적용된 스킨·위젯
+   * 오버레이를 일괄 숨김만 함 — 각 스킨의 적용 상태/설정값은 그대로 보존되어
+   * 다시 true로 돌리면 기존 설정 그대로 복원된다. 차트 분석 지표는 영향 없음.
+   */
+  skinsVisible: boolean;
 
   applyBackground: (id: string) => void;
   removeBackground: () => void;
@@ -93,8 +106,12 @@ interface SkinState {
   /** 같은 스타일 재선택 시 해제(토글), 다른 스타일이면 교체. */
   setCrossStyle: (style: CrossStyle) => void;
   setBrickStyle: (style: BrickStyle) => void;
+  /** 매물대 벽돌 투명도를 스타일별로 설정 (0~1). */
+  setBrickOpacity: (style: BrickStyle, opacity: number) => void;
   setBackgroundOpacity: (opacity: number) => void;
   setFitMode: (mode: FitMode) => void;
+  /** 배경 연동 테마 on/off 토글. */
+  toggleTheming: () => void;
   toggleCat: () => void;
   toggleFire: () => void;
   setFireHeight: (height: number) => void;
@@ -114,6 +131,8 @@ interface SkinState {
   setBasicLineColor: (color: string) => void;
   setLineDrawMode: (mode: LineDrawMode) => void;
   setLineDrawPendingStyle: (styleId: LineStyleId | null) => void;
+  /** 마켓플레이스 스킨·위젯 전역 표시/숨김 토글 (설정값은 보존). */
+  toggleSkinsVisible: () => void;
 }
 
 export const useSkinStore = create<SkinState>()(
@@ -123,8 +142,10 @@ export const useSkinStore = create<SkinState>()(
       indicatorSkinId: null,
       crossStyle: null,
       brickStyle: null,
+      brickOpacity: { pixel: 0.75, gold: 0.75 },
       backgroundOpacity: 0.5,
       fitMode: "cover",
+      themingEnabled: true,
       catEnabled: false,
       fireEnabled: false,
       fireHeight: 30,
@@ -141,6 +162,7 @@ export const useSkinStore = create<SkinState>()(
       basicLineColor: "#E5E5E5",
       lineDrawMode: "idle",
       lineDrawPendingStyle: null,
+      skinsVisible: true,
 
       applyBackground: (id) => set({ backgroundSkinId: id }),
       removeBackground: () => set({ backgroundSkinId: null }),
@@ -150,8 +172,11 @@ export const useSkinStore = create<SkinState>()(
         set((s) => ({ crossStyle: s.crossStyle === style ? null : style })),
       setBrickStyle: (style) =>
         set((s) => ({ brickStyle: s.brickStyle === style ? null : style })),
+      setBrickOpacity: (style, opacity) =>
+        set((s) => ({ brickOpacity: { ...s.brickOpacity, [style]: opacity } })),
       setBackgroundOpacity: (backgroundOpacity) => set({ backgroundOpacity }),
       setFitMode: (fitMode) => set({ fitMode }),
+      toggleTheming: () => set((s) => ({ themingEnabled: !s.themingEnabled })),
       toggleCat: () => set((s) => ({ catEnabled: !s.catEnabled })),
       toggleFire: () => set((s) => ({ fireEnabled: !s.fireEnabled })),
       setFireHeight: (fireHeight) => set({ fireHeight }),
@@ -181,6 +206,8 @@ export const useSkinStore = create<SkinState>()(
       setBasicLineColor: (basicLineColor) => set({ basicLineColor }),
       setLineDrawMode: (lineDrawMode) => set({ lineDrawMode }),
       setLineDrawPendingStyle: (lineDrawPendingStyle) => set({ lineDrawPendingStyle }),
+      toggleSkinsVisible: () =>
+        set((s) => ({ skinsVisible: !s.skinsVisible })),
     }),
     {
       name: "skin-settings",

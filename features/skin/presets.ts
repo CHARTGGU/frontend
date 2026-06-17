@@ -1,6 +1,7 @@
 import type { FitMode } from "@/stores/skinStore";
+import { DEFAULT_THEME, type ChartTheme } from "@/lib/chartTheme";
 
-export type SkinCategory = "background" | "indicator" | "widget" | "set" | "drawing";
+export type SkinCategory = "background" | "indicator" | "widget" | "drawing";
 
 export const CATEGORY_META: Record<
   SkinCategory,
@@ -10,7 +11,6 @@ export const CATEGORY_META: Record<
   background: { label: "배경 스킨", icon: "🖼️", accent: "#4aa3ff" },
   indicator: { label: "지표 스킨", icon: "📍", accent: "#f5b945" },
   widget: { label: "위젯", icon: "🐾", accent: "#e06ec5" },
-  set: { label: "세트 테마", icon: "🎨", accent: "#5fd38d" },
   drawing: { label: "그리기", icon: "✏️", accent: "#a78bfa" },
 };
 
@@ -79,6 +79,11 @@ export interface BackgroundSkin extends BaseSkin {
   defaultFit: FitMode;
   /** 적용 시 기본 투명도. 없으면 현재 투명도 유지. */
   defaultOpacity?: number;
+  /**
+   * 이 배경에 어울리는 색 팔레트. 적용 시(테마 켜짐) 차트 캔들·그리드·축·텍스트와
+   * 페이지 베이스 배경색이 이 값으로 바뀐다. 없으면 DEFAULT_THEME 사용.
+   */
+  theme?: ChartTheme;
 }
 
 export interface IndicatorSkin extends BaseSkin {
@@ -101,17 +106,71 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     thumbnail: "/skins/bg-night-sky.svg",
     image: "/skins/bg-night-sky.svg",
     defaultFit: "cover",
+    theme: {
+      pageBg: "#16112e",
+      candleUp: "#5fe0c8",
+      candleDown: "#ff6b8a",
+      grid: "rgba(160,150,230,0.10)",
+      text: "#d4cdf0",
+      axisBorder: "#372f5e",
+    },
   },
   {
-    id: "bg-candy",
-    name: "캔디 패턴",
+    id: "bg-cyber-grid",
+    name: "사이버펑크 그리드",
     author: "ChartSkin",
-    description: "파스텔 도트 패턴. 귀엽고 달달한 분위기.",
+    description: "신스웨이브 태양과 네온 원근 그리드. CRT 스캔라인까지, 차트 단말기 무드.",
     category: "background",
     status: "available",
-    thumbnail: "/skins/bg-candy.svg",
-    image: "/skins/bg-candy.svg",
-    defaultFit: "tile",
+    thumbnail: "/skins/bg-cyber-grid.svg",
+    image: "/skins/bg-cyber-grid.svg",
+    defaultFit: "cover",
+    theme: {
+      pageBg: "#0d0221",
+      candleUp: "#2de2e6",
+      candleDown: "#ff2e97",
+      grid: "rgba(255,46,151,0.10)",
+      text: "#9af7f2",
+      axisBorder: "#3a1d5e",
+    },
+  },
+  {
+    id: "bg-moon-rally",
+    name: "떡상 일출",
+    author: "ChartSkin",
+    description: "지평선 위로 떠오르는 황금빛 태양과 솟구치는 상승 캔들. 가즈아 무드.",
+    category: "background",
+    status: "available",
+    thumbnail: "/skins/bg-moon-rally.svg",
+    image: "/skins/bg-moon-rally.svg",
+    defaultFit: "cover",
+    theme: {
+      pageBg: "#1c1305",
+      candleUp: "#86d96a",
+      candleDown: "#ff7a45",
+      grid: "rgba(255,196,84,0.09)",
+      text: "#f5e0b0",
+      axisBorder: "#4a3413",
+    },
+  },
+  {
+    id: "bg-abyss-aurora",
+    name: "심해 오로라",
+    author: "ChartSkin",
+    description: "딥블루 심해에 흐르는 청록 오로라와 떠오르는 기포. 차분한 시네마틱 무드.",
+    category: "background",
+    status: "available",
+    thumbnail: "/skins/bg-abyss-aurora.svg",
+    image: "/skins/bg-abyss-aurora.svg",
+    defaultFit: "cover",
+    theme: {
+      pageBg: "#072135",
+      candleUp: "#46ecd0",
+      candleDown: "#ff7384",
+      grid: "rgba(70,236,208,0.10)",
+      text: "#bfe6ef",
+      axisBorder: "#11506b",
+    },
   },
   {
     id: "bg-gazua",
@@ -123,6 +182,14 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     thumbnail: "/skins/bg-gazua.png",
     image: "/skins/bg-gazua.png",
     defaultFit: "cover",
+    theme: {
+      pageBg: "#15110d",
+      candleUp: "#3ecf8e",
+      candleDown: "#ff4d4d",
+      grid: "rgba(255,255,255,0.05)",
+      text: "#d8cbb6",
+      axisBorder: "#3a2f22",
+    },
   },
   {
     id: "bg-budda",
@@ -135,6 +202,14 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     image: "/skins/bg-budda.jpeg",
     defaultFit: "cover",
     defaultOpacity: 0.3,
+    theme: {
+      pageBg: "#1a1308",
+      candleUp: "#5ec98a",
+      candleDown: "#ef5350",
+      grid: "rgba(255,210,120,0.07)",
+      text: "#e8d8a8",
+      axisBorder: "#43361a",
+    },
   },
   {
     id: "bg-karina",
@@ -146,6 +221,15 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
     thumbnail: "/skins/bg-karina.png",
     image: "/skins/bg-karina.png",
     defaultFit: "cover",
+    defaultOpacity: 0.35,
+    theme: {
+      pageBg: "#141016",
+      candleUp: "#34d3a0",
+      candleDown: "#ff5d73",
+      grid: "rgba(255,255,255,0.06)",
+      text: "#d7cfe0",
+      axisBorder: "#332b3d",
+    },
   },
 ];
 
@@ -330,33 +414,10 @@ export const STICKER_IMAGE: Record<string, string> = {
   "wg-bujeok-rich": "/skins/bujeok-rich.jpeg",
 };
 
-/** 세트 테마 — Phase 2. 카테고리 자리만(준비중). */
-export const SET_SKINS: BaseSkin[] = [
-  {
-    id: "set-night",
-    name: "밤하늘 세트",
-    author: "ChartSkin",
-    description: "배경+지표+색상 묶음 패키지. (준비중)",
-    category: "set",
-    status: "soon",
-    thumbnail: "/skins/bg-night-sky.svg",
-  },
-  {
-    id: "set-candy",
-    name: "달달 세트",
-    author: "ChartSkin",
-    description: "캔디 배경 + 고양이 지표 묶음. (준비중)",
-    category: "set",
-    status: "soon",
-    thumbnail: "/skins/bg-candy.svg",
-  },
-];
-
 export const SKINS_BY_CATEGORY: Record<SkinCategory, Skin[]> = {
   background: BACKGROUND_SKINS,
   indicator: [...INDICATOR_SKINS, ...BINDING_SKINS],
   widget: WIDGET_SKINS,
-  set: SET_SKINS,
   drawing: [...DRAWING_SKINS, ...STICKER_SKINS],
 };
 
@@ -374,6 +435,20 @@ export const BRICK_SKIN_STYLE: Record<string, "pixel" | "gold"> = {
 
 export function findBackgroundSkin(id: string | null): BackgroundSkin | null {
   return BACKGROUND_SKINS.find((s) => s.id === id) ?? null;
+}
+
+/**
+ * 적용된 배경 스킨 id + 테마 on/off → 차트·페이지에 쓸 ChartTheme 결정.
+ * - 테마 꺼짐 → 항상 DEFAULT_THEME (기존 색 유지).
+ * - 스킨 없음/팔레트 없음(커스텀 업로드 배경 등) → DEFAULT_THEME.
+ * 반환값은 항상 동일 객체 참조(스킨의 theme 또는 DEFAULT_THEME)라 useEffect dep로 안전.
+ */
+export function resolveTheme(
+  backgroundSkinId: string | null,
+  themingEnabled: boolean,
+): ChartTheme {
+  if (!themingEnabled) return DEFAULT_THEME;
+  return findBackgroundSkin(backgroundSkinId)?.theme ?? DEFAULT_THEME;
 }
 
 export function findIndicatorSkin(id: string | null): IndicatorSkin | null {

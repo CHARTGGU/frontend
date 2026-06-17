@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="aa-sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#021024"/>
+      <stop offset="45%" stop-color="#04263f"/>
+      <stop offset="100%" stop-color="#010a14"/>
+    </linearGradient>
+    <linearGradient id="aa-aur1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2bf5c4" stop-opacity="0"/>
+      <stop offset="55%" stop-color="#2bf5c4" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#2bf5c4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="aa-aur2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4f8cff" stop-opacity="0"/>
+      <stop offset="55%" stop-color="#4f8cff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4f8cff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="aa-aur3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a86bff" stop-opacity="0"/>
+      <stop offset="55%" stop-color="#a86bff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#a86bff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="aa-floor" cx="50%" cy="100%" r="75%">
+      <stop offset="0%" stop-color="#0a3d52" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#0a3d52" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="aa-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#aa-sea)"/>
+
+  <!-- 오로라 커튼 (블러로 부드럽게) -->
+  <g filter="url(#aa-blur)">
+    <path d="M120 80 C 260 220, 60 380, 220 560 L 320 560 C 200 380, 360 220, 240 80 Z" fill="url(#aa-aur1)"/>
+    <path d="M460 40 C 600 200, 420 360, 560 600 L 670 600 C 560 360, 720 200, 590 40 Z" fill="url(#aa-aur2)"/>
+    <path d="M820 70 C 940 240, 780 400, 920 560 L 1010 560 C 900 400, 1040 240, 940 70 Z" fill="url(#aa-aur3)"/>
+    <path d="M1000 100 C 1120 260, 980 420, 1110 580 L 1190 580 C 1090 420, 1210 260, 1120 100 Z" fill="url(#aa-aur1)"/>
+  </g>
+
+  <!-- 해저 광원 -->
+  <rect x="0" y="420" width="1200" height="380" fill="url(#aa-floor)"/>
+
+  <!-- 빛 내림(god rays) -->
+  <g opacity="0.12">
+    <polygon points="300,0 360,0 240,800 120,800" fill="#7fe9ff"/>
+    <polygon points="640,0 690,0 600,800 500,800" fill="#7fe9ff"/>
+    <polygon points="920,0 960,0 1020,800 920,800" fill="#7fe9ff"/>
+  </g>
+
+  <!-- 떠오르는 기포 -->
+  <g fill="#bdf6ff">
+    <circle cx="180" cy="640" r="3" opacity="0.7"/>
+    <circle cx="210" cy="540" r="2" opacity="0.55"/>
+    <circle cx="195" cy="450" r="2.6" opacity="0.6"/>
+    <circle cx="520" cy="680" r="2.4" opacity="0.65"/>
+    <circle cx="545" cy="560" r="1.8" opacity="0.5"/>
+    <circle cx="760" cy="620" r="3.2" opacity="0.7"/>
+    <circle cx="780" cy="500" r="2" opacity="0.55"/>
+    <circle cx="980" cy="660" r="2.6" opacity="0.6"/>
+    <circle cx="1010" cy="540" r="1.8" opacity="0.5"/>
+    <circle cx="1040" cy="430" r="2.2" opacity="0.55"/>
+  </g>
+
+  <!-- 미세 플랑크톤 별빛 -->
+  <g fill="#ffffff" opacity="0.5">
+    <circle cx="120" cy="120" r="1"/><circle cx="380" cy="90" r="1.2"/>
+    <circle cx="700" cy="140" r="1"/><circle cx="1080" cy="100" r="1.2"/>
+    <circle cx="860" cy="300" r="1"/><circle cx="440" cy="260" r="1.1"/>
+  </g>
+</svg>
