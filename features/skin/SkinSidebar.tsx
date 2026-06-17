@@ -78,6 +78,10 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const toggleKiyoungi = useSkinStore((s) => s.toggleKiyoungi);
   const newsMarkersEnabled = useSkinStore((s) => s.newsMarkersEnabled);
   const toggleNewsMarkers = useSkinStore((s) => s.toggleNewsMarkers);
+  const jigeumianiEnabled = useSkinStore((s) => s.jigeumianiEnabled);
+  const toggleJigeumiani = useSkinStore((s) => s.toggleJigeumiani);
+  const keycapEnabled = useSkinStore((s) => s.keycapEnabled);
+  const toggleKeycap = useSkinStore((s) => s.toggleKeycap);
   const activeIndicators = useChartStore((s) => s.activeIndicators);
   const toggleIndicator = useChartStore((s) => s.toggleIndicator);
 
@@ -192,6 +196,12 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
               (category === "widget" &&
                 skin.id === "wg-news-marker" &&
                 newsMarkersEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-jigeumiani" &&
+                jigeumianiEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-keycap" &&
+                keycapEnabled) ||
               (skin.id === "ind-ichimoku-cloud" &&
                 activeIndicators.includes("ichimoku"));
 
@@ -216,6 +226,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (skin.id === "wg-kiyoungi") toggleKiyoungi();
                     else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
+                    else if (category === "widget" && skin.id === "wg-jigeumiani") toggleJigeumiani();
+                    else if (category === "widget" && skin.id === "wg-keycap") toggleKeycap();
                   }}
                   onRemove={() => {
                     if (category === "background") removeBackground();
@@ -228,6 +240,8 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (skin.id === "wg-kiyoungi") toggleKiyoungi();
                     else if (category === "widget" && skin.id === "wg-news-marker") toggleNewsMarkers();
+                    else if (category === "widget" && skin.id === "wg-jigeumiani") toggleJigeumiani();
+                    else if (category === "widget" && skin.id === "wg-keycap") toggleKeycap();
                   }}
                   isSticker={!!stickerImg}
                   onDelete={

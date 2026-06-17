@@ -14,6 +14,8 @@ import BrickOverlay from "@/features/skin/bindings/BrickOverlay";
 import KiyoungiOverlay from "@/features/skin/KiyoungiOverlay";
 import StickerOverlay from "@/features/skin/StickerOverlay";
 import LineDrawOverlay from "@/features/skin/LineDrawOverlay";
+import JigeumianiOverlay from "./JigeumianiOverlay";
+import KeycapWidget from "./KeycapWidget";
 import ChartCanvas from "./ChartCanvas";
 import { ChartRefProvider } from "./ChartRefContext";
 import IchimokuCloudOverlay from "./IchimokuCloudOverlay";
@@ -64,12 +66,15 @@ export default function ChartView() {
           <ChartCanvas />
           <IchimokuCloudOverlay />
           {skinsVisible && newsMarkersEnabled && <NewsMarkerOverlay />}
+          {/* 키캡 위젯 — 차트 좌표와 무관한 플로팅 위젯, PlotClip 밖에 배치. */}
+          {skinsVisible && <KeycapWidget />}
           {/* 캔들 위 오버레이는 PlotClip으로 축(Y·X) 거터를 비워 축이 최상단 유지. */}
           {skinsVisible && (
             <PlotClip>
               <IndicatorOverlay />
               <CrossOverlay />
               <KiyoungiOverlay />
+              <JigeumianiOverlay />
               <LineDrawOverlay />
               <StickerOverlay />
             </PlotClip>
