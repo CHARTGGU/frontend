@@ -13,8 +13,10 @@ export default function BackgroundControls() {
   const backgroundSkinId = useSkinStore((s) => s.backgroundSkinId);
   const opacity = useSkinStore((s) => s.backgroundOpacity);
   const fitMode = useSkinStore((s) => s.fitMode);
+  const themingEnabled = useSkinStore((s) => s.themingEnabled);
   const setOpacity = useSkinStore((s) => s.setBackgroundOpacity);
   const setFitMode = useSkinStore((s) => s.setFitMode);
+  const toggleTheming = useSkinStore((s) => s.toggleTheming);
 
   if (!backgroundSkinId) return null;
 
@@ -35,6 +37,19 @@ export default function BackgroundControls() {
           className="w-full accent-accent"
         />
       </div>
+
+      <label className="flex cursor-pointer items-center justify-between gap-2">
+        <span className="text-[11px] text-text-muted">
+          배경에 맞춰 색 변경
+          <span className="ml-1 text-text-muted/70">(캔들·톤)</span>
+        </span>
+        <input
+          type="checkbox"
+          checked={themingEnabled}
+          onChange={toggleTheming}
+          className="h-3.5 w-3.5 accent-accent"
+        />
+      </label>
 
       <div>
         <span className="mb-1 block text-[11px] text-text-muted">맞춤 모드</span>

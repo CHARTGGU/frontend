@@ -34,11 +34,10 @@ import {
 } from "@/lib/types";
 import { useChartStore } from "@/stores/chartStore";
 import { useSkinStore } from "@/stores/skinStore";
+import { hexToRgba } from "@/lib/chartTheme";
+import { useChartTheme } from "@/features/skin/useChartTheme";
 import { CatOverlay } from "./CatOverlay";
 import { useChartRefs } from "./ChartRefContext";
-
-const volColor = (up: boolean) =>
-  up ? "rgba(38,166,154,0.5)" : "rgba(239,83,80,0.5)";
 
 export default function ChartCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,6 +82,15 @@ export default function ChartCanvas() {
   const { setRefs, setReady } = useChartRefs();
 
   const catEnabled = useSkinStore((s) => s.catEnabled);
+  const skinsVisible = useSkinStore((s) => s.skinsVisible);
+
+  // 배경 스킨 연동 테마. themeRef로 데이터/실시간 effect가 항상 최신 색을 참조하게 함.
+  const theme = useChartTheme();
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
+  // 거래량 막대 색 — 현재 테마 캔들색 기반 반투명(0.5).
+  const volColor = (up: boolean) =>
+    hexToRgba(up ? themeRef.current.candleUp : themeRef.current.candleDown, 0.5);
 
   const candles = useChartStore((s) => s.candles);
   const activeMa = useChartStore((s) => s.activeMa);
@@ -97,32 +105,34 @@ export default function ChartCanvas() {
     const container = containerRef.current;
     if (!container) return;
 
+    // 초기 색은 현재 테마로 (이후 테마 변경은 아래 별도 effect가 applyOptions로 반영).
+    const t0 = themeRef.current;
     const chart = createChart(container, {
       autoSize: true,
       layout: {
         // 배경 투명 → 뒤 배경 스킨 레이어가 비침 (CLAUDE.md §4).
         background: { color: "transparent" },
-        textColor: "#cccccc",
+        textColor: t0.text,
         attributionLogo: true,
       },
       grid: {
-        vertLines: { color: "rgba(255,255,255,0.06)" },
-        horzLines: { color: "rgba(255,255,255,0.06)" },
+        vertLines: { color: t0.grid },
+        horzLines: { color: t0.grid },
       },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: "#333333" },
-      timeScale: { borderColor: "#333333", timeVisible: false },
+      rightPriceScale: { borderColor: t0.axisBorder },
+      timeScale: { borderColor: t0.axisBorder, timeVisible: false },
       handleScroll: true,
       handleScale: true,
     });
 
     const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderUpColor: "#26a69a",
-      borderDownColor: "#ef5350",
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
+      upColor: t0.candleUp,
+      downColor: t0.candleDown,
+      borderUpColor: t0.candleUp,
+      borderDownColor: t0.candleDown,
+      wickUpColor: t0.candleUp,
+      wickDownColor: t0.candleDown,
     });
 
     // 거래량 = 별도 pane(index 1).
@@ -163,6 +173,46 @@ export default function ChartCanvas() {
       setReady(false);
     };
   }, [setRefs, setReady]);
+
+  // 배경 스킨 테마 변경 → 캔들·그리드·축·텍스트 색 재적용. 차트는 투명 배경 유지.
+  useEffect(() => {
+    const chart = chartRef.current;
+    const candleSeries = candleRef.current;
+    const volumeSeries = volumeRef.current;
+    if (!chart || !candleSeries) return;
+
+    candleSeries.applyOptions({
+      upColor: theme.candleUp,
+      downColor: theme.candleDown,
+      borderUpColor: theme.candleUp,
+      borderDownColor: theme.candleDown,
+      wickUpColor: theme.candleUp,
+      wickDownColor: theme.candleDown,
+    });
+    chart.applyOptions({
+      layout: { textColor: theme.text },
+      grid: {
+        vertLines: { color: theme.grid },
+        horzLines: { color: theme.grid },
+      },
+      rightPriceScale: { borderColor: theme.axisBorder },
+      timeScale: { borderColor: theme.axisBorder },
+    });
+
+    // 거래량 막대는 per-bar 색 → 테마 변경 시 현재 캔들로 색만 재계산해 재적용.
+    if (volumeSeries) {
+      const current = useChartStore.getState().candles;
+      volumeSeries.setData(
+        current.map((c) => ({
+          time: c.time,
+          value: c.volume,
+          color: volColor(c.close >= c.open),
+        })),
+      );
+    }
+    // volColor는 themeRef로 최신값 참조 → deps에 theme만 두면 충분.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme]);
 
   // 캔들·거래량 데이터셋 적용 (전체 교체). fit은 별도 effect.
   useEffect(() => {
@@ -518,7 +568,7 @@ export default function ChartCanvas() {
   return (
     <>
       <div ref={containerRef} className="absolute inset-0" />
-      {catEnabled && (
+      {catEnabled && skinsVisible && (
         <CatOverlay hostRef={containerRef} getYAtX={getYAtX} getXBounds={getXBounds} />
       )}
     </>

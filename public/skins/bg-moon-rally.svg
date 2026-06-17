@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="mr-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a1505"/>
+      <stop offset="40%" stop-color="#7a3e0c"/>
+      <stop offset="70%" stop-color="#e08a1e"/>
+      <stop offset="100%" stop-color="#ffd86b"/>
+    </linearGradient>
+    <radialGradient id="mr-sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff7d6"/>
+      <stop offset="35%" stop-color="#ffd152"/>
+      <stop offset="70%" stop-color="#ff9b2f"/>
+      <stop offset="100%" stop-color="#ff9b2f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mr-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffcf66" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffcf66" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="mr-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#mr-sky)"/>
+
+  <!-- 후광 + 태양 (지평선 위로 떠오름) -->
+  <circle cx="600" cy="560" r="430" fill="url(#mr-halo)"/>
+  <circle cx="600" cy="560" r="190" fill="url(#mr-sun)"/>
+
+  <!-- 방사형 광선 -->
+  <g stroke="#fff0bf" stroke-width="2" opacity="0.28" filter="url(#mr-soft)">
+    <line x1="600" y1="560" x2="120" y2="20"/>
+    <line x1="600" y1="560" x2="360" y2="-40"/>
+    <line x1="600" y1="560" x2="600" y2="-60"/>
+    <line x1="600" y1="560" x2="840" y2="-40"/>
+    <line x1="600" y1="560" x2="1080" y2="20"/>
+    <line x1="600" y1="560" x2="-40" y2="240"/>
+    <line x1="600" y1="560" x2="1240" y2="240"/>
+  </g>
+
+  <!-- 상승 캔들 실루엣 (떡상) -->
+  <g fill="#3a1e06" opacity="0.85">
+    <rect x="150" y="690" width="34" height="74"/>
+    <rect x="230" y="650" width="34" height="114"/>
+    <rect x="310" y="600" width="34" height="164"/>
+    <rect x="390" y="560" width="34" height="204"/>
+    <rect x="470" y="700" width="34" height="64"/>
+    <rect x="730" y="640" width="34" height="124"/>
+    <rect x="810" y="580" width="34" height="184"/>
+    <rect x="890" y="520" width="34" height="244"/>
+    <rect x="970" y="470" width="34" height="294"/>
+    <rect x="1050" y="430" width="34" height="334"/>
+  </g>
+  <g stroke="#3a1e06" stroke-width="4" opacity="0.85">
+    <line x1="167" y1="676" x2="167" y2="700"/>
+    <line x1="247" y1="636" x2="247" y2="660"/>
+    <line x1="327" y1="586" x2="327" y2="610"/>
+    <line x1="407" y1="540" x2="407" y2="566"/>
+    <line x1="827" y1="560" x2="827" y2="586"/>
+    <line x1="907" y1="500" x2="907" y2="526"/>
+    <line x1="987" y1="448" x2="987" y2="476"/>
+    <line x1="1067" y1="408" x2="1067" y2="436"/>
+  </g>
+
+  <!-- 떠오르는 입자(반짝) -->
+  <g fill="#fff3c4">
+    <circle cx="240" cy="420" r="2.4" opacity="0.8"/>
+    <circle cx="430" cy="320" r="1.8" opacity="0.7"/>
+    <circle cx="540" cy="200" r="2.2" opacity="0.75"/>
+    <circle cx="690" cy="300" r="1.6" opacity="0.6"/>
+    <circle cx="820" cy="220" r="2.4" opacity="0.8"/>
+    <circle cx="960" cy="360" r="1.8" opacity="0.7"/>
+    <circle cx="360" cy="160" r="1.5" opacity="0.6"/>
+    <circle cx="1010" cy="180" r="2.0" opacity="0.7"/>
+  </g>
+</svg>

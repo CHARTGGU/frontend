@@ -5,6 +5,9 @@ import Toolbar from "@/features/chart/Toolbar";
 import ChartView from "@/features/chart/ChartView";
 import SkinSidebar from "@/features/skin/SkinSidebar";
 import { CaptureProvider } from "@/features/export/captureContext";
+import OnboardingGuide from "@/features/onboarding/OnboardingGuide";
+import { ONBOARDING_STEPS } from "@/features/onboarding/steps";
+import { useChartTheme } from "@/features/skin/useChartTheme";
 
 /**
  * 전체 화면 셸 (데스크탑 전용).
@@ -16,10 +19,14 @@ import { CaptureProvider } from "@/features/export/captureContext";
 export default function AppShell() {
   // 마켓플레이스 사이드바 접힘 상태 (AppShell이 소유, SkinSidebar에 props로 전달)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const theme = useChartTheme();
 
   return (
     <CaptureProvider>
-      <div className="flex h-screen flex-col bg-[#131313]">
+      <div
+        className="flex h-screen flex-col transition-colors duration-300"
+        style={{ backgroundColor: theme.pageBg }}
+      >
         <Toolbar />
         <div className="flex min-h-0 flex-1">
           <ChartView />
@@ -28,6 +35,7 @@ export default function AppShell() {
             onToggle={() => setSidebarCollapsed((c) => !c)}
           />
         </div>
+        <OnboardingGuide steps={ONBOARDING_STEPS} />
       </div>
     </CaptureProvider>
   );
