@@ -211,21 +211,26 @@
   <!-- 4. 귀여운데 유용하기까지 -->
   <section class="slide">
     <div class="label">WHAT · 투자용 지표</div>
-    <div class="body" id="usefulBody">
-      <div id="usefulContent" style="display:flex;flex-direction:column;height:100%">
-        <div style="flex:0 0 auto"><span class="big sm">귀여운데, <span style="color:var(--pink-deep)">유용하기까지</span> 해요.</span></div>
-        <div class="useshot">
-          <div class="frame" style="transform:rotate(-1deg);position:relative"><img src="assets/shot-useful.jpg" alt="유용한 스킨"><button class="gotobtn" onclick="openUseful()">▶ 직접 보기</button></div>
-          <div class="uselist">
-            <div class="ubadge"><span class="e">✨</span><div><b>골든·데드크로스</b><p>MA20·MA60이 교차하는 순간을 네온·이펙트로 강조 — 매수·매도 타이밍 놓치지 않게.</p></div></div>
-            <div class="ubadge"><span class="e">🧱</span><div><b>매물대 (거래량 프로파일)</b><p>가격대별 거래량을 벽돌로 쌓아, 지지·저항 구간이 한눈에.</p></div></div>
-            <div class="ubadge"><span class="e">😸</span><div><b>고점·저점 자동 표시</b><p>보이는 구간의 최고·최저점에 캐릭터가 딱 붙어요.</p></div></div>
+    <div class="body">
+      <div style="flex:0 0 auto"><span class="big sm">귀여운데, <span style="color:var(--pink-deep)">유용하기까지</span> 해요.</span></div>
+      <div class="useshot">
+        <!-- 왼쪽: 이미지 ↔ iframe 토글 -->
+        <div style="display:flex;flex-direction:column;min-height:0">
+          <div id="usefulImg" class="frame" style="transform:rotate(-1deg);position:relative;flex:1;min-height:0">
+            <img src="assets/shot-useful.jpg" alt="유용한 스킨">
+            <button class="gotobtn" onclick="openUseful()">▶ 직접 보기</button>
+          </div>
+          <div id="usefulDemo" style="display:none;flex-direction:column;flex:1;min-height:0;gap:8px">
+            <div class="demobar"><button class="backbtn" id="usefulBack">← 돌아가기</button></div>
+            <div class="demoframe" style="flex:1;min-height:0"><iframe id="usefulFrame" allow="fullscreen" title="ChartSkin — 투자 지표"></iframe></div>
           </div>
         </div>
-      </div>
-      <div class="demowrap" id="usefulDemowrap" style="display:none">
-        <div class="demobar"><button class="backbtn" id="usefulBack">← 슬라이드로 돌아가기</button></div>
-        <div class="demoframe"><iframe id="usefulFrame" allow="fullscreen" title="ChartSkin — 투자 지표"></iframe></div>
+        <!-- 오른쪽: 항상 표시 -->
+        <div class="uselist">
+          <div class="ubadge"><span class="e">✨</span><div><b>골든·데드크로스</b><p>MA20·MA60이 교차하는 순간을 네온·이펙트로 강조 — 매수·매도 타이밍 놓치지 않게.</p></div></div>
+          <div class="ubadge"><span class="e">🧱</span><div><b>매물대 (거래량 프로파일)</b><p>가격대별 거래량을 벽돌로 쌓아, 지지·저항 구간이 한눈에.</p></div></div>
+          <div class="ubadge"><span class="e">😸</span><div><b>고점·저점 자동 표시</b><p>보이는 구간의 최고·최저점에 캐릭터가 딱 붙어요.</p></div></div>
+        </div>
       </div>
     </div>
     <div class="pageno">5 / 8</div>
@@ -234,21 +239,26 @@
   <!-- 5. 투자자 심리 케어 -->
   <section class="slide">
     <div class="label">WHAT · 멘탈 케어까지</div>
-    <div class="body" id="mentalBody">
-      <div id="mentalContent" style="display:flex;flex-direction:column;height:100%">
-        <div style="flex:0 0 auto"><span class="big sm">차트보다 받은 스트레스, <span style="color:var(--pink-deep)">키캡 누르며</span> 풀어요.</span></div>
-        <div class="useshot">
-          <div class="frame" style="transform:rotate(-1deg);position:relative"><img src="assets/shot-mental.jpg" alt="멘탈 케어 스킨"><button class="gotobtn" onclick="openMental()">▶ 직접 보기</button></div>
-          <div class="uselist">
-            <div class="ubadge"><span class="e">🎹</span><div><b>키캡 키링</b><p>빡칠 때 키캡 딸깍딸깍. 소리로 스트레스 풀어요.</p></div></div>
-            <div class="ubadge"><span class="e">🙏</span><div><b>목탁·부처 배경</b><p>물려도 마음의 평화, 부처님 가호로 버팁니다.</p></div></div>
-            <div class="ubadge"><span class="e">🧧</span><div><b>부자 부적</b><p>차트에 부적 붙이고 존버. 오늘도 수익 기원입니다.</p></div></div>
+    <div class="body">
+      <div style="flex:0 0 auto"><span class="big sm">차트보다 받은 스트레스, <span style="color:var(--pink-deep)">키캡 누르며</span> 풀어요.</span></div>
+      <div class="useshot">
+        <!-- 왼쪽: 이미지 ↔ iframe 토글 -->
+        <div style="display:flex;flex-direction:column;min-height:0">
+          <div id="mentalImg" class="frame" style="transform:rotate(-1deg);position:relative;flex:1;min-height:0">
+            <img src="assets/shot-mental.jpg" alt="멘탈 케어 스킨">
+            <button class="gotobtn" onclick="openMental()">▶ 직접 보기</button>
+          </div>
+          <div id="mentalDemo" style="display:none;flex-direction:column;flex:1;min-height:0;gap:8px">
+            <div class="demobar"><button class="backbtn" id="mentalBack">← 돌아가기</button></div>
+            <div class="demoframe" style="flex:1;min-height:0"><iframe id="mentalFrame" allow="fullscreen" title="ChartSkin — 멘탈 케어"></iframe></div>
           </div>
         </div>
-      </div>
-      <div class="demowrap" id="mentalDemowrap" style="display:none">
-        <div class="demobar"><button class="backbtn" id="mentalBack">← 슬라이드로 돌아가기</button></div>
-        <div class="demoframe"><iframe id="mentalFrame" allow="fullscreen" title="ChartSkin — 멘탈 케어"></iframe></div>
+        <!-- 오른쪽: 항상 표시 -->
+        <div class="uselist">
+          <div class="ubadge"><span class="e">🎹</span><div><b>키캡 키링</b><p>빡칠 때 키캡 딸깍딸깍. 소리로 스트레스 풀어요.</p></div></div>
+          <div class="ubadge"><span class="e">🙏</span><div><b>목탁·부처 배경</b><p>물려도 마음의 평화, 부처님 가호로 버팁니다.</p></div></div>
+          <div class="ubadge"><span class="e">🧧</span><div><b>부자 부적</b><p>차트에 부적 붙이고 존버. 오늘도 수익 기원입니다.</p></div></div>
+        </div>
       </div>
     </div>
     <div class="pageno">6 / 8</div>
@@ -311,32 +321,32 @@
   };
   const DEMO_URL = "https://frontend-alpha-nine-22.vercel.app/";
 
-  // 슬라이드 5 — 투자 지표 프리셋
+  // 슬라이드 5 — 투자 지표 프리셋 (이미지 ↔ iframe, 제목·배지 유지)
   const usefulFrame = document.getElementById('usefulFrame');
-  const usefulContent = document.getElementById('usefulContent');
-  const usefulDemowrap = document.getElementById('usefulDemowrap');
+  const usefulImg   = document.getElementById('usefulImg');
+  const usefulDemo  = document.getElementById('usefulDemo');
   window.openUseful = () => {
     if (!usefulFrame.src) usefulFrame.src = DEMO_URL + "?preset=useful";
-    usefulContent.style.display = 'none';
-    usefulDemowrap.style.display = 'flex';
+    usefulImg.style.display  = 'none';
+    usefulDemo.style.display = 'flex';
   };
   document.getElementById('usefulBack').onclick = () => {
-    usefulDemowrap.style.display = 'none';
-    usefulContent.style.display = 'flex';
+    usefulDemo.style.display = 'none';
+    usefulImg.style.display  = 'flex';
   };
 
-  // 슬라이드 6 — 멘탈 케어 프리셋
+  // 슬라이드 6 — 멘탈 케어 프리셋 (이미지 ↔ iframe, 제목·배지 유지)
   const mentalFrame = document.getElementById('mentalFrame');
-  const mentalContent = document.getElementById('mentalContent');
-  const mentalDemowrap = document.getElementById('mentalDemowrap');
+  const mentalImg   = document.getElementById('mentalImg');
+  const mentalDemo  = document.getElementById('mentalDemo');
   window.openMental = () => {
     if (!mentalFrame.src) mentalFrame.src = DEMO_URL + "?preset=mental";
-    mentalContent.style.display = 'none';
-    mentalDemowrap.style.display = 'flex';
+    mentalImg.style.display  = 'none';
+    mentalDemo.style.display = 'flex';
   };
   document.getElementById('mentalBack').onclick = () => {
-    mentalDemowrap.style.display = 'none';
-    mentalContent.style.display = 'flex';
+    mentalDemo.style.display = 'none';
+    mentalImg.style.display  = 'flex';
   };
   document.getElementById('demoBack').onclick=()=>{
     demowrap.style.display='none';revealWrap.style.display='flex';
