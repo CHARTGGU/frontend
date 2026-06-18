@@ -214,8 +214,8 @@
     <div class="body">
       <div style="flex:0 0 auto"><span class="big sm">귀여운데, <span style="color:var(--pink-deep)">유용하기까지</span> 해요.</span></div>
       <div class="useshot">
-        <!-- 왼쪽: 이미지 ↔ iframe 토글 -->
-        <div style="display:flex;flex-direction:column;min-height:0;align-self:stretch">
+        <!-- 왼쪽: 이미지 ↔ iframe 토글 (aspect-ratio:3/2 고정 → 비율 유지하며 iframe 높이 확보) -->
+        <div style="display:flex;flex-direction:column;aspect-ratio:3/2">
           <div id="usefulImg" class="frame" style="transform:rotate(-1deg);position:relative;flex:1;min-height:0">
             <img src="assets/shot-useful.jpg" alt="유용한 스킨">
             <button class="gotobtn" onclick="openUseful()">▶ 직접 보기</button>
@@ -242,8 +242,8 @@
     <div class="body">
       <div style="flex:0 0 auto"><span class="big sm">차트보다 받은 스트레스, <span style="color:var(--pink-deep)">키캡 누르며</span> 풀어요.</span></div>
       <div class="useshot">
-        <!-- 왼쪽: 이미지 ↔ iframe 토글 -->
-        <div style="display:flex;flex-direction:column;min-height:0;align-self:stretch">
+        <!-- 왼쪽: 이미지 ↔ iframe 토글 (aspect-ratio:3/2 고정 → 비율 유지하며 iframe 높이 확보) -->
+        <div style="display:flex;flex-direction:column;aspect-ratio:3/2">
           <div id="mentalImg" class="frame" style="transform:rotate(-1deg);position:relative;flex:1;min-height:0">
             <img src="assets/shot-mental.jpg" alt="멘탈 케어 스킨">
             <button class="gotobtn" onclick="openMental()">▶ 직접 보기</button>
