@@ -9,15 +9,15 @@ import type { Candle } from "@/lib/types";
 /**
  * 장대양봉 판정 기준
  * - 양봉: close > open
- * - 몸통(close - open) / open >= 3% — 의미 있는 상승
- * - 몸통 / 전체범위(high - low) >= 60% — 꼬리 짧은 강한 실체
+ * - 몸통(close - open) / open >= 7% — 강한 상승
+ * - 몸통 / 전체범위(high - low) >= 75% — 꼬리 매우 짧은 강한 실체
  */
 function isBigBullish(c: Candle): boolean {
   if (c.close <= c.open) return false;
   const body = c.close - c.open;
   const range = c.high - c.low;
   if (range === 0) return false;
-  return body / c.open >= 0.03 && body / range >= 0.6;
+  return body / c.open >= 0.07 && body / range >= 0.75;
 }
 
 /**
