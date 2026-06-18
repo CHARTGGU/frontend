@@ -58,15 +58,20 @@ export default function KiyoungiOverlay() {
     [chart, candleSeries],
   );
 
-  // 미배치 본체 → 차트 중앙(상단 40%)에 앵커 부여.
+  // 미배치이거나 화면 밖(toPx=null)이면 차트 중앙(상단 40%)에 앵커 부여.
   useEffect(() => {
     if (!kiyoungiEnabled || !ready) return;
-    if (body.time !== null && body.price !== null) return;
+    // 이미 배치된 경우 → 현재 뷰에서 보이는지 확인
+    if (body.time !== null && body.price !== null) {
+      const px = toPx(body.time, body.price);
+      if (px !== null) return; // 화면에 보임 → 유지
+      // 화면 밖 → 중앙에 재배치
+    }
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     const anchor = toAnchor(rect.width / 2, rect.height * 0.4);
     if (anchor) setBody(anchor);
-  }, [kiyoungiEnabled, ready, body.time, body.price, toAnchor, setBody]);
+  }, [kiyoungiEnabled, ready, body.time, body.price, toAnchor, toPx, setBody]);
 
   // 컨테이너 바깥(차트 등) 클릭 → 선택 해제.
   useEffect(() => {
