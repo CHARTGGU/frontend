@@ -8,6 +8,7 @@ import { CaptureProvider } from "@/features/export/captureContext";
 import OnboardingGuide from "@/features/onboarding/OnboardingGuide";
 import { ONBOARDING_STEPS } from "@/features/onboarding/steps";
 import { useChartTheme } from "@/features/skin/useChartTheme";
+import SkinPresetLoader from "@/features/SkinPresetLoader";
 
 /**
  * 전체 화면 셸 (데스크탑 전용).
@@ -23,6 +24,7 @@ export default function AppShell() {
 
   return (
     <CaptureProvider>
+        <SkinPresetLoader />
       <div
         className="flex h-screen flex-col transition-colors duration-300"
         style={{ backgroundColor: theme.pageBg }}
