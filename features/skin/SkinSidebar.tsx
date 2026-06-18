@@ -28,8 +28,8 @@ import {
 const CATEGORY_ORDER: SkinCategory[] = [
   "background",
   "indicator",
-  "drawing",
   "widget",
+  "drawing",
 ];
 
 // 구현된(status='available') 스킨이 1개라도 있는 카테고리는 펼친 채로 시작.
@@ -313,6 +313,40 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                       <CustomBgUpload />
                     </>
                   )}
+                  {category === "drawing" && (
+                    <div className="mb-1 border-b border-panel-border px-3 pb-3 pt-2.5">
+                      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                        <span>✏️</span>
+                        <span>라인 그리기</span>
+                      </div>
+                      <p className="mb-2 text-[10px] text-text-muted">
+                        스타일 선택 후 차트 드래그
+                      </p>
+                      <LineStylePicker
+                        onSelect={(styleId) => {
+                          setLineDrawPendingStyle(styleId);
+                          setLineDrawMode("drawing");
+                        }}
+                      />
+
+                      {lineDrawMode === "drawing" && (
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-[10px] font-semibold text-accent">
+                            ✏️ 그리는 중… 차트 드래그
+                          </span>
+                          <button
+                            onClick={() => {
+                              setLineDrawMode("idle");
+                              setLineDrawPendingStyle(null);
+                            }}
+                            className="rounded bg-panel-hover px-2 py-0.5 text-[10px] text-text-muted hover:text-text-primary"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {category === "indicator"
                     ? // 지표 스킨은 연동 지표(binding)별 서브그룹으로 구분 표시.
                       INDICATOR_BINDING_ORDER.map((binding) => {
@@ -364,41 +398,6 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                         );
                       })
                     : skins.map(renderCard)}
-
-                  {category === "drawing" && (
-                    <div className="mt-1 border-t border-panel-border px-3 pb-3 pt-2.5">
-                      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
-                        <span>✏️</span>
-                        <span>라인 그리기</span>
-                      </div>
-                      <p className="mb-2 text-[10px] text-text-muted">
-                        스타일 선택 후 차트 드래그
-                      </p>
-                      <LineStylePicker
-                        onSelect={(styleId) => {
-                          setLineDrawPendingStyle(styleId);
-                          setLineDrawMode("drawing");
-                        }}
-                      />
-
-                      {lineDrawMode === "drawing" && (
-                        <div className="mt-2 flex items-center justify-between">
-                          <span className="text-[10px] font-semibold text-accent">
-                            ✏️ 그리는 중… 차트 드래그
-                          </span>
-                          <button
-                            onClick={() => {
-                              setLineDrawMode("idle");
-                              setLineDrawPendingStyle(null);
-                            }}
-                            className="rounded bg-panel-hover px-2 py-0.5 text-[10px] text-text-muted hover:text-text-primary"
-                          >
-                            취소
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
             </section>
