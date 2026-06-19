@@ -62,6 +62,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const crossStyle = useSkinStore((s) => s.crossStyle);
   const brickStyle = useSkinStore((s) => s.brickStyle);
   const catEnabled = useSkinStore((s) => s.catEnabled);
+  const runnerEnabled = useSkinStore((s) => s.runnerEnabled);
   const fireEnabled = useSkinStore((s) => s.fireEnabled);
   const waterfallEnabled = useSkinStore((s) => s.waterfallEnabled);
   const applyBackground = useSkinStore((s) => s.applyBackground);
@@ -72,6 +73,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
   const setCrossStyle = useSkinStore((s) => s.setCrossStyle);
   const setBrickStyle = useSkinStore((s) => s.setBrickStyle);
   const toggleCat = useSkinStore((s) => s.toggleCat);
+  const toggleRunner = useSkinStore((s) => s.toggleRunner);
   const toggleFire = useSkinStore((s) => s.toggleFire);
   const toggleWaterfall = useSkinStore((s) => s.toggleWaterfall);
   const kiyoungiEnabled = useSkinStore((s) => s.kiyoungiEnabled);
@@ -188,6 +190,9 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
               (category === "widget" &&
                 skin.id === "wg-running-cat" &&
                 catEnabled) ||
+              (category === "widget" &&
+                skin.id === "wg-running-duo" &&
+                runnerEnabled) ||
               (category === "widget" && skin.id === "wg-fire" && fireEnabled) ||
               (category === "widget" &&
                 skin.id === "wg-waterfall" &&
@@ -222,6 +227,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (stickerImg) addSticker(stickerImg);
                     else if (category === "indicator") applyIndicator(skin.id);
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                    else if (category === "widget" && skin.id === "wg-running-duo") toggleRunner();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (skin.id === "wg-kiyoungi") toggleKiyoungi();
@@ -236,6 +242,7 @@ export default function SkinSidebar({ collapsed, onToggle }: SkinSidebarProps) {
                     else if (skin.id === "ind-ichimoku-cloud") toggleIndicator("ichimoku");
                     else if (category === "indicator") removeIndicator();
                     else if (category === "widget" && skin.id === "wg-running-cat") toggleCat();
+                    else if (category === "widget" && skin.id === "wg-running-duo") toggleRunner();
                     else if (category === "widget" && skin.id === "wg-fire") toggleFire();
                     else if (category === "widget" && skin.id === "wg-waterfall") toggleWaterfall();
                     else if (skin.id === "wg-kiyoungi") toggleKiyoungi();

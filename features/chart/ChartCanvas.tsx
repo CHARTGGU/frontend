@@ -37,6 +37,7 @@ import { useSkinStore } from "@/stores/skinStore";
 import { hexToRgba } from "@/lib/chartTheme";
 import { useChartTheme } from "@/features/skin/useChartTheme";
 import { CatOverlay } from "./CatOverlay";
+import { RunnerOverlay } from "./RunnerOverlay";
 import { useChartRefs } from "./ChartRefContext";
 
 export default function ChartCanvas() {
@@ -82,6 +83,7 @@ export default function ChartCanvas() {
   const { setRefs, setReady } = useChartRefs();
 
   const catEnabled = useSkinStore((s) => s.catEnabled);
+  const runnerEnabled = useSkinStore((s) => s.runnerEnabled);
   const skinsVisible = useSkinStore((s) => s.skinsVisible);
 
   // 배경 스킨 연동 테마. themeRef로 데이터/실시간 effect가 항상 최신 색을 참조하게 함.
@@ -570,6 +572,9 @@ export default function ChartCanvas() {
       <div ref={containerRef} className="absolute inset-0" />
       {catEnabled && skinsVisible && (
         <CatOverlay hostRef={containerRef} getYAtX={getYAtX} getXBounds={getXBounds} />
+      )}
+      {runnerEnabled && skinsVisible && (
+        <RunnerOverlay hostRef={containerRef} getYAtX={getYAtX} getXBounds={getXBounds} />
       )}
     </>
   );

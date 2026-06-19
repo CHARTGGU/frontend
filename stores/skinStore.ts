@@ -62,6 +62,8 @@ interface SkinState {
   themingEnabled: boolean;
   /** 뛰어다니는 고양이 위젯 활성화 여부. */
   catEnabled: boolean;
+  /** 달리기 경주(파란공·흰구름) 위젯 활성화 여부. */
+  runnerEnabled: boolean;
   /** 불타는 효과 위젯 활성화 여부. */
   fireEnabled: boolean;
   /** 불 이펙트 영역 높이 (10~80, 화면 높이 %). */
@@ -113,6 +115,7 @@ interface SkinState {
   /** 배경 연동 테마 on/off 토글. */
   toggleTheming: () => void;
   toggleCat: () => void;
+  toggleRunner: () => void;
   toggleFire: () => void;
   setFireHeight: (height: number) => void;
   toggleWaterfall: () => void;
@@ -147,6 +150,7 @@ export const useSkinStore = create<SkinState>()(
       fitMode: "cover",
       themingEnabled: true,
       catEnabled: false,
+      runnerEnabled: false,
       fireEnabled: false,
       fireHeight: 30,
       waterfallEnabled: false,
@@ -178,6 +182,7 @@ export const useSkinStore = create<SkinState>()(
       setFitMode: (fitMode) => set({ fitMode }),
       toggleTheming: () => set((s) => ({ themingEnabled: !s.themingEnabled })),
       toggleCat: () => set((s) => ({ catEnabled: !s.catEnabled })),
+      toggleRunner: () => set((s) => ({ runnerEnabled: !s.runnerEnabled })),
       toggleFire: () => set((s) => ({ fireEnabled: !s.fireEnabled })),
       setFireHeight: (fireHeight) => set({ fireHeight }),
       toggleWaterfall: () =>
