@@ -236,6 +236,36 @@ export const BACKGROUND_SKINS: BackgroundSkin[] = [
 /** 지표 스킨 — 최고/최저점에 캐릭터+말풍선, 실제 적용 가능. */
 export const INDICATOR_SKINS: IndicatorSkin[] = [
   {
+    id: "ind-ball",
+    name: "두두",
+    author: "ChartSkin",
+    description: "기간 최고점엔 신난 두두, 최저점엔 우는 두두가 붙어요.",
+    category: "indicator",
+    binding: "price-extreme",
+    status: "available",
+    thumbnail: "/skins/ball-happy.png",
+    characters: {
+      happy: "/skins/ball-happy.png",
+      sad: "/skins/ball-sad.png",
+      neutral: "/skins/ball-happy.png",
+    },
+  },
+  {
+    id: "ind-cloud",
+    name: "아이",
+    author: "ChartSkin",
+    description: "기간 최고점엔 신난 아이, 최저점엔 우는 아이가 붙어요.",
+    category: "indicator",
+    binding: "price-extreme",
+    status: "available",
+    thumbnail: "/skins/cloud-happy.png",
+    characters: {
+      happy: "/skins/cloud-happy.png",
+      sad: "/skins/cloud-sad.png",
+      neutral: "/skins/cloud-happy.png",
+    },
+  },
+  {
     id: "ind-cat",
     name: "감정 고양이",
     author: "ChartSkin",
@@ -259,16 +289,6 @@ export const INDICATOR_SKINS: IndicatorSkin[] = [
  */
 export const BINDING_SKINS: BaseSkin[] = [
   {
-    id: "ind-cross-muhan",
-    name: "무한도전 크로스",
-    author: "ChartSkin",
-    description: "골든크로스엔 무야~호~, 데드크로스엔 해골 스티커가 떠요.",
-    category: "indicator",
-    binding: "cross",
-    status: "available",
-    thumbnail: "/skins/muhan-muyaho.png",
-  },
-  {
     id: "ind-cross-neon",
     name: "네온 크로스",
     author: "ChartSkin",
@@ -277,6 +297,16 @@ export const BINDING_SKINS: BaseSkin[] = [
     binding: "cross",
     status: "available",
     thumbnail: "/skins/cross-neon.svg",
+  },
+  {
+    id: "ind-cross-muhan",
+    name: "무한도전 크로스",
+    author: "ChartSkin",
+    description: "골든크로스엔 무야~호~, 데드크로스엔 해골 스티커가 떠요.",
+    category: "indicator",
+    binding: "cross",
+    status: "available",
+    thumbnail: "/skins/muhan-muyaho.png",
   },
   {
     id: "ind-cross-burst",
@@ -289,16 +319,6 @@ export const BINDING_SKINS: BaseSkin[] = [
     thumbnail: "/skins/cross-burst.svg",
   },
   {
-    id: "ind-brick-pixel",
-    name: "픽셀 벽돌 매물대",
-    author: "ChartSkin",
-    description: "가격대별 거래량을 픽셀 벽돌로 쌓아요. 최대 매물대는 금색 벽.",
-    category: "indicator",
-    binding: "volume-profile",
-    status: "available",
-    thumbnail: "/skins/brick-pixel.svg",
-  },
-  {
     id: "ind-brick-gold",
     name: "골드바 매물대",
     author: "ChartSkin",
@@ -307,6 +327,16 @@ export const BINDING_SKINS: BaseSkin[] = [
     binding: "volume-profile",
     status: "available",
     thumbnail: "/skins/brick-gold.svg",
+  },
+  {
+    id: "ind-brick-pixel",
+    name: "픽셀 벽돌 매물대",
+    author: "ChartSkin",
+    description: "가격대별 거래량을 픽셀 벽돌로 쌓아요. 최대 매물대는 금색 벽.",
+    category: "indicator",
+    binding: "volume-profile",
+    status: "available",
+    thumbnail: "/skins/brick-pixel.svg",
   },
   {
     id: "ind-ichimoku-cloud",
@@ -322,6 +352,15 @@ export const BINDING_SKINS: BaseSkin[] = [
 
 /** 위젯 — Phase 2. 카테고리 자리만(준비중). */
 export const WIDGET_SKINS: BaseSkin[] = [
+  {
+    id: "wg-running-duo",
+    name: "두아이 달리기",
+    author: "ChartSkin",
+    description: "두두와 아이가 차트 캔들 고가 위를 경주하듯 달려요.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/ball-run-1.png",
+  },
   {
     id: "wg-running-cat",
     name: "뛰어다니는 고양이",
@@ -350,15 +389,6 @@ export const WIDGET_SKINS: BaseSkin[] = [
     thumbnail: "/skins/waterfall-thumb.svg",
   },
   {
-    id: "wg-news-marker",
-    name: "뉴스 마커",
-    author: "ChartSkin",
-    description: "5% 급등락 날짜에 뉴스 이유를 시간축 아이콘으로 표시.",
-    category: "widget",
-    status: "available",
-    thumbnail: "/skins/news-marker.svg",
-  },
-  {
     id: "wg-keycap",
     name: "키캡 키링",
     author: "ChartSkin",
@@ -366,6 +396,15 @@ export const WIDGET_SKINS: BaseSkin[] = [
     category: "widget",
     status: "available",
     thumbnail: "/skins/keycap-thumb.svg",
+  },
+  {
+    id: "wg-news-marker",
+    name: "뉴스 마커",
+    author: "ChartSkin",
+    description: "5% 급등락 날짜에 뉴스 이유를 시간축 아이콘으로 표시.",
+    category: "widget",
+    status: "available",
+    thumbnail: "/skins/news-marker.svg",
   },
   {
     id: "wg-jigeumiani",
